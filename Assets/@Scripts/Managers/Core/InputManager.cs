@@ -8,12 +8,12 @@ public class InputManager : MonoBehaviour, IInitializable
 
     private InputSystem_Actions _input;
 
-    public event Action<Vector2> OnMove;
-    public event Action OnJump;
-    public event Action OnPrimaryAttack;
-    public event Action OnSecondaryAttack;
-    public event Action OnSkill;
-    public event Action OnInteract;
+    public event Action<InputAction.CallbackContext> OnMove;
+    public event Action<InputAction.CallbackContext> OnJump;
+    public event Action<InputAction.CallbackContext> OnPrimaryAttack;
+    public event Action<InputAction.CallbackContext> OnSecondaryAttack;
+    public event Action<InputAction.CallbackContext> OnSkill;
+    public event Action<InputAction.CallbackContext> OnMarkTarget;
 
     public void Initialize()
     {
@@ -22,7 +22,7 @@ public class InputManager : MonoBehaviour, IInitializable
         _input = new InputSystem_Actions();
 
         BindActions();
-        _input.Enable();
+        _input.Player.Enable();
 
         IsInitialized = true;
     }
@@ -31,30 +31,69 @@ public class InputManager : MonoBehaviour, IInitializable
     {
         var player = _input.Player;
 
-        // Move (Vector2)
-        player.Move.performed += ctx => OnMove?.Invoke(ctx.ReadValue<Vector2>());
-        player.Move.canceled += ctx => OnMove?.Invoke(Vector2.zero);
+        player.Move.started += HandleMove;
+        player.Move.performed += HandleMove;
+        player.Move.canceled += HandleMove;
 
-        // Jump
-        player.Jump.performed += _ => OnJump?.Invoke();
+        player.Jump.started += HandleJump;
+        player.Jump.performed += HandleJump;
+        player.Jump.canceled += HandleJump;
 
-        // Attack + Shotgun (Primary + Secondary Attack)
-        player.Attack.performed += _ => OnPrimaryAttack?.Invoke();
-        player.Shotgun.performed += _ => OnSecondaryAttack?.Invoke(); // 추가된 공격 액션
+        player.Attack.started += HandlePrimaryAttack;
+        player.Attack.performed += HandlePrimaryAttack;
+        player.Attack.canceled += HandlePrimaryAttack;
 
-        // Interact (Optional)
-        // player.Interact.performed += _ => OnInteract?.Invoke();
+        player.Shotgun.started += HandleSecondaryAttack;
+        player.Shotgun.performed += HandleSecondaryAttack;
+        player.Shotgun.canceled += HandleSecondaryAttack;
 
-        // Skill (Deadeye)
-        player.Skill.started += _ => OnSkill?.Invoke();
-        player.Skill.canceled += _ => OnSkill?.Invoke();
+        player.Skill.started += HandleSkill;
+        player.Skill.performed += HandleSkill;
+        player.Skill.canceled += HandleSkill;
+
+        player.MarkTarget.started += HandleMarkTarget;
+        player.MarkTarget.performed += HandleMarkTarget;
+        player.MarkTarget.canceled += HandleMarkTarget;
     }
+
+    private void HandleMove(InputAction.CallbackContext ctx) => OnMove?.Invoke(ctx);
+    private void HandleJump(InputAction.CallbackContext ctx) => OnJump?.Invoke(ctx);
+    private void HandlePrimaryAttack(InputAction.CallbackContext ctx) => OnPrimaryAttack?.Invoke(ctx);
+    private void HandleSecondaryAttack(InputAction.CallbackContext ctx) => OnSecondaryAttack?.Invoke(ctx);
+    private void HandleSkill(InputAction.CallbackContext ctx) => OnSkill?.Invoke(ctx);
+    private void HandleMarkTarget(InputAction.CallbackContext ctx) => OnMarkTarget?.Invoke(ctx);
 
     private void OnDestroy()
     {
-        if (_input != null)
-        {
-            _input.Disable();
-        }
+        if (_input == null)
+            return;
+
+        var player = _input.Player;
+
+        player.Move.started -= HandleMove;
+        player.Move.performed -= HandleMove;
+        player.Move.canceled -= HandleMove;
+
+        player.Jump.started -= HandleJump;
+        player.Jump.performed -= HandleJump;
+        player.Jump.canceled -= HandleJump;
+
+        player.Attack.started -= HandlePrimaryAttack;
+        player.Attack.performed -= HandlePrimaryAttack;
+        player.Attack.canceled -= HandlePrimaryAttack;
+
+        player.Shotgun.started -= HandleSecondaryAttack;
+        player.Shotgun.performed -= HandleSecondaryAttack;
+        player.Shotgun.canceled -= HandleSecondaryAttack;
+
+        player.Skill.started -= HandleSkill;
+        player.Skill.performed -= HandleSkill;
+        player.Skill.canceled -= HandleSkill;
+
+        player.MarkTarget.started -= HandleMarkTarget;
+        player.MarkTarget.performed -= HandleMarkTarget;
+        player.MarkTarget.canceled -= HandleMarkTarget;
+
+        _input.Player.Disable();
     }
 }

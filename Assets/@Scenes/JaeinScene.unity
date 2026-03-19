@@ -526,7 +526,7 @@ GameObject:
   - component: {fileID: 1687851852}
   - component: {fileID: 1687851860}
   - component: {fileID: 1687851859}
-  - component: {fileID: 1687851858}
+  - component: {fileID: 1687851864}
   - component: {fileID: 1687851857}
   - component: {fileID: 1687851851}
   - component: {fileID: 1687851861}
@@ -565,7 +565,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1687851858}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnMove
         m_Mode: 0
@@ -585,7 +585,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Look[/Mouse/delta]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1687851858}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnAttack
         m_Mode: 0
@@ -665,7 +665,7 @@ MonoBehaviour:
     m_ActionName: UI/TrackedDeviceOrientation
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1687851858}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnShotgun
         m_Mode: 0
@@ -681,7 +681,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Shotgun[/Mouse/rightButton]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1687851858}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnSkill
         m_Mode: 0
@@ -697,7 +697,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Skill[/Keyboard/shift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1687851858}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnMarkTarget
         m_Mode: 0
@@ -882,18 +882,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   _groundCheckRadius: 0.1
---- !u!114 &1687851858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1687851850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6301bce746406fa47aa03a6af88207c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!114 &1687851859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -953,6 +941,18 @@ MonoBehaviour:
   _damagePerShot: 100
   _timeBetweenShots: 0.1
   _maxTargets: 3
+--- !u!114 &1687851864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687851850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6301bce746406fa47aa03a6af88207c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1 &1873651232
 GameObject:
   m_ObjectHideFlags: 0

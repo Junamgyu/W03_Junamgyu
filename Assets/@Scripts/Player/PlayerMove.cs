@@ -1,11 +1,13 @@
-using UnityEngine;
+﻿using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerMove : MonoBehaviour
 {
     Rigidbody2D _rb;
-    Player player;
+    Player _player;
     Vector2 _dir;
 
+    // 이게 여기에 있는게 맞을까???
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _groundCheckRadius = 0.1f;
@@ -13,13 +15,17 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
-        player = GetComponent<Player>();
+        _player = GetComponent<Player>();
     }
 
     void FixedUpdate()
     {
-        if (player.IsRecoiling) return;
-        _rb.AddForce(new Vector2(_dir.x, 0) * player.moveSpeed, ForceMode2D.Impulse);
+        // TODO 반동으로 인해 뜨게 되었을 경우 IsRecoiling이 짧기도 하고 HasAirRecoil가 true가 되어야 하는데 안됨
+        //Debug.Log($"IsRecoiling => {_player.IsRecoiling},  HasAirRecoil => {_player.HasAirRecoil}");
+
+        if (_player.IsRecoiling) return;
+
+        _rb.linearVelocity = new Vector2(_player.moveSpeed * _dir.x, _rb.linearVelocityY);
 
     }
 
@@ -27,11 +33,14 @@ public class PlayerMove : MonoBehaviour
     {
         bool isGrounded = Physics2D.OverlapCircle(_groundCheck.position, _groundCheckRadius, _groundLayer);
 
-        // ���� �� ���� ���� ����
-        if (isGrounded && !player.IsGrounded)
-            player.playerAttack.ReloadAll();
-
-        player.IsGrounded = isGrounded;
+        // 공중 → 착지 순간 감지
+        if (isGrounded && !_player.IsGrounded)
+        {
+            _player.playerAttack.ReloadAll(); // 무기 전체 재장전
+            _player.HasAirRecoil = false; // 공중 반동 상태 초기화
+        }
+            
+        _player.IsGrounded = isGrounded;
     }
 
     public void CanMove(Vector2 input)

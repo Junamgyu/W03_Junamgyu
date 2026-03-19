@@ -215,6 +215,7 @@ public abstract class EnemyBase : EntityBase
     // =====================
     protected virtual bool DetectPlayer()
     {
+        
         float dist = Vector2.Distance(transform.position, _player.position);
         if (dist > _detectionRange) return false;
 

@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &31471746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 31471747}
+  m_Layer: 0
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &31471747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31471746}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1687851855}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &238593084
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +161,7 @@ GameObject:
   - component: {fileID: 238593086}
   - component: {fileID: 238593085}
   - component: {fileID: 238593087}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +218,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.48443198, g: 1, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -206,7 +237,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 34.5671, y: -4.6075, z: 0}
-  m_LocalScale: {x: 86.61465, y: 2.295, z: 1}
+  m_LocalScale: {x: 184.33, y: 2.295, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -269,12 +300,13 @@ GameObject:
   - component: {fileID: 1687851854}
   - component: {fileID: 1687851853}
   - component: {fileID: 1687851852}
-  - component: {fileID: 1687851856}
   - component: {fileID: 1687851860}
   - component: {fileID: 1687851859}
   - component: {fileID: 1687851858}
   - component: {fileID: 1687851857}
   - component: {fileID: 1687851851}
+  - component: {fileID: 1687851861}
+  - component: {fileID: 1687851862}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -407,6 +439,54 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 9caa3d8a-6b2f-4e8e-8bad-6ede561bd9be
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1687851858}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnShotgun
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 02eec7fc-b670-4003-9979-1c014649c620
+    m_ActionName: 'Player/Shotgun[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1687851858}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnSkill
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: b6e34d58-852a-4da9-b3c0-4b263a6b7b32
+    m_ActionName: 'Player/Skill[/Keyboard/shift]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1687851858}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnMarkTarget
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 3c2b852f-f037-4b82-a34c-898451798ebf
+    m_ActionName: 'Player/MarkTarget[/Mouse/leftButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
@@ -437,7 +517,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &1687851853
 BoxCollider2D:
@@ -554,32 +634,13 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1873651235}
+  - {fileID: 31471747}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1687851856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1687851850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c489e54f9d82344485cc5dd0199693c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerState
-  _moveSpeed: 500
-  _shotgunForce: 120
-  _gravityOffDuration: 0.3
-  _damplingDuration: 0.1
-  _damplingValue: 20
-  _shootXMul: 1.5
-  _isMove: 0
-  _originalGravity: 15
 --- !u!114 &1687851857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,6 +653,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aff2d476da057724e917610d7e6179d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
+  _groundCheck: {fileID: 31471747}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  _groundCheckRadius: 0.1
 --- !u!114 &1687851858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -616,6 +682,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6e97bcf1ff71db44af5c9c2af5b7b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  _shotgunData: {fileID: 11400000, guid: 1015d5e3b2d6a974f86df04a7334bc26, type: 2}
+  currentWeaponData: {fileID: 11400000, guid: 7bae448247a12ce408b3ad19b61f55fc, type: 2}
 --- !u!114 &1687851860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -628,6 +696,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9018743f50ef0940adf0f2dd0de7d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  moveSpeed: 8
+  gravityOffDuration: 0.3
+  dampingDuration: 0.1
+  dampingValue: 20
+--- !u!114 &1687851861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687851850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b545845d9d7474ba4b374fed8dfb73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAimer
+  _cam: {fileID: 1873651234}
+--- !u!114 &1687851862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687851850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5585cf05bf78a2a48808065b39276300, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeadeyeSkill
+  _slowTimeScale: 0.2
+  _damagePerShot: 100
+  _timeBetweenShots: 0.1
+  _maxTargets: 3
 --- !u!1 &1873651232
 GameObject:
   m_ObjectHideFlags: 0

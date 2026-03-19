@@ -13,20 +13,34 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
         Vector2 inputDir = context.ReadValue<Vector2>();
-        Debug.Log(inputDir);
         player.playerMove.CanMove(inputDir);
     }
 
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (context.started)
-        {
-            player.playerAttack.Shotgun();
-        }
+            player.playerAttack.FireCurrentWeapon();
+    }
+
+    public void OnShotgun(InputAction.CallbackContext context)
+    {
+        if (context.started)
+            player.playerAttack.FireShotgun();
+    }
+
+    public void OnSkill(InputAction.CallbackContext context)
+    {
+        player.GetComponent<DeadeyeSkill>().OnSkill(context);
+    }
+
+    public void OnMarkTarget(InputAction.CallbackContext context)
+    {
+        player.GetComponent<DeadeyeSkill>().OnMarkTarget(context);
     }
 }

@@ -62,18 +62,35 @@ public class PlayerAttack : MonoBehaviour
         Vector2 aimDir = _player.playerAimer.AimDirection;
 
         // 총알 스폰
-        SpawnBullets(data, aimDir);
+        SpawnBullets(data, aimDir); // 총알은 정확한 마우스 방향으로
 
         // 반동
-        Vector2 shootDir = aimDir;
-        shootDir.x *= data.shootXMul;
-        shootDir.y = shootDir.y < 0
-            ? (shootDir.y - 1) / 2
-            : (shootDir.y + 1) / 2;
+        // shootXMul 보정 먼저, 그 다음 스냅
+        Vector2 adjustedDir = new Vector2(aimDir.x * data.shootXMul, aimDir.y);
+        Vector2 shootDir = SnapTo8Direction(adjustedDir); // 반동만 8방향 스냅
+
+        //shootDir.y = shootDir.y < 0
+        //    ? (shootDir.y - 1) / 2
+        //    : (shootDir.y + 1) / 2;
+
+        // 디버그용 저장
+        _debugAimDir = aimDir;
+        _debugShootDir = shootDir;
 
         // X만 초기화, Y는 보존 (점프 중 샷건 쏴도 Y속도 안 날아감)
         _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
         _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
+    }
+
+    Vector2 SnapTo8Direction(Vector2 dir)
+    {
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        // 45도 단위로 반올림
+        float snapped = Mathf.Round(angle / 45f) * 45f;
+
+        float rad = snapped * Mathf.Deg2Rad;
+        return new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
     }
 
     void SpawnBullets(SO_WeaponBase data, Vector2 aimDir)
@@ -138,5 +155,20 @@ public class PlayerAttack : MonoBehaviour
     {
         currentWeaponData = newWeapon;
         _currentWeaponInstance = new WeaponInstance(newWeapon); // 교체 시 인스턴스도 새로 생성 (기존꺼는 자동으로 GC가 해결.)
+    }
+
+    // 디버그용 필드
+    Vector2 _debugAimDir;
+    Vector2 _debugShootDir;
+
+    void OnDrawGizmos()
+    {
+        // 노란색 = 실제 마우스 방향 (총알 방향)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(transform.position, _debugAimDir * 2f);
+
+        // 빨간색 = 스냅된 반동 방향
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, -_debugShootDir * 2f);
     }
 }

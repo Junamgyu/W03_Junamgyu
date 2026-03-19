@@ -19,7 +19,9 @@ public class PlayerMove : MonoBehaviour
     void FixedUpdate()
     {
         if (player.IsRecoiling) return;
-        _rb.AddForce(new Vector2(_dir.x, 0) * player.moveSpeed, ForceMode2D.Impulse);
+        //_rb.AddForce(new Vector2(_dir.x, 0) * player.moveSpeed, ForceMode2D.Impulse);
+
+        _rb.linearVelocity = new Vector2(player.moveSpeed * _dir.x, _rb.linearVelocityY);
 
     }
 
@@ -32,6 +34,8 @@ public class PlayerMove : MonoBehaviour
             player.playerAttack.ReloadAll();
 
         player.IsGrounded = isGrounded;
+
+        // Test
     }
 
     public void CanMove(Vector2 input)

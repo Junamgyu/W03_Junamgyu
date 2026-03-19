@@ -17,6 +17,7 @@ public class Jaein_PlayerController : MonoBehaviour
         }
 
         _inputManager.OnMove += HandleMove;
+        _inputManager.OnJump += HandleJump;
         _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
         _inputManager.OnSkill += HandleSkill;
@@ -29,6 +30,7 @@ public class Jaein_PlayerController : MonoBehaviour
             return;
 
         _inputManager.OnMove -= HandleMove;
+        _inputManager.OnJump -= HandleJump;
         _inputManager.OnPrimaryAttack -= HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack -= HandleSecondaryAttack;
         _inputManager.OnSkill -= HandleSkill;
@@ -39,6 +41,12 @@ public class Jaein_PlayerController : MonoBehaviour
     {
         Vector2 inputDir = ctx.ReadValue<Vector2>();
         player.playerMove.CanMove(inputDir);
+    }
+
+    private void HandleJump(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started)
+            player.playerJump.OnJump(ctx);
     }
 
     private void HandlePrimaryAttack(InputAction.CallbackContext ctx)

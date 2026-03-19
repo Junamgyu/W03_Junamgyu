@@ -1,13 +1,14 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour
 {
-    Player player;
+    Player _player;
 
     void Start()
     {
-        player = GetComponent<Player>();
+        _player = GetComponent<Player>();
 
     }
 
@@ -19,28 +20,34 @@ public class PlayerController : MonoBehaviour
     public void OnMove(InputAction.CallbackContext context)
     {
         Vector2 inputDir = context.ReadValue<Vector2>();
-        player.playerMove.CanMove(inputDir);
+        _player.playerMove.CanMove(inputDir);
     }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        _player.playerJump.OnJump(context);
+    }
+
 
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (context.started)
-            player.playerAttack.FireCurrentWeapon();
+            _player.playerAttack.FireCurrentWeapon();
     }
 
     public void OnShotgun(InputAction.CallbackContext context)
     {
         if (context.started)
-            player.playerAttack.FireShotgun();
+            _player.playerAttack.FireShotgun();
     }
 
     public void OnSkill(InputAction.CallbackContext context)
     {
-        player.GetComponent<DeadeyeSkill>().OnSkill(context);
+        _player.GetComponent<DeadeyeSkill>().OnSkill(context);
     }
 
     public void OnMarkTarget(InputAction.CallbackContext context)
     {
-        player.GetComponent<DeadeyeSkill>().OnMarkTarget(context);
+        _player.GetComponent<DeadeyeSkill>().OnMarkTarget(context);
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,7 +26,7 @@ public class DeadeyeSkill : MonoBehaviour
         _cam = Camera.main;
     }
 
-    // ½ÃÇÁÆ® Å°
+    // ì‹œí”„íŠ¸ í‚¤
     public void OnSkill(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -51,7 +51,7 @@ public class DeadeyeSkill : MonoBehaviour
         }
         else if (context.canceled)
         {
-            // ÁÂÅ¬¸¯ ¶¼´Â ¼ø°£ ¹ßµ¿
+            // ì¢Œí´ë¦­ ë–¼ëŠ” ìˆœê°„ ë°œë™
             if (_targets.Count > 0)
                 StartCoroutine(FireAtTargets());
         }
@@ -62,7 +62,7 @@ public class DeadeyeSkill : MonoBehaviour
         if (!_isSkillActive || !_isAiming) return;
         if (_targets.Count >= _maxTargets) return;
 
-        // ¸¶¿ì½º À§Ä¡¿¡ ÀûÀÌ ÀÖÀ¸¸é ¸¶Å·
+        // ë§ˆìš°ìŠ¤ ìœ„ì¹˜ì— ì ì´ ìˆìœ¼ë©´ ë§ˆí‚¹
         Vector2 mouseWorld = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         Collider2D hit = Physics2D.OverlapPoint(mouseWorld);
 
@@ -72,14 +72,14 @@ public class DeadeyeSkill : MonoBehaviour
             if (enemy != null && !_targets.Contains(enemy))
             {
                 _targets.Add(enemy);
-                enemy.ShowMark(true); // ¸¶Å· Ç¥½Ã
+                enemy.ShowMark(true); // ë§ˆí‚¹ í‘œì‹œ
             }
         }
     }
 
     IEnumerator FireAtTargets()
     {
-        // ½Ã°£ º¹±¸ ÈÄ ¼ø¼­´ë·Î Ã³Ä¡
+        // ì‹œê°„ ë³µêµ¬ í›„ ìˆœì„œëŒ€ë¡œ ì²˜ì¹˜
         ExitSkill();
 
         foreach (EnemyBase enemy in _targets)

@@ -68,9 +68,11 @@ public class RangedEnemy : EnemyBase
         }
 
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        Quaternion rotation = Quaternion.Euler(0, 0, angle);
 
-        GameObject projectile = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
-        projectile.GetComponent<EnemyProjectile>().Initialize(dir, _projectileSpeed, _attackDamage);
+        GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+        projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
     }
 
     // =====================

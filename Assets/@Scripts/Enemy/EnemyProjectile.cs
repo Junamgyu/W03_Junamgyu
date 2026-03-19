@@ -2,14 +2,12 @@ using UnityEngine;
 
 public class EnemyProjectile : MonoBehaviour
 {
-    private Vector2 _direction;
     private float _speed;
     private float _damage;
-    [SerializeField] private float _lifetime = 5f;  // 최대 생존 시간
+    [SerializeField] private float _lifetime = 5f;
 
-    public void Initialize(Vector2 direction, float speed, float damage)
+    public void Initialize(float speed, float damage)
     {
-        _direction = direction;
         _speed = speed;
         _damage = damage;
         Destroy(gameObject, _lifetime);
@@ -17,7 +15,8 @@ public class EnemyProjectile : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(_direction * _speed * Time.deltaTime);
+        // rotation이 이미 방향을 가리키고 있으니 right(로컬 x축)으로 이동
+        transform.Translate(Vector2.right * _speed * Time.deltaTime);
     }
 
     void OnTriggerEnter2D(Collider2D col)
@@ -28,7 +27,6 @@ public class EnemyProjectile : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // 벽에 맞으면 제거
         if (col.CompareTag("Ground"))
         {
             Destroy(gameObject);

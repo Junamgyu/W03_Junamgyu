@@ -47,6 +47,11 @@ public abstract class EnemyBase : MonoBehaviour
     protected Transform _player;
 
     // =====================
+    // 감지
+    // =====================
+    [SerializeField] protected LayerMask _excludeLayer;  // Enemy 레이어 제외용
+
+    // =====================
     // 생명주기
     // =====================
     protected virtual void Start()
@@ -224,9 +229,18 @@ public abstract class EnemyBase : MonoBehaviour
     // =====================
     // 감지
     // =====================
-    protected bool DetectPlayer()
+    protected virtual bool DetectPlayer()
     {
-        return Vector2.Distance(transform.position, _player.position) <= _detectionRange;
+        float dist = Vector2.Distance(transform.position, _player.position);
+        if (dist > _detectionRange) return false;
+
+        Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, _detectionRange, ~_excludeLayer);
+
+        if (hit.collider != null && hit.collider.CompareTag("Player"))
+            return true;
+
+        return false;
     }
 
     protected bool IsInAttackRange()

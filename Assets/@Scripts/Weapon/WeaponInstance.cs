@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public class WeaponInstance : MonoBehaviour
+﻿public class WeaponInstance
 {
     public SO_WeaponBase Data { get; private set; }
     public int CurrentAmmo { get; private set; }

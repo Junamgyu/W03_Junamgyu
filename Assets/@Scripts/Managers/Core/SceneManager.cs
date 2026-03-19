@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneFlowManager : MonoBehaviour, IInitializable
+public class SceneManager : MonoBehaviour, IInitializable
 {
     public bool IsInitialized { get; private set; }
 
@@ -18,11 +18,11 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
     {
         if (!string.IsNullOrEmpty(_currentStage))
         {
-            SceneManager.UnloadSceneAsync(_currentStage);
+            UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_currentStage);
         }
 
         _currentStage = stageName;
-        SceneManager.LoadSceneAsync(stageName, LoadSceneMode.Additive);
+        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(stageName, LoadSceneMode.Additive);
     }
 
     public void ReloadStage()

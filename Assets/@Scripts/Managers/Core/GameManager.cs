@@ -4,7 +4,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 {
     [Header("Core Managers")]
     [SerializeField] private GameStateManager _gameStateManager;
-    [SerializeField] private SceneFlowManager _sceneFlowManager;
+    [SerializeField] private SceneManager _sceneFlowManager;
     [SerializeField] private PoolManager _poolManager;
     [SerializeField] private InputManager _inputManager;
     // TODO: Add EnemyManager etc.
@@ -51,7 +51,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         ManagerRegistry.Register<GameStateManager>(_gameStateManager);
         ManagerRegistry.Register<PoolManager>(_poolManager);
         ManagerRegistry.Register<InputManager>(_inputManager);
-        ManagerRegistry.Register<SceneFlowManager>(_sceneFlowManager);
+        ManagerRegistry.Register<SceneManager>(_sceneFlowManager);
     }
 
     // 매니저 초기화는 여기서 진행

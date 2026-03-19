@@ -1,11 +1,11 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class EnemyBase : MonoBehaviour
 {
     [SerializeField] private float _maxHp = 100f;
     private float _currentHp;
 
-    [SerializeField] private GameObject _markIndicator; // ¸¶Å· Ç¥½Ã¿ë ¿ÀºêÁ§Æ®
+    [SerializeField] private GameObject _markIndicator; // ë§ˆí‚¹ í‘œì‹œìš© ì˜¤ë¸Œì íŠ¸
 
     void Start()
     {

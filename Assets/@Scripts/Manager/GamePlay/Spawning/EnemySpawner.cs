@@ -144,11 +144,6 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
 
-        //if (_pool == null)
-        //{
-        //    ManagerRegistry.TryGet(out _pool); // 풀 매니저가 아직 등록되지 않았을 때 다시 시도
-        //}
-
         GameObject enemyObject;
 
         if (_pool != null)
@@ -198,6 +193,23 @@ public class EnemySpawner : MonoBehaviour
         }
 
         return result;
+    }
+
+    // Draw gizmos in editor to visualize spawn points and connections to this spawner
+    private void OnDrawGizmosSelected()
+    {
+        if (_spawnPoints == null || _spawnPoints.Count == 0)
+            return;
+
+        Vector3 from = transform.position;
+
+        // Draw only circles at spawn points (no connecting lines)
+        Gizmos.color = Color.cyan;
+        foreach (var pt in _spawnPoints)
+        {
+            if (pt == null) continue;
+            Gizmos.DrawWireSphere(pt.position, 0.5f);
+        }
     }
 
     public void ClearWaveRoutine()

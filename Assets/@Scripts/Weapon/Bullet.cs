@@ -59,17 +59,27 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground") ||
-            other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            if (ManagerRegistry.TryGet<PoolManager>(out var pool))
-            {
-                pool.Return(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            ReturnToPool();
+            return;
         }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            if (other.TryGetComponent<IDamageable>(out var damageable))
+                damageable.TakeDamage(_damage);
+
+            ReturnToPool();
+        }
+    }
+
+    //Helper
+    private void ReturnToPool()
+    {
+        if (ManagerRegistry.TryGet<PoolManager>(out var pool))
+            pool.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 }

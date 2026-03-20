@@ -4,7 +4,7 @@ public class Explosives : MonoBehaviour
 {
     [SerializeField] LayerMask _interactionMask;
     [SerializeField] float _explosionRadius;
-    [SerializeField] float _explosionDamage;
+    [SerializeField] int _explosionDamage;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

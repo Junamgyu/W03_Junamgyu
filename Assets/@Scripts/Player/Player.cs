@@ -18,7 +18,6 @@ public class Player : MonoBehaviour
 
     public PlayerAttack playerAttack{ get; private set; }
     public PlayerMove playerMove{ get; private set; }
-    public PlayerController playerController { get; private set; }
     public PlayerAimer playerAimer { get; private set; }
 
     public PlayerJump playerJump { get; private set; }
@@ -32,7 +31,6 @@ public class Player : MonoBehaviour
     {
         playerAttack= GetComponent<PlayerAttack>();
         playerMove= GetComponent<PlayerMove>(); // 좌우 이동만 담당
-        playerController= GetComponent<PlayerController>();
         playerAimer = GetComponent<PlayerAimer>();
         playerJump = GetComponent<PlayerJump>(); 
         deadeyeSkill = GetComponent<DeadeyeSkill>();

@@ -11,17 +11,21 @@ public class PlayerJump : MonoBehaviour
     [Tooltip("점프 버튼 땔 시 중력 적용 배율")][SerializeField] private float _jumpCutOff = 2f;       // 버튼 떼면 이 배율로 전환
     [SerializeField] private float _speedLimit = 20f;
 
+    [SerializeField] private float _coyoteTime = 0.15f;
+
     Rigidbody2D _rb;
     Player _player;
 
+    // 점프
     bool _desiredJump; // 점프 실행해줘
     bool _pressingJump; // 점프 버튼 누르는 중이야
     bool _currentlyJumping; // 점프 중
+    
+    // 중력
     float _gravMultiplier = 1f;
 
-    // TODO: 코요테 타임 변수 자리
-    // float _coyoteTime = 0.15f;
-    // float _coyoteTimeCounter;
+    // 코요테
+    float _coyoteTimeCounter;
 
     // TODO: 점프 버퍼 변수 자리
     // float _jumpBuffer = 0.15f;
@@ -40,10 +44,12 @@ public class PlayerJump : MonoBehaviour
 
         if (context.started)
         {
-            // 지상에서만 점프 가능
-            if (!_player.IsGrounded) return;
+            // 지상이거나 코요테 타임 안이면 점프 가능
+            bool canJump = _player.IsGrounded || (!_currentlyJumping && _coyoteTimeCounter < _coyoteTime);
+            if (!canJump) return;
             _desiredJump = true;
             _pressingJump = true;
+            _coyoteTimeCounter = _coyoteTime; // 코요테 타임 즉시 소모 (코요테 타임 중에 점프하면 카운터를 한계값으로 올려서 2번 쓰는 것 방지)
         }
         if (context.canceled)
             _pressingJump = false;
@@ -52,6 +58,12 @@ public class PlayerJump : MonoBehaviour
     void FixedUpdate()
     {
         if (_player.IsGravityOverridden) return; // Attack의 GravityRoutine이 관할 중이면 스킵
+
+        // 코요테 타임 카운터
+        if (!_player.IsGrounded && !_currentlyJumping)
+            _coyoteTimeCounter += Time.fixedDeltaTime;
+        else if (_player.IsGrounded)  // 지상일 때만 리셋
+            _coyoteTimeCounter = 0f;
 
         ApplyGravity();
 
@@ -109,14 +121,21 @@ public class PlayerJump : MonoBehaviour
     {
         _desiredJump = false;
 
-        // 점프 속도 계산 (높이와 정점 도달 시간으로 역산)
+        _gravMultiplier = 1f;
+        Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
+        _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
+
         float jumpSpeed = Mathf.Sqrt(-2f * Physics2D.gravity.y * _rb.gravityScale * _jumpHeight);
 
-        // 이미 올라가는 중이면 그만큼 차감 (이중 점프 방지 잔재, 안전장치)
-        if (_rb.linearVelocity.y > 0f)
+        // 코요테 타임 점프면 Y속도 초기화 후 순수 점프 속도만 적용
+        if (!_player.IsGrounded)
+        {
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
+        }
+        else if (_rb.linearVelocity.y > 0f)
+        {
             jumpSpeed = Mathf.Max(jumpSpeed - _rb.linearVelocity.y, 0f);
-        else if (_rb.linearVelocity.y < 0f)
-            jumpSpeed += Mathf.Abs(_rb.linearVelocity.y);
+        }
 
         _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocity.y + jumpSpeed);
         _currentlyJumping = true;

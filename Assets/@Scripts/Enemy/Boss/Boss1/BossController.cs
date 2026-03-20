@@ -8,11 +8,11 @@ public class BossController : MonoBehaviour
     public BossEye[] eyes;
 
     [Header("회전 설정")]
-    public float rotationSpeed = 30f; // 초당 회전 각도 (시계방향)
+    public float rotationSpeed = 30f;
 
     [Header("레이저 페이즈 설정")]
-    public float laserDuration = 5f;  // 눈 활성화 지속 시간
-    public float idleDuration = 5f;  // 이후 대기 시간
+    public float laserDuration = 5f;
+    public float idleDuration = 5f;
 
     [Header("소환 설정")]
     public GameObject[] minionPrefabs;
@@ -20,16 +20,12 @@ public class BossController : MonoBehaviour
     public float spawnInterval = 5f;
     public int spawnCountPerWave = 2;
 
-    // 전체 체력 = Eye 체력 합산
     public float TotalHp => CalculateTotalHp();
 
     private bool _isDead = false;
     private bool _summonStarted = false;
     private int _prevDeadCount = 0;
 
-    // =====================
-    // 생명주기
-    // =====================
     void Start()
     {
         StartCoroutine(AttackCycleRoutine());
@@ -38,25 +34,31 @@ public class BossController : MonoBehaviour
 
     void Update()
     {
-        // 시계방향 회전 (z축 음수)
+        if (_isDead) return;
         transform.Rotate(0f, 0f, -rotationSpeed * Time.deltaTime);
     }
 
     // =====================
-    // 체력 계산
+    // 체력
     // =====================
     float CalculateTotalHp()
     {
         float total = 0f;
         foreach (var eye in eyes)
             if (!eye.IsDead)
-                total += eye.CurrentHp; // EnemyBase의 protected라면 프로퍼티 열어줘야 함
+                total += eye.CurrentHp;
         return total;
     }
 
     BossEye[] GetAliveEyes()
     {
         return System.Array.FindAll(eyes, e => !e.IsDead);
+    }
+
+    // CanBeginLaser인 Eye만 — 전환 중인 Eye 제외
+    BossEye[] GetReadyEyes()
+    {
+        return System.Array.FindAll(eyes, e => e.CanBeginLaser);
     }
 
     int DeadCount()
@@ -71,28 +73,23 @@ public class BossController : MonoBehaviour
     {
         while (!_isDead)
         {
-            BossEye[] alive = GetAliveEyes();
-            if (alive.Length == 0) yield break;
+            // 준비된 Eye 기준으로 뽑기
+            BossEye[] ready = GetReadyEyes();
 
-            // 1~3 랜덤, 살아있는 눈 수 초과하지 않게 클램프
-            int count = Mathf.Min(Random.Range(1, 4), alive.Length);
+            if (ready.Length > 0)
+            {
+                int count = Mathf.Min(Random.Range(1, 4), ready.Length);
+                List<BossEye> targets = PickRandom(ready, count);
+                foreach (var eye in targets)
+                    eye.BeginLaser(laserDuration);
+            }
 
-            // 살아있는 눈 중에서 count만큼 랜덤 비복원 추출
-            List<BossEye> targets = PickRandom(alive, count);
-            foreach (var eye in targets)
-                eye.BeginLaser(laserDuration);
-
-            // 레이저 지속 시간 대기
-            yield return new WaitForSeconds(laserDuration);
-
-            // 대기
-            yield return new WaitForSeconds(idleDuration);
+            yield return new WaitForSeconds(laserDuration + idleDuration);
         }
     }
 
     List<BossEye> PickRandom(BossEye[] pool, int count)
     {
-        // 셔플 후 앞에서 count개 뽑기
         List<BossEye> list = new List<BossEye>(pool);
         for (int i = list.Count - 1; i > 0; i--)
         {
@@ -129,14 +126,12 @@ public class BossController : MonoBehaviour
 
     void OnEyeDied(int deadCount)
     {
-        // 첫 Eye 사망 시 소환 시작
         if (!_summonStarted)
         {
             _summonStarted = true;
             StartCoroutine(SummonRoutine());
         }
 
-        // 눈 죽을수록 소환 강화
         spawnInterval = Mathf.Max(1f, spawnInterval - 0.5f);
         spawnCountPerWave += 1;
     }
@@ -145,10 +140,8 @@ public class BossController : MonoBehaviour
     {
         if (_isDead) return;
         _isDead = true;
-
         StopAllCoroutines();
         Debug.Log("보스 사망");
-        // 보스 사망 처리 (애니메이션, 드랍 등)
         gameObject.SetActive(false);
     }
 
@@ -167,6 +160,11 @@ public class BossController : MonoBehaviour
     void SpawnWave()
     {
         if (minionPrefabs.Length == 0) return;
+        if (spawnPoint == null)
+        {
+            Debug.LogWarning("BossController: spawnPoint가 할당되지 않았습니다.");
+            return;
+        }
 
         for (int i = 0; i < spawnCountPerWave; i++)
         {
@@ -174,7 +172,5 @@ public class BossController : MonoBehaviour
             Vector3 pos = spawnPoint.position + (Vector3)(Random.insideUnitCircle * 2f);
             Instantiate(prefab, pos, Quaternion.identity);
         }
-
-        Debug.Log($"소환 웨이브: {spawnCountPerWave}마리");
     }
 }

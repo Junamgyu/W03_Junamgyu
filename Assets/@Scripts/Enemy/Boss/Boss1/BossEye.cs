@@ -18,8 +18,8 @@ public class BossEye : EnemyBase
     public int laserDamage = 10;
 
     public EyeState EyeCurrentState { get; private set; } = EyeState.Idle;
-    public bool IsVulnerable => EyeCurrentState == EyeState.Idle && !_isTransitioning;
     public bool IsDead => EyeCurrentState == EyeState.Dead;
+    public bool CanBeginLaser => EyeCurrentState == EyeState.Idle && !_isTransitioning;
     public float CurrentHp => _currentHp;
 
     private static readonly Color ColorIdle = Color.white;
@@ -46,7 +46,7 @@ public class BossEye : EnemyBase
 
     protected override void Start() { }
     protected override void Update() { }
-    protected override void Initialize() { _currentHp = _maxHp; }
+    protected override void Initialize() { }
 
     protected override void OnEnterIdle() { }
     protected override void OnEnterPatrol() { }
@@ -92,7 +92,10 @@ public class BossEye : EnemyBase
     // =====================
     public override void TakeDamage(int damage)
     {
-        if (!IsVulnerable) return;
+        if (IsDead) return;
+        if (EyeCurrentState == EyeState.Laser) return;
+        if (_isTransitioning) return;
+        if (EyeCurrentState != EyeState.Idle) return;
 
         _currentHp -= damage;
 
@@ -114,7 +117,8 @@ public class BossEye : EnemyBase
     // =====================
     public void BeginLaser(float duration)
     {
-        if (EyeCurrentState == EyeState.Dead) return;
+        if (!CanBeginLaser) return;
+
         StartEyeTransition(EyeState.Laser, ColorLaser, () =>
         {
             StartCoroutine(LaserRoutine(duration));
@@ -126,6 +130,8 @@ public class BossEye : EnemyBase
     // =====================
     IEnumerator LaserRoutine(float duration)
     {
+        if (IsDead) yield break;
+
         _lineRenderer.enabled = true;
 
         // 1단계 : 예고선
@@ -136,6 +142,7 @@ public class BossEye : EnemyBase
         float elapsed = 0f;
         while (elapsed < warningDuration)
         {
+            if (IsDead) { _lineRenderer.enabled = false; yield break; }
             UpdateLaserLine(dealDamage: false);
             elapsed += Time.deltaTime;
             yield return null;
@@ -149,13 +156,16 @@ public class BossEye : EnemyBase
         elapsed = 0f;
         while (elapsed < duration)
         {
+            if (IsDead) { _lineRenderer.enabled = false; yield break; }
             UpdateLaserLine(dealDamage: true);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         _lineRenderer.enabled = false;
-        StartEyeTransition(EyeState.Idle, ColorIdle);
+
+        if (!IsDead)
+            StartEyeTransition(EyeState.Idle, ColorIdle);
     }
 
     void UpdateLaserLine(bool dealDamage)
@@ -163,7 +173,8 @@ public class BossEye : EnemyBase
         Vector2 origin = transform.position;
         Vector2 direction = transform.up;
 
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, laserRange);
+        int layerMask = ~LayerMask.GetMask("Enemy", "Ground");
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, laserRange, layerMask);
 
         Vector2 end = hit.collider != null
             ? hit.point
@@ -181,10 +192,14 @@ public class BossEye : EnemyBase
     // =====================
     void EyeDie()
     {
-        if (EyeCurrentState == EyeState.Dead) return;
+        if (IsDead) return;
+
+        StopAllCoroutines();
+
         _lineRenderer.enabled = false;
         GetComponent<Collider2D>().enabled = false;
-        StartEyeTransition(EyeState.Dead, ColorDead);
+
+        _transitionCoroutine = StartCoroutine(TransitionRoutine(EyeState.Dead, ColorDead, null));
     }
 
     void StartEyeTransition(EyeState next, Color target, System.Action onComplete = null)
@@ -219,6 +234,7 @@ public class BossEye : EnemyBase
 
         for (int i = 0; i < blinkCount; i++)
         {
+            if (IsDead) { _isBlinking = false; yield break; }
             _rend.material.color = ColorHit;
             yield return new WaitForSeconds(blinkInterval);
             _rend.material.color = original;

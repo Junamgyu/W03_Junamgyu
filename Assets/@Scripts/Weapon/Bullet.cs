@@ -62,6 +62,10 @@ public class Bullet : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground") ||
             other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
+            if (other.gameObject.tag == "Enemy")
+            {
+                other.GetComponent<EnemyBase>().TakeDamage(1);
+            }
             if (ManagerRegistry.TryGet<PoolManager>(out var pool))
             {
                 pool.Return(gameObject);

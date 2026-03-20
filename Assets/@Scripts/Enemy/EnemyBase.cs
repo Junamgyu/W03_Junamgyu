@@ -35,7 +35,7 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // ∏∂≈∑
     // =====================
-    [SerializeField] private GameObject _markIndicator;
+    [SerializeField] private CircleDrawer _markIndicator;
     private bool _isMarked = false;
 
     // =====================
@@ -67,12 +67,16 @@ public abstract class EnemyBase : EntityBase
     protected virtual void Update()
     {
         UpdateState();
+        ShowMark(true);
     }
 
     protected override void Initialize()
     {
         base.Initialize(); // EntityBase¿« _currentHp = _maxHp
+        _markIndicator = GetComponentInChildren<CircleDrawer>();
         ShowMark(false);
+        
+        Debug.Log(_markIndicator);
         ChangeState(EnemyState.Idle);
     }
 
@@ -239,7 +243,7 @@ public abstract class EnemyBase : EntityBase
     {
         if (_markIndicator == null) return;
         _isMarked = show;
-        _markIndicator.SetActive(show);
+        _markIndicator.gameObject.SetActive(show);
     }
 
     public bool IsMarked() => _isMarked;

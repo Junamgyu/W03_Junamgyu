@@ -32,7 +32,7 @@ public class PlayerAttack : MonoBehaviour
 
     public void FireShotgun()
     {
-        if (!_shotgunInstance.TryConsume()) return;
+        if (!TryFireWeapon(_shotgunInstance)) return;
         Fire(_shotgunData);
 
         // 공중에서 쐈으면 공중 반동 상태 진입
@@ -43,10 +43,8 @@ public class PlayerAttack : MonoBehaviour
     public void FireCurrentWeapon()
     {
         if (_player.deadeyeSkill.IsSkillActive) return;
-
         if (currentWeaponData == null) return;
-
-        if (!_currentWeaponInstance.TryConsume()) return;
+        if (!TryFireWeapon(_currentWeaponInstance)) return;
 
         Fire(currentWeaponData);
 
@@ -74,10 +72,18 @@ public class PlayerAttack : MonoBehaviour
         _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
 
         TriggerRecoilRoutines(shootDir);
+    }
 
-        // 지상이면 즉시 재장전
-        if (_player.IsGrounded)
+    // 총알이 없을 시 땅이면 재장전.
+    bool TryFireWeapon(WeaponInstance instance)
+    {
+        if (!instance.TryConsume())
+        {
+            if (!_player.IsGrounded) return false;
             ReloadAll();
+            if (!instance.TryConsume()) return false;
+        }
+        return true;
     }
 
     Vector2 SnapTo8Direction(Vector2 dir)

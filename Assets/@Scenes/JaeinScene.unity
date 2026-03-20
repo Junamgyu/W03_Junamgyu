@@ -257,25 +257,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!1 &814407786 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1542305805289372434, guid: fa94fcc7016431a42a2f9f939efb5ba9, type: 3}
-  m_PrefabInstance: {fileID: 3497611089197497118}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &814407799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 814407786}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30db8aeb5b5095f42886292d8ef06c1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Jaein_PlayerAttack
-  _shotgunData: {fileID: 11400000, guid: 1015d5e3b2d6a974f86df04a7334bc26, type: 2}
-  currentWeaponData: {fileID: 11400000, guid: 7bae448247a12ce408b3ad19b61f55fc, type: 2}
 --- !u!1 &1022412450
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,14 +605,10 @@ PrefabInstance:
       propertyPath: gravityOffDuration
       value: 0.21
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1591362941041749997, guid: fa94fcc7016431a42a2f9f939efb5ba9, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1542305805289372434, guid: fa94fcc7016431a42a2f9f939efb5ba9, type: 3}
-      insertIndex: 6
-      addedObject: {fileID: 814407799}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa94fcc7016431a42a2f9f939efb5ba9, type: 3}
 --- !u!1001 &8317103452322090210
 PrefabInstance:

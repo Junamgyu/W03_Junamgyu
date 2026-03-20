@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
@@ -6,16 +7,38 @@ public class Bullet : MonoBehaviour
 
     private void Start()
     {
-        Destroy(gameObject, _lifetime);
+        if (ManagerRegistry.TryGet<PoolManager>(out var pool))
+        {
+            StartCoroutine(LifeReturnRoutine(pool));
+        }
+        else
+        {
+            Destroy(gameObject, _lifetime);
+        }
     }
+
+    #region Pool Return 코루틴
+    private System.Collections.IEnumerator LifeReturnRoutine(PoolManager pool)
+    {
+        yield return new WaitForSeconds(_lifetime);
+
+        // 풀에 반환
+        pool.Return(gameObject);
+    }
+    #endregion
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // "Enemy" 태그가 있는 오브젝트에 명중 시 제거
-        // 이후 IDamageable 인터페이스로 확장하기 좋은 자리
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground") || other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            Destroy(gameObject);
+            if (ManagerRegistry.TryGet<PoolManager>(out var pool))
+            {
+                pool.Return(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

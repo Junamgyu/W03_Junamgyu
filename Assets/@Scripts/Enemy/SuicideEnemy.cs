@@ -6,7 +6,7 @@ public class SuicideEnemy : EnemyBase
     // =====================
     // 자폭 전용 변수
     // =====================
-    [SerializeField] private float _explosionDamage = 30f;
+    [SerializeField] private int _explosionDamage = 30;
     [SerializeField] private float _explosionRange = 2f;
     [SerializeField] private float _explosionWindupTime = 1f;  // 자폭 예고 시간
 

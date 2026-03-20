@@ -7,7 +7,7 @@ public class DeadeyeSkill : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float _slowTimeScale = 0.2f;
-    [SerializeField] private float _damagePerShot = 50f;
+    [SerializeField] private int _damagePerShot = 50;
     [SerializeField] private float _timeBetweenShots = 0.1f;
     [SerializeField] private int _maxTargets = 3;
 

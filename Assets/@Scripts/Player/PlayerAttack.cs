@@ -40,9 +40,8 @@ public class PlayerAttack : MonoBehaviour
 
     public void FireShotgun()
     {
-        if (!_shotgunInstance.TryConsume()) return;
+        if (!TryFireWeapon(_shotgunInstance)) return;
         Fire(_shotgunData);
-        TriggerRecoilRoutines();
 
         // 공중에서 쐈으면 공중 반동 상태 진입
         if (!_player.IsGrounded)
@@ -52,13 +51,10 @@ public class PlayerAttack : MonoBehaviour
     public void FireCurrentWeapon()
     {
         if (_player.deadeyeSkill.IsSkillActive) return;
-
         if (currentWeaponData == null) return;
-
-        if (!_currentWeaponInstance.TryConsume()) return;
+        if (!TryFireWeapon(_currentWeaponInstance)) return;
 
         Fire(currentWeaponData);
-        TriggerRecoilRoutines();
 
         // 공중에서 쐈으면 공중 반동 상태 진입
         if (!_player.IsGrounded)
@@ -73,13 +69,7 @@ public class PlayerAttack : MonoBehaviour
         SpawnBullets(data, aimDir); // 총알은 정확한 마우스 방향으로
 
         // 반동
-        // shootXMul 보정 먼저, 그 다음 스냅
-        Vector2 adjustedDir = new Vector2(aimDir.x * data.shootXMul, aimDir.y);
-        Vector2 shootDir = SnapTo8Direction(adjustedDir); // 반동만 8방향 스냅
-
-        //shootDir.y = shootDir.y < 0
-        //    ? (shootDir.y - 1) / 2
-        //    : (shootDir.y + 1) / 2;
+        Vector2 shootDir = SnapTo8Direction(aimDir); // 반동만 8방향 스냅
 
         // 디버그용 저장
         _debugAimDir = aimDir;
@@ -88,6 +78,20 @@ public class PlayerAttack : MonoBehaviour
         // X만 초기화, Y는 보존 (점프 중 샷건 쏴도 Y속도 안 날아감)
         _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
         _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
+
+        TriggerRecoilRoutines(shootDir);
+    }
+
+    // 총알이 없을 시 땅이면 재장전.
+    bool TryFireWeapon(WeaponInstance instance)
+    {
+        if (!instance.TryConsume())
+        {
+            if (!_player.IsGrounded) return false;
+            ReloadAll();
+            if (!instance.TryConsume()) return false;
+        }
+        return true;
     }
 
     Vector2 SnapTo8Direction(Vector2 dir)
@@ -136,7 +140,7 @@ public class PlayerAttack : MonoBehaviour
             bulletRb.linearVelocity = dir * data.bulletSpeed;
     }
 
-    void TriggerRecoilRoutines()
+    void TriggerRecoilRoutines(Vector2 shootDir)
     {
         StopCoroutine(nameof(GravityRoutine));
         StopCoroutine(nameof(DampingRoutine));

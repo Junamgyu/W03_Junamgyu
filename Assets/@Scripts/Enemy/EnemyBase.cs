@@ -1,22 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class EnemyBase : MonoBehaviour
+public abstract class EnemyBase : EntityBase
 {
     // =====================
-    // 스탯
+    // 스탯 (EntityBase에 없는 것만)
     // =====================
-    [SerializeField] protected float _maxHp = 100f;
-    [SerializeField] protected float _moveSpeed = 3f;
-    [SerializeField] protected float _attackDamage = 10f;
     [SerializeField] protected float _attackRange = 1.5f;
     [SerializeField] protected float _detectionRange = 5f;
     [SerializeField] protected float _attackCooldown = 1.5f;
-    [SerializeField] protected float _knockBackForce = 5f;
     [SerializeField] protected float _hitStunDuration = 0.2f;
     [SerializeField] protected float _attackMotionDuration = 0.3f;
 
-    protected float _currentHp;
     protected bool _canAttack = true;
 
     // =====================
@@ -43,20 +38,15 @@ public abstract class EnemyBase : MonoBehaviour
     // =====================
     // 참조
     // =====================
-    protected Rigidbody2D _rb;
     protected Transform _player;
-
-    // =====================
-    // 감지
-    // =====================
-    [SerializeField] protected LayerMask _excludeLayer;  // Enemy 레이어 제외용
+    [SerializeField] protected LayerMask _excludeLayer;
 
     // =====================
     // 생명주기
     // =====================
-    protected virtual void Start()
+    protected override void Start()
     {
-        _rb = GetComponent<Rigidbody2D>();
+        base.Start(); // EntityBase의 _rb, Initialize 처리
 
         GameObject playerObj = GameObject.FindWithTag("Player");
         if (playerObj != null)
@@ -69,8 +59,6 @@ public abstract class EnemyBase : MonoBehaviour
             enabled = false;
             return;
         }
-
-        Initialize();
     }
 
     protected virtual void Update()
@@ -78,9 +66,9 @@ public abstract class EnemyBase : MonoBehaviour
         UpdateState();
     }
 
-    protected virtual void Initialize()
+    protected override void Initialize()
     {
-        _currentHp = _maxHp;
+        base.Initialize(); // EntityBase의 _currentHp = _maxHp
         ShowMark(false);
         ChangeState(EnemyState.Idle);
     }
@@ -168,9 +156,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
 
         if (_idleTimer <= 0f)
-        {
             ChangeState(EnemyState.Patrol);
-        }
     }
 
     protected virtual void OnUpdatePatrol()
@@ -184,9 +170,7 @@ public abstract class EnemyBase : MonoBehaviour
         Move((_patrolTarget - (Vector2)transform.position).normalized);
 
         if (Mathf.Abs(transform.position.x - _patrolTarget.x) < 0.2f)
-        {
             ChangeState(EnemyState.Idle);
-        }
     }
 
     protected virtual void OnUpdateChase()
@@ -237,10 +221,7 @@ public abstract class EnemyBase : MonoBehaviour
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, _detectionRange, ~_excludeLayer);
 
-        if (hit.collider != null && hit.collider.CompareTag("Player"))
-            return true;
-
-        return false;
+        return hit.collider != null && hit.collider.CompareTag("Player");
     }
 
     protected bool IsInAttackRange()
@@ -263,19 +244,17 @@ public abstract class EnemyBase : MonoBehaviour
     // =====================
     // 전투
     // =====================
-    public virtual void TakeDamage(float damage, Vector2 knockBackDirection = default)
+    public override void TakeDamage(float damage)
     {
         if (_currentState == EnemyState.Dead) return;
+        base.TakeDamage(damage);
+        ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
+    }
 
-        _currentHp -= damage;
-
-        if (knockBackDirection != default)
-            KnockBack(knockBackDirection);
-
-        if (_currentHp <= 0f)
-            ChangeState(EnemyState.Dead);
-        else
-            ChangeState(EnemyState.Hit);
+    public void TakeDamage(float damage, Vector2 knockBackDirection)
+    {
+        KnockBack(knockBackDirection);
+        TakeDamage(damage);
     }
 
     protected virtual void KnockBack(Vector2 direction)
@@ -284,13 +263,18 @@ public abstract class EnemyBase : MonoBehaviour
         _rb.AddForce(direction.normalized * _knockBackForce, ForceMode2D.Impulse);
     }
 
-    protected abstract void DoAttack();
-
-    // 자식에서 드랍, 이펙트 등 override
-    protected virtual IEnumerator OnDieRoutine()
+    protected virtual void OnCollisionEnter2D(Collision2D col)
     {
-        yield break;
+        //if (col.gameObject.CompareTag("Player")) 
+            //col.gameObject.GetComponent<IDamageable>().TakeDamage(_attackDamage);
     }
+
+    public override void Die()
+    {
+        ChangeState(EnemyState.Dead);
+    }
+
+    protected abstract void DoAttack();
 
     // =====================
     // 코루틴
@@ -321,6 +305,11 @@ public abstract class EnemyBase : MonoBehaviour
     {
         yield return StartCoroutine(OnDieRoutine());
         Destroy(gameObject);
+    }
+
+    protected virtual IEnumerator OnDieRoutine()
+    {
+        yield break;
     }
 
     // =====================

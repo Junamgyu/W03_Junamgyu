@@ -165,7 +165,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 15
+  m_GravityScale: 22.93578
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -373,6 +373,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 3c2b852f-f037-4b82-a34c-898451798ebf
     m_ActionName: 'Player/MarkTarget[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 44a0050c-91f5-43e5-9ef3-e8b571d9355d
+    m_ActionName: 'Player/DeadeyeSkill[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ab482208-ad32-4409-a0bb-0e67ac55c696
+    m_ActionName: 'Player/CheatOne[/Keyboard/1]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
   m_DefaultActionMap: Player
@@ -403,10 +411,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5585cf05bf78a2a48808065b39276300, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeadeyeSkill
+  _deadeyeBulletPrefab: {fileID: 1866698543977563895, guid: 5e68a840c3ff9e74a87ce1b805e77b4f, type: 3}
+  _deadeyeBulletSpeed: 400
+  _gaugePerKill: 15
   _slowTimeScale: 0.2
+  _gaugeConsumeRate: 10
   _damagePerShot: 100
   _timeBetweenShots: 0.1
   _maxTargets: 3
+  _gaugeCostDeadeye: 50
+  _markingDuration: 3
 --- !u!114 &4474358315243513985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,9 +434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   _maxHp: 5
-  _moveSpeed: 5
   _attackDamage: 1
-  _knockBackForce: 5
   _invincibleDuration: 1.5
 --- !u!1 &977712098372752119
 GameObject:

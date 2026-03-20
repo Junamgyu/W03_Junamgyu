@@ -177,6 +177,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc4db43cba9245439f7c68e459e8bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneManager
+--- !u!1 &8157820277705932781
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5589446889677401448}
+  - component: {fileID: 4387843078383570158}
+  m_Layer: 0
+  m_Name: CheckpointManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5589446889677401448
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8157820277705932781}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3690215996671242045}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4387843078383570158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8157820277705932781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 665acb66fd3bedb4f88a8560411ddfd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheckpointManager
+  _checkpoints: []
 --- !u!1 &8188686934479407690
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +256,7 @@ Transform:
   - {fileID: 9177657977456648006}
   - {fileID: 3296377505451080963}
   - {fileID: 2656886620273990671}
+  - {fileID: 5589446889677401448}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7711112655822185066
@@ -229,3 +275,4 @@ MonoBehaviour:
   _sceneManager: {fileID: 2767800192646572309}
   _poolManager: {fileID: 2208614351143115200}
   _inputManager: {fileID: 6430504387374019275}
+  _checkpointManager: {fileID: 0}

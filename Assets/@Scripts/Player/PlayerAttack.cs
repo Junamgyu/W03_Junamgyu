@@ -19,6 +19,8 @@ public class PlayerAttack : MonoBehaviour
 
     public WeaponInstance Current => _currentWeaponInstance;
 
+    private PoolManager _poolManager;
+
     private void Start()
     {
         _player = GetComponent<Player>();
@@ -27,6 +29,12 @@ public class PlayerAttack : MonoBehaviour
 
         // 좌클릭 기본 무기 넣기
         _currentWeaponInstance = new WeaponInstance(currentWeaponData);
+
+        // 풀매니저 세팅
+        if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
+        {
+            _poolManager = null;
+        }
 
     }
 
@@ -113,7 +121,20 @@ public class PlayerAttack : MonoBehaviour
     void SpawnBullet(SO_WeaponBase data, Vector2 dir)
     {
         if (data.bulletPrefab == null) return;
-        GameObject bullet = Instantiate(data.bulletPrefab, _player.transform.position, Quaternion.identity);
+
+        Vector3 spawnPos = _player.transform.position;
+        GameObject bullet;
+
+        // 풀매니저 연동: 풀매니저가 있으면 풀에서, 없으면 Instantiate
+        if (_poolManager != null)
+        {
+            bullet = _poolManager.Get(data.bulletPrefab, spawnPos, Quaternion.identity);
+        }
+        else
+        {
+            bullet = Instantiate(data.bulletPrefab, _player.transform.position, Quaternion.identity);
+        }
+
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
         if (bulletRb != null)
             bulletRb.linearVelocity = dir * data.bulletSpeed;
@@ -152,7 +173,6 @@ public class PlayerAttack : MonoBehaviour
         _shotgunInstance.Reload();
         _currentWeaponInstance?.Reload();
     }
-
 
     // 무기 추가 시 필요.
     public void SwapWeapon(SO_WeaponBase newWeapon)

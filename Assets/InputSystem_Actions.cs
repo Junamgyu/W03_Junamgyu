@@ -183,9 +183,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Skill"",
+                    ""name"": ""SlowMotionSkill"",
                     ""type"": ""Button"",
                     ""id"": ""b6e34d58-852a-4da9-b3c0-4b263a6b7b32"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DeadeyeSkill"",
+                    ""type"": ""Button"",
+                    ""id"": ""44a0050c-91f5-43e5-9ef3-e8b571d9355d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -195,6 +204,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""MarkTarget"",
                     ""type"": ""Button"",
                     ""id"": ""3c2b852f-f037-4b82-a34c-898451798ebf"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CheatOne"",
+                    ""type"": ""Button"",
+                    ""id"": ""ab482208-ad32-4409-a0bb-0e67ac55c696"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -605,7 +623,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Skill"",
+                    ""action"": ""SlowMotionSkill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -617,6 +635,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MarkTarget"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c5af07c5-645c-44f2-b32b-0d8a71475e27"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DeadeyeSkill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2ff68f9a-7e9c-491c-8770-354e17fe63ac"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CheatOne"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1214,8 +1254,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Shotgun = m_Player.FindAction("Shotgun", throwIfNotFound: true);
-        m_Player_Skill = m_Player.FindAction("Skill", throwIfNotFound: true);
+        m_Player_SlowMotionSkill = m_Player.FindAction("SlowMotionSkill", throwIfNotFound: true);
+        m_Player_DeadeyeSkill = m_Player.FindAction("DeadeyeSkill", throwIfNotFound: true);
         m_Player_MarkTarget = m_Player.FindAction("MarkTarget", throwIfNotFound: true);
+        m_Player_CheatOne = m_Player.FindAction("CheatOne", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1319,8 +1361,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Shotgun;
-    private readonly InputAction m_Player_Skill;
+    private readonly InputAction m_Player_SlowMotionSkill;
+    private readonly InputAction m_Player_DeadeyeSkill;
     private readonly InputAction m_Player_MarkTarget;
+    private readonly InputAction m_Player_CheatOne;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1373,13 +1417,21 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Shotgun => m_Wrapper.m_Player_Shotgun;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Skill".
+        /// Provides access to the underlying input action "Player/SlowMotionSkill".
         /// </summary>
-        public InputAction @Skill => m_Wrapper.m_Player_Skill;
+        public InputAction @SlowMotionSkill => m_Wrapper.m_Player_SlowMotionSkill;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/DeadeyeSkill".
+        /// </summary>
+        public InputAction @DeadeyeSkill => m_Wrapper.m_Player_DeadeyeSkill;
         /// <summary>
         /// Provides access to the underlying input action "Player/MarkTarget".
         /// </summary>
         public InputAction @MarkTarget => m_Wrapper.m_Player_MarkTarget;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/CheatOne".
+        /// </summary>
+        public InputAction @CheatOne => m_Wrapper.m_Player_CheatOne;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1436,12 +1488,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Shotgun.started += instance.OnShotgun;
             @Shotgun.performed += instance.OnShotgun;
             @Shotgun.canceled += instance.OnShotgun;
-            @Skill.started += instance.OnSkill;
-            @Skill.performed += instance.OnSkill;
-            @Skill.canceled += instance.OnSkill;
+            @SlowMotionSkill.started += instance.OnSlowMotionSkill;
+            @SlowMotionSkill.performed += instance.OnSlowMotionSkill;
+            @SlowMotionSkill.canceled += instance.OnSlowMotionSkill;
+            @DeadeyeSkill.started += instance.OnDeadeyeSkill;
+            @DeadeyeSkill.performed += instance.OnDeadeyeSkill;
+            @DeadeyeSkill.canceled += instance.OnDeadeyeSkill;
             @MarkTarget.started += instance.OnMarkTarget;
             @MarkTarget.performed += instance.OnMarkTarget;
             @MarkTarget.canceled += instance.OnMarkTarget;
+            @CheatOne.started += instance.OnCheatOne;
+            @CheatOne.performed += instance.OnCheatOne;
+            @CheatOne.canceled += instance.OnCheatOne;
         }
 
         /// <summary>
@@ -1483,12 +1541,18 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Shotgun.started -= instance.OnShotgun;
             @Shotgun.performed -= instance.OnShotgun;
             @Shotgun.canceled -= instance.OnShotgun;
-            @Skill.started -= instance.OnSkill;
-            @Skill.performed -= instance.OnSkill;
-            @Skill.canceled -= instance.OnSkill;
+            @SlowMotionSkill.started -= instance.OnSlowMotionSkill;
+            @SlowMotionSkill.performed -= instance.OnSlowMotionSkill;
+            @SlowMotionSkill.canceled -= instance.OnSlowMotionSkill;
+            @DeadeyeSkill.started -= instance.OnDeadeyeSkill;
+            @DeadeyeSkill.performed -= instance.OnDeadeyeSkill;
+            @DeadeyeSkill.canceled -= instance.OnDeadeyeSkill;
             @MarkTarget.started -= instance.OnMarkTarget;
             @MarkTarget.performed -= instance.OnMarkTarget;
             @MarkTarget.canceled -= instance.OnMarkTarget;
+            @CheatOne.started -= instance.OnCheatOne;
+            @CheatOne.performed -= instance.OnCheatOne;
+            @CheatOne.canceled -= instance.OnCheatOne;
         }
 
         /// <summary>
@@ -1860,12 +1924,19 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShotgun(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Skill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "SlowMotionSkill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSkill(InputAction.CallbackContext context);
+        void OnSlowMotionSkill(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DeadeyeSkill" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDeadeyeSkill(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "MarkTarget" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -1873,6 +1944,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMarkTarget(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CheatOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCheatOne(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

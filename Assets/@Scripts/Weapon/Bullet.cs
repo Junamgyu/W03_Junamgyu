@@ -3,42 +3,86 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float _lifetime = 2f;
+    [SerializeField] private int _damage = 1;
+    [SerializeField] private float _lifetime = 1f;
+    [SerializeField] private bool _isPiercing = false; // 관통 여부
+    [SerializeField] private bool _giveGauge = true;
 
-    private void Start()
+    private Coroutine _lifeRoutine;
+    private Rigidbody2D _rb;
+    private PoolManager _pool;
+
+    private void Awake()
     {
-        if (ManagerRegistry.TryGet<PoolManager>(out var pool))
+        _rb = GetComponent<Rigidbody2D>();
+        ManagerRegistry.TryGet(out _pool);
+    }
+
+    private void OnEnable()
+    {
+        if (_lifeRoutine != null)
         {
-            StartCoroutine(LifeReturnRoutine(pool));
+            StopCoroutine(_lifeRoutine);
         }
-        else
+
+        _lifeRoutine = StartCoroutine(LifeReturnRoutine(_pool));
+    }
+
+    private void OnDisable()
+    {
+        if (_lifeRoutine != null)
         {
-            Destroy(gameObject, _lifetime);
+            StopCoroutine(_lifeRoutine);
+            _lifeRoutine = null;
+        }
+
+        if (_rb != null)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
         }
     }
 
     #region Pool Return 코루틴
-    private System.Collections.IEnumerator LifeReturnRoutine(PoolManager pool)
+    private IEnumerator LifeReturnRoutine(PoolManager pool)
     {
         yield return new WaitForSeconds(_lifetime);
 
-        // 풀에 반환
-        pool.Return(gameObject);
+        if (pool != null)
+        {
+            pool.Return(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     #endregion
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground") || other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            if (ManagerRegistry.TryGet<PoolManager>(out var pool))
-            {
-                pool.Return(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            if (_isPiercing) return; // 관통이면 무시
+            ReturnToPool();
+            return;
         }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            if (other.TryGetComponent<EnemyBase>(out var damageable))
+                damageable.TakeDamage(_damage, _giveGauge);
+
+            ReturnToPool();
+        }
+    }
+
+    //Helper
+    private void ReturnToPool()
+    {
+        if (ManagerRegistry.TryGet<PoolManager>(out var pool))
+            pool.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 }

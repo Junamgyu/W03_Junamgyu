@@ -3,10 +3,10 @@ using UnityEngine;
 public class EnemyProjectile : MonoBehaviour
 {
     private float _speed;
-    private float _damage;
+    private int _damage;
     [SerializeField] private float _lifetime = 5f;
 
-    public void Initialize(float speed, float damage)
+    public void Initialize(float speed, int damage)
     {
         _speed = speed;
         _damage = damage;
@@ -23,7 +23,7 @@ public class EnemyProjectile : MonoBehaviour
     {
         if (col.CompareTag("Player"))
         {
-            //col.GetComponent<Player>().TakeDamage(_damage);
+            col.GetComponent<IDamageable>().TakeDamage(_damage);
             Destroy(gameObject);
         }
 

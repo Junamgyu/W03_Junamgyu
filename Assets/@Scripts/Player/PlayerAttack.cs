@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -19,17 +17,23 @@ public class PlayerAttack : MonoBehaviour
 
     public WeaponInstance Current => _currentWeaponInstance;
 
+    // 머리 쿵 관련
+    [SerializeField] private Transform _ceilingCheck;
+    [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private float _ceilingCheckRadius = 0.1f;
+
     private PoolManager _poolManager;
 
-    private void Start()
+    private void Awake()
     {
         _player = GetComponent<Player>();
         _rb = GetComponent<Rigidbody2D>();
         _shotgunInstance = new WeaponInstance(_shotgunData);
-
-        // 좌클릭 기본 무기 넣기
         _currentWeaponInstance = new WeaponInstance(currentWeaponData);
+    }
 
+    private void Start()
+    {
         // 풀매니저 세팅
         if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
         {
@@ -50,7 +54,7 @@ public class PlayerAttack : MonoBehaviour
 
     public void FireCurrentWeapon()
     {
-        if (_player.deadeyeSkill.IsSkillActive) return;
+        if (_player.deadeyeSkill.IsDeadeyeActive) return;
         if (currentWeaponData == null) return;
         if (!TryFireWeapon(_currentWeaponInstance)) return;
 
@@ -146,7 +150,7 @@ public class PlayerAttack : MonoBehaviour
         StopCoroutine(nameof(DampingRoutine));
         StartCoroutine(nameof(GravityRoutine));
         StartCoroutine(nameof(DampingRoutine));
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
 
     }
 
@@ -154,7 +158,22 @@ public class PlayerAttack : MonoBehaviour
     {
         _player.IsGravityOverridden = true;
         _rb.gravityScale = 0f;
-        yield return new WaitForSeconds(_player.gravityOffDuration);
+
+        float elapsed = 0f;
+        while (elapsed < _player.gravityOffDuration)
+        {
+            // 천장 감지 시 즉시 중단
+            if (Physics2D.OverlapCircle(
+                _ceilingCheck.position,
+                _ceilingCheckRadius,
+                _groundLayer))
+            {
+                _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
+                break;
+            }
+            elapsed += Time.deltaTime;
+            yield return null; // 매 프레임 체크
+        }
         _rb.gravityScale = _player.OriginalGravity;
         _player.IsGravityOverridden = false;
     }

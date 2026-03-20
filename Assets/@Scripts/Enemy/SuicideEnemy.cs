@@ -8,8 +8,8 @@ public class SuicideEnemy : EnemyBase
     // =====================
     [SerializeField] private int _explosionDamage = 30;
     [SerializeField] private float _explosionRange = 2f;
-    [SerializeField] private float _explosionWindupTime = 1f;  // 자폭 예고 시간
-
+    [SerializeField] private float _explosionWindupTime = 3f;  // 자폭 예고 시간
+    [SerializeField] private ParticleSystem _explosionParticle;
     // =====================
     // 공격 (자폭 준비)
     // =====================
@@ -20,16 +20,33 @@ public class SuicideEnemy : EnemyBase
 
     IEnumerator ExplosionRoutine()
     {
-        // 자폭 예고
         _rb.linearVelocity = Vector2.zero;
-        // TODO: 자폭 예고 이펙트 (깜빡임 등)
-        yield return new WaitForSeconds(_explosionWindupTime);
+
+        // 깜빡임
+        SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+        float elapsed = 0f;
+        float blinkInterval = 0.3f;
+
+        while (elapsed < _explosionWindupTime)
+        {
+            sr.color = Color.red;
+            yield return new WaitForSeconds(blinkInterval);
+            sr.color = Color.white;
+            yield return new WaitForSeconds(blinkInterval);
+            elapsed += blinkInterval * 2;
+            blinkInterval = Mathf.Max(0.05f, blinkInterval - 0.03f); // 점점 빨라짐
+        }
 
         Explode();
     }
 
     void Explode()
     {
+        if (_explosionParticle != null)
+        {
+            ParticleSystem particle = Instantiate(_explosionParticle, transform.position, Quaternion.identity);
+            particle.transform.localScale = Vector3.one * _explosionRange; // range에 맞게 스케일
+        }
         // 자폭 범위 안 플레이어 감지
         Collider2D hit = Physics2D.OverlapCircle(
             transform.position,
@@ -40,7 +57,6 @@ public class SuicideEnemy : EnemyBase
         if (hit != null)
             hit.GetComponent<IDamageable>().TakeDamage(_explosionDamage);
 
-        // TODO: 자폭 이펙트
         ChangeState(EnemyState.Dead);
     }
 

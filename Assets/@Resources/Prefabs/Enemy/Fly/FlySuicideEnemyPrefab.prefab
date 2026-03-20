@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 7965816820322047130}
   - component: {fileID: 9166221463573044941}
   m_Layer: 15
-  m_Name: SuicideEnemyPrefab
+  m_Name: FlySuicideEnemyPrefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -141,7 +141,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -219,7 +219,7 @@ MonoBehaviour:
   _attackCooldown: 1.5
   _hitStunDuration: 0.2
   _attackMotionDuration: 0.3
-  _isFlying: 0
+  _isFlying: 1
   _patrolDistance: 3
   _idleWaitTime: 2
   _markIndicator: {fileID: 0}

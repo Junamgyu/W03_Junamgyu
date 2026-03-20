@@ -15,6 +15,7 @@ public abstract class EnemyBase : EntityBase
     [SerializeField] protected bool _isFlying = false;
 
     protected bool _canAttack = true;
+    protected bool _DamagedByBullet = false;
 
     // =====================
     // 상태
@@ -246,12 +247,21 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 전투
     // =====================
+    public void TakeDamage(int damage, bool isBullet = false)
+    {
+        if (_currentState == EnemyState.Dead) return;
+        base.TakeDamage(damage);
+        _DamagedByBullet = isBullet;
+        ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
+    }
     public override void TakeDamage(int damage)
     {
         if (_currentState == EnemyState.Dead) return;
         base.TakeDamage(damage);
+        _DamagedByBullet = false;
         ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
     }
+
 
 
     protected virtual void OnCollisionEnter2D(Collision2D col)
@@ -300,6 +310,10 @@ public abstract class EnemyBase : EntityBase
 
     protected virtual IEnumerator OnDieRoutine()
     {
+        if (_DamagedByBullet)
+        {
+            //player 게이지 증가
+        }
         yield break;
     }
 

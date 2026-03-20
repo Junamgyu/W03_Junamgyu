@@ -1,15 +1,17 @@
 using System.Collections;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 public class RangedEnemy : EnemyBase
 {
     // =====================
     // 원거리 전용 변수
     // =====================
-    [SerializeField] private GameObject _projectilePrefab;
-    [SerializeField] private float _projectileSpeed = 8f;
-    [SerializeField] private float _retreatRange = 2f;      // 이 거리보다 가까우면 후퇴
-    [SerializeField] private float _preferredRange = 4f;    // 유지하려는 거리
+    [SerializeField] protected GameObject _projectilePrefab;
+    [SerializeField] protected float _projectileSpeed = 8f;
+    [SerializeField] protected float _retreatRange = 2f;      // 이 거리보다 가까우면 후퇴
+    [SerializeField] protected float _preferredRange = 4f;    // 유지하려는 거리
+    [SerializeField] protected Transform _gunPivot;
 
     // =====================
     // OnEnter 오버라이드
@@ -37,6 +39,10 @@ public class RangedEnemy : EnemyBase
             // 너무 가까우면 뒤로 빠짐
             Vector2 retreatDir = ((Vector2)transform.position - (Vector2)_player.position).normalized;
             Move(retreatDir);
+            if (_canAttack)
+            {
+                ChangeState(EnemyState.Attack);
+            }
         }
         else if (distToPlayer <= _attackRange && _canAttack)
         {
@@ -54,6 +60,15 @@ public class RangedEnemy : EnemyBase
             // 적정 거리면 멈추고 대기
             _rb.linearVelocity = Vector2.zero;
         }
+
+        if (_gunPivot != null)
+        {
+            Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            Quaternion rotation = Quaternion.Euler(0, 0, angle);
+            _gunPivot.rotation = rotation;
+        }
+        
     }
 
     // =====================
@@ -67,10 +82,12 @@ public class RangedEnemy : EnemyBase
             return;
         }
 
+
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
 
+        
         GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
         projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
     }

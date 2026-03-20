@@ -19,9 +19,7 @@ public class Player : MonoBehaviour
     public PlayerAttack playerAttack{ get; private set; }
     public PlayerMove playerMove{ get; private set; }
     public PlayerAimer playerAimer { get; private set; }
-
     public PlayerJump playerJump { get; private set; }
-
     public DeadeyeSkill deadeyeSkill { get; private set; }
 
     Rigidbody2D _rb;
@@ -29,10 +27,10 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        playerAttack= GetComponent<PlayerAttack>();
-        playerMove= GetComponent<PlayerMove>(); // 좌우 이동만 담당
-        playerAimer = GetComponent<PlayerAimer>();
-        playerJump = GetComponent<PlayerJump>(); 
+        playerAttack= GetComponent<PlayerAttack>(); // 샷건, 주무기 반동 담당
+        playerMove= GetComponent<PlayerMove>(); // 좌우 이동 + 땅 여부 판단 담당
+        playerAimer = GetComponent<PlayerAimer>(); 
+        playerJump = GetComponent<PlayerJump>(); // 점프 담당
         deadeyeSkill = GetComponent<DeadeyeSkill>();
         _rb = GetComponent<Rigidbody2D>();
         OriginalGravity = _rb.gravityScale;

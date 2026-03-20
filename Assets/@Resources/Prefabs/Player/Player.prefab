@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 796632091333723660}
   - component: {fileID: 8107594692235736828}
   - component: {fileID: 6331054487131336594}
+  - component: {fileID: 4474358315243513985}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -41,6 +42,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2608154827606444628}
+  - {fileID: 817894102700673229}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3775958232748174706
@@ -224,6 +226,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   _shotgunData: {fileID: 11400000, guid: 1015d5e3b2d6a974f86df04a7334bc26, type: 2}
   currentWeaponData: {fileID: 11400000, guid: 7bae448247a12ce408b3ad19b61f55fc, type: 2}
+  _ceilingCheck: {fileID: 817894102700673229}
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  _ceilingCheckRadius: 0.1
 --- !u!114 &6637769796217830890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,6 +407,54 @@ MonoBehaviour:
   _damagePerShot: 100
   _timeBetweenShots: 0.1
   _maxTargets: 3
+--- !u!114 &4474358315243513985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222992740227915879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92abb298b8a095d449fc6177613929b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  _maxHp: 5
+  _moveSpeed: 5
+  _attackDamage: 1
+  _knockBackForce: 5
+  _invincibleDuration: 1.5
+--- !u!1 &977712098372752119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 817894102700673229}
+  m_Layer: 0
+  m_Name: CeilCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &817894102700673229
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 977712098372752119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2116783419184232425}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5819986337700169743
 GameObject:
   m_ObjectHideFlags: 0

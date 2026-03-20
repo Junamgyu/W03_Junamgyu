@@ -149,6 +149,7 @@ public abstract class EnemyBase : EntityBase
     {
         StopAllCoroutines();
         ShowMark(false);
+        GetComponent<Collider2D>().enabled = false;
         StartCoroutine(nameof(DieRoutine));
     }
 

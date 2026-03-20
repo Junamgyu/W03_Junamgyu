@@ -6,6 +6,7 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 스탯 (EntityBase에 없는 것만)
     // =====================
+    [SerializeField] protected float _moveSpeed = 5f;
     [SerializeField] protected float _attackRange = 1.5f;
     [SerializeField] protected float _detectionRange = 5f;
     [SerializeField] protected float _attackCooldown = 1.5f;

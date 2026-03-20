@@ -1173,16 +1173,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
   m_Padding:
-    m_Left: 0
-    m_Right: 0
+    m_Left: 20
+    m_Right: 20
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 4
   m_Spacing: 20
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -1300,10 +1300,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1907130635720233524, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
-      propertyPath: m_GravityScale
-      value: 22.93578
-      objectReference: {fileID: 0}
     - target: {fileID: 2116783419184232425, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1344,14 +1340,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6331054487131336594, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
-      propertyPath: _deadeyeBulletSpeed
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 6331054487131336594, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
-      propertyPath: _deadeyeBulletPrefab
-      value: 
-      objectReference: {fileID: 1866698543977563895, guid: 5e68a840c3ff9e74a87ce1b805e77b4f, type: 3}
     - target: {fileID: 8107594692235736828, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
       propertyPath: _cam
       value: 

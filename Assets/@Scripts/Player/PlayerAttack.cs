@@ -24,15 +24,16 @@ public class PlayerAttack : MonoBehaviour
 
     private PoolManager _poolManager;
 
-    private void Start()
+    private void Awake()
     {
         _player = GetComponent<Player>();
         _rb = GetComponent<Rigidbody2D>();
         _shotgunInstance = new WeaponInstance(_shotgunData);
-
-        // 좌클릭 기본 무기 넣기
         _currentWeaponInstance = new WeaponInstance(currentWeaponData);
+    }
 
+    private void Start()
+    {
         // 풀매니저 세팅
         if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
         {

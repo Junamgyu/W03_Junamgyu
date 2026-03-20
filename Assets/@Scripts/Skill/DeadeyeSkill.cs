@@ -43,7 +43,6 @@ public class DeadeyeSkill : MonoBehaviour
     {
         _player.playerHealth.OnDie -= OnPlayerDie;
     }
-
     void OnPlayerDie()
     {
         ExitSlow();
@@ -55,7 +54,7 @@ public class DeadeyeSkill : MonoBehaviour
     // 게이지
     // =====================
     #region Gauge
-    [SerializeField] private float _maxGauge = 100f;
+    private float _maxGauge = 100f;
     [Tooltip("적을 죽일 때마다 차는 게이지량")][SerializeField] private float _gaugePerKill = 15f;
     private float _currentGauge = 0f;
 
@@ -224,11 +223,13 @@ public class DeadeyeSkill : MonoBehaviour
         }
     }
 
+    // TODO: 꼼수
     IEnumerator FireAtTargets()
     {
         // 순서대로 처치
         _isFiring = true;
         
+        // 연출용 총알
         foreach (EnemyBase enemy in _targets)
         {
             if (enemy != null && enemy.CurrentHp > 0)
@@ -245,8 +246,18 @@ public class DeadeyeSkill : MonoBehaviour
                     rb.linearVelocity = dir * _deadeyeBulletSpeed;
 
             }
+            yield return new WaitForSecondsRealtime(_timeBetweenShots);
+        }
+
+        // 실제 공격
+        foreach (EnemyBase enemy in _targets)
+        {
+            if (enemy != null && enemy.CurrentHp > 0)
+                enemy.TakeDamage(_damagePerShot, false);
+
             yield return new WaitForSeconds(_timeBetweenShots);
         }
+
 
         ExitDeadeye(); // 시간 복구
         _isFiring = false;

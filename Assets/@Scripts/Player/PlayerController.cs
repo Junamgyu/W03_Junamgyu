@@ -1,46 +1,77 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    Player player;
+    private Player _player;
+    private InputManager _inputManager;
 
     void Start()
     {
-        player = GetComponent<Player>();
+        _player = GetComponent<Player>();
 
+        if (!ManagerRegistry.TryGet<InputManager>(out _inputManager))
+        {
+            Debug.LogError("InputManager is not registered in ManagerRegistry.");
+            return;
+        }
+
+        _inputManager.OnMove += HandleMove;
+        _inputManager.OnJump += HandleJump;
+        _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
+        _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
+        _inputManager.OnSkill += HandleSkill;
+        _inputManager.OnMarkTarget += HandleMarkTarget;
     }
 
-    void Update()
+    private void OnDestroy()
     {
+        if (_inputManager == null)
+            return;
 
+        _inputManager.OnMove -= HandleMove;
+        _inputManager.OnJump -= HandleJump;
+        _inputManager.OnPrimaryAttack -= HandlePrimaryAttack;
+        _inputManager.OnSecondaryAttack -= HandleSecondaryAttack;
+        _inputManager.OnSkill -= HandleSkill;
+        _inputManager.OnMarkTarget -= HandleMarkTarget;
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    private void HandleMove(InputAction.CallbackContext ctx)
     {
-        Vector2 inputDir = context.ReadValue<Vector2>();
-        player.playerMove.CanMove(inputDir);
+        Vector2 inputDir = ctx.ReadValue<Vector2>();
+        _player.playerMove.CanMove(inputDir);
     }
 
-    public void OnAttack(InputAction.CallbackContext context)
+    private void HandleJump(InputAction.CallbackContext ctx)
     {
-        if (context.started)
-            player.playerAttack.FireCurrentWeapon();
+        if (ctx.started)
+            _player.playerJump.OnJump(ctx);
     }
 
-    public void OnShotgun(InputAction.CallbackContext context)
+    private void HandlePrimaryAttack(InputAction.CallbackContext ctx)
     {
-        if (context.started)
-            player.playerAttack.FireShotgun();
+        if (ctx.started)
+            _player.playerAttack.FireCurrentWeapon();
     }
 
-    public void OnSkill(InputAction.CallbackContext context)
+    private void HandleSecondaryAttack(InputAction.CallbackContext ctx)
     {
-        player.GetComponent<DeadeyeSkill>().OnSkill(context);
+        if (ctx.started)
+            _player.playerAttack.FireShotgun();
     }
 
-    public void OnMarkTarget(InputAction.CallbackContext context)
+    private void HandleSkill(InputAction.CallbackContext ctx)
     {
-        player.GetComponent<DeadeyeSkill>().OnMarkTarget(context);
+        var skill = _player.GetComponent<DeadeyeSkill>();
+        if (skill != null)
+            skill.OnSkill(ctx);
+    }
+
+    private void HandleMarkTarget(InputAction.CallbackContext ctx)
+    {
+        var skill = _player.GetComponent<DeadeyeSkill>();
+        if (skill != null)
+            skill.OnMarkTarget(ctx);
     }
 }

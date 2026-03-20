@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -10,14 +10,17 @@ public class Player : MonoBehaviour
     public float dampingValue = 8f;
 
     public float OriginalGravity { get; private set; }
+    public bool IsRecoiling { get; set; } // 반동 상태
+    public bool IsGrounded { get; set; } // 땅 여부 
+    public bool HasAirRecoil { get; set; } // 공중 반동 상태
 
-    public bool IsRecoiling { get; set; }
-    public bool IsGrounded { get; set; }
+    public bool IsGravityOverridden { get; set; } // 샷건 or 주무기 반동 중에는 Jump에서 처리되는 중력 처리 꺼주기 위함.
 
     public PlayerAttack playerAttack{ get; private set; }
     public PlayerMove playerMove{ get; private set; }
-    public PlayerController playerController { get; private set; }
     public PlayerAimer playerAimer { get; private set; }
+
+    public PlayerJump playerJump { get; private set; }
 
     public DeadeyeSkill deadeyeSkill { get; private set; }
 
@@ -27,11 +30,10 @@ public class Player : MonoBehaviour
     void Awake()
     {
         playerAttack= GetComponent<PlayerAttack>();
-        playerMove= GetComponent<PlayerMove>();
-        playerController= GetComponent<PlayerController>();
+        playerMove= GetComponent<PlayerMove>(); // 좌우 이동만 담당
         playerAimer = GetComponent<PlayerAimer>();
+        playerJump = GetComponent<PlayerJump>(); 
         deadeyeSkill = GetComponent<DeadeyeSkill>();
-
         _rb = GetComponent<Rigidbody2D>();
         OriginalGravity = _rb.gravityScale;
     }

@@ -355,7 +355,7 @@ MonoBehaviour:
   _projectilePrefab: {fileID: 3618253558596877259, guid: dc4f46b1dc080234aafccf704533149a, type: 3}
   _projectileSpeed: 8
   _retreatRange: 0
-  _preferredRange: 10
+  _preferredRange: 1
   _gunPivot: {fileID: 8175451469513102941}
 --- !u!114 &8320303540111667643
 MonoBehaviour:

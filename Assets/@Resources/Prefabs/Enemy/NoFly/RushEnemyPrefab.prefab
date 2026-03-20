@@ -486,7 +486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RushEnemy
   _maxHp: 100
-  _attackDamage: 10
+  _attackDamage: 1
   _moveSpeed: 5
   _attackRange: 12.07
   _detectionRange: 14.49

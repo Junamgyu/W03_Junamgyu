@@ -71,7 +71,6 @@ public abstract class EnemyBase : EntityBase
     protected virtual void Update()
     {
         UpdateState();
-        ShowMark(true);
     }
 
     protected override void Initialize()

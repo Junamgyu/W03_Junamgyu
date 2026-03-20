@@ -19,9 +19,7 @@ public class Player : MonoBehaviour
     public PlayerAttack playerAttack{ get; private set; }
     public PlayerMove playerMove{ get; private set; }
     public PlayerAimer playerAimer { get; private set; }
-
     public PlayerJump playerJump { get; private set; }
-
     public DeadeyeSkill deadeyeSkill { get; private set; }
 
     Rigidbody2D _rb;

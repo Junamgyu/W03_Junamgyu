@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponName: Pistol
   recoilForce: 40
   shootXMul: 1.5
-  bulletPrefab: {fileID: 3806268705299755859, guid: 35d167a07f7cc884097d8394463c0588, type: 3}
+  bulletPrefab: {fileID: 3806268705299755859, guid: d54fe1e14033fab44b676dab44747126, type: 3}
   bulletSpeed: 10
   pelletCount: 1
   spreadAngle: 0

@@ -16,7 +16,8 @@ public class Player : MonoBehaviour
 
     public bool IsGravityOverridden { get; set; } // 샷건 or 주무기 반동 중에는 Jump에서 처리되는 중력 처리 꺼주기 위함.
 
-    public PlayerAttack playerAttack{ get; private set; }
+    //public PlayerAttack playerAttack{ get; private set; }
+    public Jaein_PlayerAttack jaein_playerAttack{ get; private set; }
     public PlayerMove playerMove{ get; private set; }
     public PlayerAimer playerAimer { get; private set; }
 
@@ -29,8 +30,9 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        playerAttack= GetComponent<PlayerAttack>();
-        playerMove= GetComponent<PlayerMove>(); // 좌우 이동만 담당
+        //playerAttack= GetComponent<PlayerAttack>();
+        jaein_playerAttack = GetComponent<Jaein_PlayerAttack>();
+        playerMove = GetComponent<PlayerMove>(); // 좌우 이동만 담당
         playerAimer = GetComponent<PlayerAimer>();
         playerJump = GetComponent<PlayerJump>(); 
         deadeyeSkill = GetComponent<DeadeyeSkill>();

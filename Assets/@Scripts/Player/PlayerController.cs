@@ -52,13 +52,13 @@ public class PlayerController : MonoBehaviour
     private void HandlePrimaryAttack(InputAction.CallbackContext ctx)
     {
         if (ctx.started)
-            _player.playerAttack.FireCurrentWeapon();
+            _player.jaein_playerAttack.FireCurrentWeapon();
     }
 
     private void HandleSecondaryAttack(InputAction.CallbackContext ctx)
     {
         if (ctx.started)
-            _player.playerAttack.FireShotgun();
+            _player.jaein_playerAttack.FireShotgun();
     }
 
     private void HandleSkill(InputAction.CallbackContext ctx)

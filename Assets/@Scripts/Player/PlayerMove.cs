@@ -36,7 +36,7 @@ public class PlayerMove : MonoBehaviour
         // 공중 → 착지 순간 감지
         if (isGrounded && !_player.IsGrounded)
         {
-            _player.playerAttack.ReloadAll(); // 무기 전체 재장전
+            _player.jaein_playerAttack.ReloadAll(); // 무기 전체 재장전
             _player.HasAirRecoil = false; // 공중 반동 상태 초기화
         }
             

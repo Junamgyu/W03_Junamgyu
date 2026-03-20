@@ -5,8 +5,14 @@ public class PoolManager : MonoBehaviour, IInitializable
 {
     public bool IsInitialized { get; private set; }
 
+    [Header("Pooling")]
+    [Tooltip("0 = no automatic prewarm. If >0, CreatePool will pre-create this many instances when called without explicit size.")]
+    [SerializeField] private int _defaultPrewarm = 0;
+    public int DefaultPrewarm => _defaultPrewarm;
+
     private readonly Dictionary<GameObject, Queue<GameObject>> _pools = new();
     private readonly Dictionary<GameObject, GameObject> _instanceToPrefab = new();
+    private readonly Dictionary<GameObject, Transform> _poolContainers = new();
 
     public void Initialize()
     {
@@ -21,11 +27,20 @@ public class PoolManager : MonoBehaviour, IInitializable
 
         Queue<GameObject> pool = GetOrCreatePool(prefab);
 
-        for (int i = 0; i < initialSize; i++)
+        if (pool.Count >= initialSize)
+            return;
+
+        int toCreate = initialSize - pool.Count;
+        for (int i = 0; i < toCreate; i++)
         {
             GameObject instance = CreateNewInstance(prefab);
             ReturnInternal(prefab, instance);
         }
+    }
+
+    public void CreatePool(GameObject prefab)
+    {
+        CreatePool(prefab, DefaultPrewarm);
     }
 
     public GameObject Get(GameObject prefab, Vector3 position, Quaternion rotation)
@@ -72,7 +87,11 @@ public class PoolManager : MonoBehaviour, IInitializable
 
     private GameObject CreateNewInstance(GameObject prefab)
     {
-        GameObject instance = Instantiate(prefab);
+        Transform container = GetOrCreateContainer(prefab);
+        GameObject instance = Instantiate(prefab, container);
+        
+        instance.SetActive(false);
+
         _instanceToPrefab[instance] = prefab;
         return instance;
     }
@@ -85,7 +104,7 @@ public class PoolManager : MonoBehaviour, IInitializable
         pool.Enqueue(instance);
     }
 
-    // 풀을 반환하거나 없으면 생성해서 반환
+    // 풀을 반환하거나 없으면 생성해서 반환 (빈 큐 생성만 함)
     private Queue<GameObject> GetOrCreatePool(GameObject prefab)
     {
         if (!_pools.TryGetValue(prefab, out var pool))
@@ -94,5 +113,20 @@ public class PoolManager : MonoBehaviour, IInitializable
             _pools[prefab] = pool;
         }
         return pool;
+    }
+
+    private Transform GetOrCreateContainer(GameObject prefab)
+    {
+        if (prefab == null) return this.transform;
+
+        if (_poolContainers.TryGetValue(prefab, out var existing) && existing != null)
+            return existing;
+
+        var containerGo = new GameObject($"Pool-{prefab.name}");
+        containerGo.transform.SetParent(this.transform, false);
+
+        var container = containerGo.transform;
+        _poolContainers[prefab] = container;
+        return container;
     }
 }

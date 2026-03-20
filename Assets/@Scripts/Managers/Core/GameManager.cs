@@ -4,7 +4,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 {
     [Header("Core Managers")]
     [SerializeField] private GameStateManager _gameStateManager;
-    [SerializeField] private SceneManager _sceneFlowManager;
+    [SerializeField] private SceneManager _sceneManager;
     [SerializeField] private PoolManager _poolManager;
     [SerializeField] private InputManager _inputManager;
     // TODO: Add EnemyManager etc.
@@ -29,9 +29,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
-        if (_sceneFlowManager == null)
+        if (_sceneManager == null)
         {
-            Debug.LogError("SceneFlowManager is not assigned!");
+            Debug.LogError("SceneManager is not assigned!");
             return;
         }
 
@@ -51,7 +51,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         ManagerRegistry.Register<GameStateManager>(_gameStateManager);
         ManagerRegistry.Register<PoolManager>(_poolManager);
         ManagerRegistry.Register<InputManager>(_inputManager);
-        ManagerRegistry.Register<SceneManager>(_sceneFlowManager);
+        ManagerRegistry.Register<SceneManager>(_sceneManager);
     }
 
     // 매니저 초기화는 여기서 진행
@@ -60,7 +60,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         Initialize(_gameStateManager);
         Initialize(_poolManager);
         Initialize(_inputManager);
-        Initialize(_sceneFlowManager);
+        Initialize(_sceneManager);
     }
 
     private void Initialize(IInitializable manager)
@@ -73,7 +73,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
     public void StartGame()
     {
-        if (_sceneFlowManager == null)
+        if (_sceneManager == null)
         {
             Debug.LogError("SceneFlowManager is missing!");
             return;
@@ -81,6 +81,6 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
         Debug.Log("Game Start!");
         _gameStateManager.ChangeState(GameState.Playing);
-        _sceneFlowManager.LoadStage("Stage_01");
+        _sceneManager.LoadStage("Stage_01");
     }
 }

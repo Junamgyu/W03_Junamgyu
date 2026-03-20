@@ -11,6 +11,7 @@ public abstract class EnemyBase : EntityBase
     [SerializeField] protected float _attackCooldown = 1.5f;
     [SerializeField] protected float _hitStunDuration = 0.2f;
     [SerializeField] protected float _attackMotionDuration = 0.3f;
+    [SerializeField] protected bool _isFlying = false;
 
     protected bool _canAttack = true;
 
@@ -198,23 +199,23 @@ public abstract class EnemyBase : EntityBase
     // =====================
     protected virtual void Move(Vector2 direction)
     {
-        _rb.linearVelocity = new Vector2(direction.x * _moveSpeed, _rb.linearVelocity.y);
-        Flip(direction.x);
+        if (_isFlying)
+        {
+            _rb.linearVelocity = direction * _moveSpeed;
+        }
+        else
+        {
+            _rb.linearVelocity = new Vector2(direction.x * _moveSpeed, _rb.linearVelocity.y);
+        }
     }
 
-    protected virtual void Flip(float dirX)
-    {
-        if (dirX > 0)
-            transform.localScale = new Vector3(1, 1, 1);
-        else if (dirX < 0)
-            transform.localScale = new Vector3(-1, 1, 1);
-    }
 
     // =====================
     // 감지
     // =====================
     protected virtual bool DetectPlayer()
     {
+        
         float dist = Vector2.Distance(transform.position, _player.position);
         if (dist > _detectionRange) return false;
 
@@ -244,24 +245,13 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 전투
     // =====================
-    public override void TakeDamage(float damage)
+    public override void TakeDamage(int damage)
     {
         if (_currentState == EnemyState.Dead) return;
         base.TakeDamage(damage);
         ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
     }
 
-    public void TakeDamage(float damage, Vector2 knockBackDirection)
-    {
-        KnockBack(knockBackDirection);
-        TakeDamage(damage);
-    }
-
-    protected virtual void KnockBack(Vector2 direction)
-    {
-        _rb.linearVelocity = Vector2.zero;
-        _rb.AddForce(direction.normalized * _knockBackForce, ForceMode2D.Impulse);
-    }
 
     protected virtual void OnCollisionEnter2D(Collision2D col)
     {

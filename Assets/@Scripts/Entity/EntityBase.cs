@@ -5,19 +5,19 @@ public abstract class EntityBase : MonoBehaviour, IDamageable
     // =====================
     // 공통 스탯
     // =====================
-    [SerializeField] protected float _maxHp = 100f;
+    [SerializeField] protected int _maxHp = 5;
     [SerializeField] protected float _moveSpeed = 5f;
-    [SerializeField] protected float _attackDamage = 10f;
+    [SerializeField] protected int _attackDamage = 1;
     [SerializeField] protected float _knockBackForce = 5f;
 
-    protected float _currentHp;
+    protected int _currentHp;
     protected Rigidbody2D _rb;
 
     // =====================
     // 프로퍼티
     // =====================
-    public float CurrentHp => _currentHp;
-    public float MaxHp => _maxHp;
+    public int CurrentHp => _currentHp;
+    public int MaxHp => _maxHp;
 
     // =====================
     // 생명주기
@@ -36,15 +36,15 @@ public abstract class EntityBase : MonoBehaviour, IDamageable
     // =====================
     // IDamageable 구현
     // =====================
-    public virtual void TakeDamage(float damage)
+    public virtual void TakeDamage(int damage)
     {
-        if (_currentHp <= 0f) return;
+        if (_currentHp <= 0) return;
 
         _currentHp -= damage;
 
-        if (_currentHp <= 0f)
+        if (_currentHp <= 0)
         {
-            _currentHp = 0f;
+            _currentHp = 0;
             Die();
         }
     }

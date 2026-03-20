@@ -13,7 +13,21 @@ MonoBehaviour:
   m_Name: vHierarchy Data
   m_EditorClassIdentifier: VHierarchy::VHierarchy.VHierarchyData
   sceneDatas_byGuid:
-    keys: []
-    values: []
+    keys:
+    - 282b2b8a56264644da2ae0bc6b1d9590
+    values:
+    - goDatas_byGlobalId:
+        keys:
+        - globalObjectIdString: GlobalObjectId_V1-2-282b2b8a56264644da2ae0bc6b1d9590-8188686934479407690-8317103452322090210
+        - globalObjectIdString: GlobalObjectId_V1-2-282b2b8a56264644da2ae0bc6b1d9590-1542305805289372434-3497611089197497118
+        values:
+        - colorIndex: 0
+          iconNameOrGuid: Settings Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: AvatarMask On Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
   bookmarks: []
   bookmarkedScenePaths: []

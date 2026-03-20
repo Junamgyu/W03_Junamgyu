@@ -255,8 +255,8 @@ public abstract class EnemyBase : EntityBase
 
     protected virtual void OnCollisionEnter2D(Collision2D col)
     {
-        //if (col.gameObject.CompareTag("Player")) 
-            //col.gameObject.GetComponent<IDamageable>().TakeDamage(_attackDamage);
+        //if (col.gameObject.CompareTag("Player"))
+        //    col.gameObject.GetComponent<IDamageable>().TakeDamage(_attackDamage);
     }
 
     public override void Die()

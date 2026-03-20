@@ -229,7 +229,7 @@ GameObject:
   - component: {fileID: 8465349152581242081}
   - component: {fileID: -665641119756365411}
   m_Layer: 15
-  m_Name: BurstFlyRangedEnemyPrefab
+  m_Name: FlyBurstRangedEnemyPrefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

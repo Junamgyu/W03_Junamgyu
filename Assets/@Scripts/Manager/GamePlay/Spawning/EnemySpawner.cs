@@ -12,7 +12,12 @@ public class EnemySpawner : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] private bool _autoStart = false;
-    [SerializeField] private bool _stopWhenSpawnPointIsShort = true;
+    [SerializeField] private bool _stopWhenSpawnPointIsShort = true; // 스폰할 적 수가 스폰 위치 수보다 많을 때 멈출지 여부
+    [SerializeField, Range(0f, 1f)] private float _changeWaveThreshold = 0.8f;
+
+    private int _currentWaveKilledCount = 0;
+    private bool _isWaveSpawnCompleted;
+    private bool _isChangingWave = false;
 
     private int _currentWaveIndex = -1;
     private Coroutine _spawnRoutine;
@@ -59,7 +64,31 @@ public class EnemySpawner : MonoBehaviour
         }
 
         _currentWaveIndex = waveIndex;
+        _currentWaveKilledCount = 0;
+        _isWaveSpawnCompleted = false;
+        _isChangingWave = false;
+
         _spawnRoutine = StartCoroutine(CoSpawnWave(_waveDatas[_currentWaveIndex]));
+    }
+
+    private bool ShouldNextWave() // 다음 웨이브로 넘어갈 조건
+    {
+        if (!_isWaveSpawnCompleted)
+            return false;
+
+        if (_currentWaveIndex < 0 || _currentWaveIndex >= _waveDatas.Count)
+            return false;
+
+        SO_WaveData waveData = _waveDatas[_currentWaveIndex];
+        int totalCount = waveData.enemyPrefabs.Count;
+
+        if (totalCount <= 0)
+            return false;
+
+        float threshold = waveData.isBossWave ? 1f : _changeWaveThreshold;
+        int requiredKillCount = Mathf.CeilToInt(totalCount * threshold);
+
+        return _currentWaveKilledCount >= requiredKillCount;
     }
 
     public void StartNextWave()
@@ -68,7 +97,8 @@ public class EnemySpawner : MonoBehaviour
 
         if (nextIndex >= _waveDatas.Count)
         {
-            Debug.Log($"{name}: 마지막 웨이브까지 완료되었습니다.");
+            Debug.Log($"{name}: 모든 웨이브 완료");
+            // 보상이나 다음 스포너 호출?은 여기에 추가하면 될듯
             return;
         }
 
@@ -134,6 +164,7 @@ public class EnemySpawner : MonoBehaviour
             }
         }
 
+        _isWaveSpawnCompleted = true;
         _spawnRoutine = null;
     }
 
@@ -148,11 +179,11 @@ public class EnemySpawner : MonoBehaviour
 
         if (_pool != null)
         {
-            enemyObject = _pool.Get(enemyPrefab, spawnPoint.position, enemyPrefab.transform.rotation);
+            enemyObject = _pool.Get(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
         }
         else
         {
-            enemyObject = Instantiate(enemyPrefab, spawnPoint.position, enemyPrefab.transform.rotation);
+            enemyObject = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
         }
 
         DespawnController despawnController = enemyObject.GetComponent<DespawnController>();
@@ -164,6 +195,7 @@ public class EnemySpawner : MonoBehaviour
         EnemyBase enemyBase = enemyObject.GetComponent<EnemyBase>();
         if (enemyBase != null)
         {
+            // 중복 구독 방어
             // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독
             //enemyBase.OnDeathFinished -= HandleEnemyDeathFinished;
             //enemyBase.OnDeathFinished += HandleEnemyDeathFinished;
@@ -195,7 +227,36 @@ public class EnemySpawner : MonoBehaviour
         return result;
     }
 
-    // Draw gizmos in editor to visualize spawn points and connections to this spawner
+    private void HandleEnemyDeathFinished(EnemyBase enemy)
+    {
+        if (enemy != null)
+        {
+            // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독 해제
+            //enemy.OnDeathFinished -= HandleEnemyDeathFinished;
+        }
+
+        if (_isChangingWave)
+            return;
+
+        _currentWaveKilledCount++;
+
+        if (ShouldNextWave())
+        {
+            _isChangingWave = true;
+            StartNextWave();
+        }
+    }
+
+    public void ClearWaveRoutine()
+    {
+        if (_spawnRoutine != null)
+        {
+            StopCoroutine(_spawnRoutine);
+            _spawnRoutine = null;
+        }
+    }
+
+    #region Editor Gizmos
     private void OnDrawGizmosSelected()
     {
         if (_spawnPoints == null || _spawnPoints.Count == 0)
@@ -211,13 +272,5 @@ public class EnemySpawner : MonoBehaviour
             Gizmos.DrawWireSphere(pt.position, 0.5f);
         }
     }
-
-    public void ClearWaveRoutine()
-    {
-        if (_spawnRoutine != null)
-        {
-            StopCoroutine(_spawnRoutine);
-            _spawnRoutine = null;
-        }
-    }
+    #endregion
 }

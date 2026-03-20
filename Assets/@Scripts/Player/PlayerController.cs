@@ -20,8 +20,10 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnJump += HandleJump;
         _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
-        _inputManager.OnSkill += HandleSkill;
+        _inputManager.OnSlowMotionSkill += HandleSlowMotionSkill;
+        _inputManager.OnDeadeyeSkill += HandleDeadeyeSkill;
         _inputManager.OnMarkTarget += HandleMarkTarget;
+        _inputManager.OnCheatOne += HandleCheatOne;
     }
 
     private void OnDestroy()
@@ -33,7 +35,8 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnJump -= HandleJump;
         _inputManager.OnPrimaryAttack -= HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack -= HandleSecondaryAttack;
-        _inputManager.OnSkill -= HandleSkill;
+        _inputManager.OnDeadeyeSkill -= HandleDeadeyeSkill;
+        _inputManager.OnSlowMotionSkill -= HandleSlowMotionSkill;
         _inputManager.OnMarkTarget -= HandleMarkTarget;
     }
 
@@ -45,8 +48,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJump(InputAction.CallbackContext ctx)
     {
-        if (ctx.started)
-            _player.playerJump.OnJump(ctx);
+        _player.playerJump.OnJump(ctx);
     }
 
     private void HandlePrimaryAttack(InputAction.CallbackContext ctx)
@@ -61,11 +63,18 @@ public class PlayerController : MonoBehaviour
             _player.playerAttack.FireShotgun();
     }
 
-    private void HandleSkill(InputAction.CallbackContext ctx)
+    private void HandleSlowMotionSkill(InputAction.CallbackContext ctx)
     {
         var skill = _player.GetComponent<DeadeyeSkill>();
         if (skill != null)
-            skill.OnSkill(ctx);
+            skill.OnSlowMotion(ctx);
+    }
+
+    private void HandleDeadeyeSkill(InputAction.CallbackContext ctx)
+    {
+        var skill = _player.GetComponent<DeadeyeSkill>();
+        if (skill != null)
+            skill.OnDeadeye(ctx);
     }
 
     private void HandleMarkTarget(InputAction.CallbackContext ctx)
@@ -73,5 +82,11 @@ public class PlayerController : MonoBehaviour
         var skill = _player.GetComponent<DeadeyeSkill>();
         if (skill != null)
             skill.OnMarkTarget(ctx);
+    }
+
+    private void HandleCheatOne(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started)
+            _player.deadeyeSkill.AddGauge(25f);
     }
 }

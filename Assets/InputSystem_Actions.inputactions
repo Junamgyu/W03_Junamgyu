@@ -97,9 +97,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Skill",
+                    "name": "SlowMotionSkill",
                     "type": "Button",
                     "id": "b6e34d58-852a-4da9-b3c0-4b263a6b7b32",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DeadeyeSkill",
+                    "type": "Button",
+                    "id": "44a0050c-91f5-43e5-9ef3-e8b571d9355d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -109,6 +118,15 @@
                     "name": "MarkTarget",
                     "type": "Button",
                     "id": "3c2b852f-f037-4b82-a34c-898451798ebf",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CheatOne",
+                    "type": "Button",
+                    "id": "ab482208-ad32-4409-a0bb-0e67ac55c696",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -519,7 +537,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Skill",
+                    "action": "SlowMotionSkill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -531,6 +549,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "MarkTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c5af07c5-645c-44f2-b32b-0d8a71475e27",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DeadeyeSkill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2ff68f9a-7e9c-491c-8770-354e17fe63ac",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CheatOne",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

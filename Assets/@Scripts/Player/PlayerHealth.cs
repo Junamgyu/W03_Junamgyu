@@ -23,6 +23,9 @@ public class PlayerHealth : EntityBase
         if (_currentHp <= 0f) return;
 
         base.TakeDamage(damage);
+
+        Debug.Log("currentHp: " + _currentHp + ", damage: " + damage);
+
         OnHit?.Invoke(damage);
 
         if (_currentHp > 0)

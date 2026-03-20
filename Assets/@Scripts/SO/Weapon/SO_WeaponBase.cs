@@ -6,14 +6,16 @@ public class SO_WeaponBase : ScriptableObject
     public string weaponName;
 
     [Header("Recoil")]
-    public float recoilForce;
+    [Tooltip("반동 세기")] public float recoilForce;
     
     [Header("Bullet")]
     public GameObject bulletPrefab;
-    public float bulletSpeed = 10f;
-    public int pelletCount = 1;
+    [Tooltip("발사 속도")] public float bulletSpeed = 10f;
+    [Tooltip("한 번에 쏘는 총알 수")] public int pelletCount = 1;
     public float spreadAngle = 0f;
     public int maxAmmo = 3;
 
+    [Header("Fire Rate")]
+    public float fireRate = 0.5f;
 }
 

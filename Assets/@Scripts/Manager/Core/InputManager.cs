@@ -12,8 +12,10 @@ public class InputManager : MonoBehaviour, IInitializable
     public event Action<InputAction.CallbackContext> OnJump;
     public event Action<InputAction.CallbackContext> OnPrimaryAttack;
     public event Action<InputAction.CallbackContext> OnSecondaryAttack;
-    public event Action<InputAction.CallbackContext> OnSkill;
+    public event Action<InputAction.CallbackContext> OnSlowMotionSkill;
+    public event Action<InputAction.CallbackContext> OnDeadeyeSkill;
     public event Action<InputAction.CallbackContext> OnMarkTarget;
+    public event Action<InputAction.CallbackContext> OnCheatOne;
 
     public void Initialize()
     {
@@ -47,21 +49,29 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Shotgun.performed += HandleSecondaryAttack;
         player.Shotgun.canceled += HandleSecondaryAttack;
 
-        player.Skill.started += HandleSkill;
-        player.Skill.performed += HandleSkill;
-        player.Skill.canceled += HandleSkill;
+        player.SlowMotionSkill.started += HandleSlowMotionSkill;
+        player.SlowMotionSkill.performed += HandleSlowMotionSkill;
+        player.SlowMotionSkill.canceled += HandleSlowMotionSkill;
+
+        player.DeadeyeSkill.started += HandleDeadeyeSkill;
+        player.DeadeyeSkill.performed += HandleDeadeyeSkill;
+        player.DeadeyeSkill.canceled += HandleDeadeyeSkill;
 
         player.MarkTarget.started += HandleMarkTarget;
         player.MarkTarget.performed += HandleMarkTarget;
         player.MarkTarget.canceled += HandleMarkTarget;
+
+        player.CheatOne.started += HandleCheatOne;
     }
 
     private void HandleMove(InputAction.CallbackContext ctx) => OnMove?.Invoke(ctx);
     private void HandleJump(InputAction.CallbackContext ctx) => OnJump?.Invoke(ctx);
     private void HandlePrimaryAttack(InputAction.CallbackContext ctx) => OnPrimaryAttack?.Invoke(ctx);
     private void HandleSecondaryAttack(InputAction.CallbackContext ctx) => OnSecondaryAttack?.Invoke(ctx);
-    private void HandleSkill(InputAction.CallbackContext ctx) => OnSkill?.Invoke(ctx);
+    private void HandleSlowMotionSkill(InputAction.CallbackContext ctx) => OnSlowMotionSkill?.Invoke(ctx);
+    private void HandleDeadeyeSkill(InputAction.CallbackContext ctx) => OnDeadeyeSkill?.Invoke(ctx);
     private void HandleMarkTarget(InputAction.CallbackContext ctx) => OnMarkTarget?.Invoke(ctx);
+    private void HandleCheatOne(InputAction.CallbackContext ctx) => OnCheatOne?.Invoke(ctx);
 
     private void OnDestroy()
     {
@@ -86,13 +96,19 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Shotgun.performed -= HandleSecondaryAttack;
         player.Shotgun.canceled -= HandleSecondaryAttack;
 
-        player.Skill.started -= HandleSkill;
-        player.Skill.performed -= HandleSkill;
-        player.Skill.canceled -= HandleSkill;
+        player.SlowMotionSkill.started -= HandleSlowMotionSkill;
+        player.SlowMotionSkill.performed -= HandleSlowMotionSkill;
+        player.SlowMotionSkill.canceled -= HandleSlowMotionSkill;
+
+        player.DeadeyeSkill.started -= HandleDeadeyeSkill;
+        player.DeadeyeSkill.performed -= HandleDeadeyeSkill;
+        player.DeadeyeSkill.canceled -= HandleDeadeyeSkill;
 
         player.MarkTarget.started -= HandleMarkTarget;
         player.MarkTarget.performed -= HandleMarkTarget;
         player.MarkTarget.canceled -= HandleMarkTarget;
+
+        player.CheatOne.started -= HandleCheatOne;
 
         _input.Player.Disable();
     }

@@ -17,8 +17,7 @@ public class DespawnController : MonoBehaviour
     {
         if (_enemy != null)
         {
-            // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독
-            //_enemy.OnDeathFinished += HandleDeathFinished;
+            _enemy.OnDeathFinished += HandleDeathFinished;
         }
     }
 
@@ -26,7 +25,7 @@ public class DespawnController : MonoBehaviour
     {
         if (_enemy != null)
         {
-            //_enemy.OnDeathFinished -= HandleDeathFinished;
+            _enemy.OnDeathFinished -= HandleDeathFinished;
         }
     }
 

@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public abstract class EnemyBase : EntityBase
 {
+
+    //이벤트
+    public event Action<EnemyBase> OnDeathFinished;
     // =====================
     // 스탯 (EntityBase에 없는 것만)
     // =====================
@@ -309,7 +313,7 @@ public abstract class EnemyBase : EntityBase
     private IEnumerator DieRoutine()
     {
         yield return StartCoroutine(OnDieRoutine());
-        Destroy(gameObject);
+        OnDeathFinished?.Invoke(this);
     }
 
     protected virtual IEnumerator OnDieRoutine()

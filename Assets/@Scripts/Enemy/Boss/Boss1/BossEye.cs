@@ -22,10 +22,10 @@ public class BossEye : EnemyBase
     public bool CanBeginLaser => EyeCurrentState == EyeState.Idle && !_isTransitioning;
     public float CurrentHp => _currentHp;
 
-    private static readonly Color ColorIdle = Color.white;
+    private static readonly Color ColorIdle  = Color.white;
     private static readonly Color ColorLaser = Color.red;
-    private static readonly Color ColorDead = Color.black;
-    private static readonly Color ColorHit = Color.yellow;
+    private static readonly Color ColorDead  = Color.black;
+    private static readonly Color ColorHit   = Color.yellow;
 
     private Renderer _rend;
     private LineRenderer _lineRenderer;
@@ -48,16 +48,16 @@ public class BossEye : EnemyBase
     protected override void Update() { }
     protected override void Initialize() { }
 
-    protected override void OnEnterIdle() { }
+    protected override void OnEnterIdle()   { }
     protected override void OnEnterPatrol() { }
-    protected override void OnEnterChase() { }
+    protected override void OnEnterChase()  { }
     protected override void OnEnterAttack() { }
-    protected override void OnEnterHit() { }
-    protected override void OnEnterDead() { }
+    protected override void OnEnterHit()    { }
+    protected override void OnEnterDead()   { }
 
-    protected override void OnUpdateIdle() { }
+    protected override void OnUpdateIdle()   { }
     protected override void OnUpdatePatrol() { }
-    protected override void OnUpdateChase() { }
+    protected override void OnUpdateChase()  { }
     protected override void OnUpdateAttack() { }
 
     protected override void Move(Vector2 direction) { }
@@ -75,7 +75,7 @@ public class BossEye : EnemyBase
         _lineRenderer.enabled = false;
         _lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         _lineRenderer.startColor = new Color(1f, 0.1f, 0.1f, 1f);
-        _lineRenderer.endColor = new Color(1f, 0.1f, 0.1f, 1f);
+        _lineRenderer.endColor   = new Color(1f, 0.1f, 0.1f, 1f);
         _lineRenderer.numCapVertices = 8;
         _lineRenderer.numCornerVertices = 8;
         _lineRenderer.alignment = LineAlignment.View;
@@ -92,6 +92,7 @@ public class BossEye : EnemyBase
     // =====================
     public override void TakeDamage(int damage)
     {
+
         if (IsDead) return;
         if (EyeCurrentState == EyeState.Laser) return;
         if (_isTransitioning) return;
@@ -108,6 +109,11 @@ public class BossEye : EnemyBase
 
         if (!_isBlinking)
             StartCoroutine(HitBlinkRoutine());
+    }
+
+    public override void TakeDamage(int damage, bool isAddGauge)
+    {
+        
     }
 
     public override void Die() => EyeDie();
@@ -137,7 +143,7 @@ public class BossEye : EnemyBase
         // 1단계 : 예고선
         _lineRenderer.widthMultiplier = warningWidth;
         _lineRenderer.startColor = new Color(1f, 0.3f, 0.3f, 0.5f);
-        _lineRenderer.endColor = new Color(1f, 0.3f, 0.3f, 0.5f);
+        _lineRenderer.endColor   = new Color(1f, 0.3f, 0.3f, 0.5f);
 
         float elapsed = 0f;
         while (elapsed < warningDuration)
@@ -151,7 +157,7 @@ public class BossEye : EnemyBase
         // 2단계 : 실제 발사
         _lineRenderer.widthMultiplier = laserWidth;
         _lineRenderer.startColor = new Color(1f, 0.1f, 0.1f, 1f);
-        _lineRenderer.endColor = new Color(1f, 0.1f, 0.1f, 1f);
+        _lineRenderer.endColor   = new Color(1f, 0.1f, 0.1f, 1f);
 
         elapsed = 0f;
         while (elapsed < duration)
@@ -170,7 +176,7 @@ public class BossEye : EnemyBase
 
     void UpdateLaserLine(bool dealDamage)
     {
-        Vector2 origin = transform.position;
+        Vector2 origin    = transform.position;
         Vector2 direction = transform.up;
 
         int layerMask = ~LayerMask.GetMask("Enemy", "Ground");

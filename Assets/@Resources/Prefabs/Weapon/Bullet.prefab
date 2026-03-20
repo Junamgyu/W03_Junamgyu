@@ -169,4 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7c5fd515a6c9a44892c0da01896d7b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
+  _damage: 100
   _lifetime: 2
+  _isPiercing: 0
+  _giveGauge: 1

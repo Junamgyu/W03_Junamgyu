@@ -154,7 +154,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &7965816820322047130
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -214,7 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SuicideEnemy
   _maxHp: 100
-  _attackDamage: 10
+  _attackDamage: 1
   _moveSpeed: 5
   _attackRange: 14.81
   _detectionRange: 17.97
@@ -228,9 +228,10 @@ MonoBehaviour:
   _excludeLayer:
     serializedVersion: 2
     m_Bits: 32768
-  _explosionDamage: 30
+  _explosionDamage: 1
   _explosionRange: 5
   _explosionWindupTime: 5
+  _explosionParticle: {fileID: 5298437731249275528, guid: 324f177e92e0f654cbb40be90ec0bc61, type: 3}
 --- !u!114 &-5584717973967424058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,7 +245,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DespawnController
   _mode: 2
-  _explosionParticle: {fileID: 5298437731249275528, guid: 324f177e92e0f654cbb40be90ec0bc61, type: 3}
 --- !u!1001 &3808190147202381795
 PrefabInstance:
   m_ObjectHideFlags: 0

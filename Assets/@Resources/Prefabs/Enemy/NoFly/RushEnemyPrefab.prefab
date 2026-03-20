@@ -376,6 +376,7 @@ GameObject:
   - component: {fileID: 4055110971983563427}
   - component: {fileID: 1491136828302440876}
   - component: {fileID: 1124894125533066749}
+  - component: {fileID: 1673709720355295497}
   m_Layer: 15
   m_Name: RushEnemyPrefab
   m_TagString: Enemy
@@ -426,7 +427,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &1491136828302440876
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -486,7 +487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RushEnemy
   _maxHp: 100
-  _attackDamage: 10
+  _attackDamage: 1
   _moveSpeed: 5
   _attackRange: 12.07
   _detectionRange: 14.49
@@ -504,6 +505,19 @@ MonoBehaviour:
   _rushDuration: 0.5
   _rushWindupTime: 0.5
   _rushParticle: {fileID: 3372789133515972625, guid: d85031b4274493e4ab61530e226e11fc, type: 3}
+--- !u!114 &1673709720355295497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5241399876828148211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ca43af1d43038499e93725044f8683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DespawnController
+  _mode: 2
 --- !u!1 &5968299136915955422
 GameObject:
   m_ObjectHideFlags: 0

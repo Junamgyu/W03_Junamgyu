@@ -5,6 +5,8 @@ public class Bullet : MonoBehaviour
 {
     [SerializeField] private int _damage = 1;
     [SerializeField] private float _lifetime = 1f;
+    [SerializeField] private bool _isPiercing = false; // 관통 여부
+    [SerializeField] private bool _giveGauge = true;
 
     private Coroutine _lifeRoutine;
     private Rigidbody2D _rb;
@@ -59,17 +61,28 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground") ||
-            other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            if (ManagerRegistry.TryGet<PoolManager>(out var pool))
-            {
-                pool.Return(gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            if (_isPiercing) return; // 관통이면 무시
+            ReturnToPool();
+            return;
         }
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            if (other.TryGetComponent<EnemyBase>(out var damageable))
+                damageable.TakeDamage(_damage, _giveGauge);
+
+            ReturnToPool();
+        }
+    }
+
+    //Helper
+    private void ReturnToPool()
+    {
+        if (ManagerRegistry.TryGet<PoolManager>(out var pool))
+            pool.Return(gameObject);
+        else
+            Destroy(gameObject);
     }
 }

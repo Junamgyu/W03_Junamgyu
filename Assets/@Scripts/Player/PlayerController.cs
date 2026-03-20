@@ -87,6 +87,6 @@ public class PlayerController : MonoBehaviour
     private void HandleCheatOne(InputAction.CallbackContext ctx)
     {
         if (ctx.started)
-            _player.deadeyeSkill.AddGauge(25f);
+            _player.deadeyeSkill.AddGauge();
     }
 }

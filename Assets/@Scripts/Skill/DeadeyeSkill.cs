@@ -6,12 +6,17 @@ using UnityEngine.InputSystem;
 
 public class DeadeyeSkill : MonoBehaviour
 {
+    // Temp
+    [SerializeField] private GameObject _deadeyeBulletPrefab;
+    [SerializeField] private float _deadeyeBulletSpeed = 20f;
+
+    Player _player;
+    Camera _cam;
+    private PoolManager _poolManager;
 
     // =====================
     // 생명주기
     // =====================
-    Player _player;
-    Camera _cam;
 
     void Start()
     {
@@ -19,6 +24,13 @@ public class DeadeyeSkill : MonoBehaviour
         _cam = Camera.main;
         _originalFixedDeltaTime = Time.fixedDeltaTime;
         _player.playerHealth.OnDie += OnPlayerDie;
+
+        // 풀매니저 세팅
+        if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
+        {
+            _poolManager = null;
+        }
+
     }
 
     void Update()
@@ -52,9 +64,9 @@ public class DeadeyeSkill : MonoBehaviour
 
     public event Action<float> OnGaugeChanged; // UI 연동용
 
-    public void AddGauge(float amount)
+    public void AddGauge()
     {
-        _currentGauge = Mathf.Min(_maxGauge, _currentGauge + amount);
+        _currentGauge = Mathf.Min(_maxGauge, _currentGauge + _gaugePerKill);
         Debug.Log("현재 게이지: " + _currentGauge);
         OnGaugeChanged?.Invoke(_currentGauge);
     }
@@ -222,7 +234,16 @@ public class DeadeyeSkill : MonoBehaviour
             if (enemy != null && enemy.CurrentHp > 0)
             {
                 enemy.ShowMark(false);
-                enemy.TakeDamage(_damagePerShot);
+
+                Vector2 dir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
+
+                GameObject go = _poolManager != null
+                    ? _poolManager.Get(_deadeyeBulletPrefab, transform.position, Quaternion.identity)
+                    : Instantiate(_deadeyeBulletPrefab, transform.position, Quaternion.identity);
+
+                if (go.TryGetComponent<Rigidbody2D>(out var rb))
+                    rb.linearVelocity = dir * _deadeyeBulletSpeed;
+
             }
             yield return new WaitForSeconds(_timeBetweenShots);
         }

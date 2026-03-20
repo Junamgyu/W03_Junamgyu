@@ -16,6 +16,7 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 9089860811144379622, guid: 297cf1c72100fe8488eebc8bbbc4c570, type: 3}
   - {fileID: 9089860811144379622, guid: 24fbe4df3399dbb4da2b63cd507da71e, type: 3}
+  - {fileID: 9089860811144379622, guid: 24fbe4df3399dbb4da2b63cd507da71e, type: 3}
   spawnSequentially: 1
   spawnInterval: 0.2
   isBossWave: 0

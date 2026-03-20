@@ -21,7 +21,6 @@ public class EnemyProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        Debug.Log(col.tag);
         if (col.CompareTag("Player"))
         {
             col.GetComponent<IDamageable>().TakeDamage(_damage);

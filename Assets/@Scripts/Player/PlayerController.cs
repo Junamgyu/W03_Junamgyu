@@ -4,25 +4,25 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     private Player _player;
-    [SerializeField] private InputManager _inputManager;
+    private InputManager _inputManager;
 
-    //void Start()
-    //{
-    //    _player = GetComponent<Player>();
+    void Start()
+    {
+        _player = GetComponent<Player>();
 
-    //    if (!ManagerRegistry.TryGet<InputManager>(out _inputManager))
-    //    {
-    //        Debug.LogError("InputManager is not registered in ManagerRegistry.");
-    //        return;
-    //    }
+        if (!ManagerRegistry.TryGet<InputManager>(out _inputManager))
+        {
+            Debug.LogError("InputManager is not registered in ManagerRegistry.");
+            return;
+        }
 
-    //    _inputManager.OnMove += HandleMove;
-    //    _inputManager.OnJump += HandleJump;
-    //    _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
-    //    _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
-    //    _inputManager.OnSkill += HandleSkill;
-    //    _inputManager.OnMarkTarget += HandleMarkTarget;
-    //}
+        _inputManager.OnMove += HandleMove;
+        _inputManager.OnJump += HandleJump;
+        _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
+        _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
+        _inputManager.OnSkill += HandleSkill;
+        _inputManager.OnMarkTarget += HandleMarkTarget;
+    }
 
     private void OnDestroy()
     {

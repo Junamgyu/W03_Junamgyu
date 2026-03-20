@@ -8,9 +8,23 @@ public class RushEnemy : EnemyBase
     // =====================
     [SerializeField] private float _rushSpeed = 100f;
     [SerializeField] private float _rushDuration = 0.5f;
-    [SerializeField] private float _rushWindupTime = 0.5f;  // 돌진 전 예고 시간
+    [SerializeField] private float _rushWindupTime = 0.5f;
+
+    [SerializeField] private ParticleSystem _rushParticle;  // 돌진 파티클
 
     private bool _isRushing = false;
+    private SpriteRenderer _spriteRenderer;
+    private Color _originalColor;
+
+    // =====================
+    // 생명주기
+    // =====================
+    protected override void Start()
+    {
+        base.Start();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _originalColor = _spriteRenderer.color;
+    }
 
     // =====================
     // 공격 (돌진)
@@ -22,10 +36,19 @@ public class RushEnemy : EnemyBase
 
     IEnumerator RushRoutine()
     {
-        // 돌진 예고 (멈추고 잠깐 대기)
         _rb.linearVelocity = Vector2.zero;
-        // TODO: 예고 이펙트
-        yield return new WaitForSeconds(_rushWindupTime);
+        if (_rushParticle != null)
+            _rushParticle.Play();
+
+        // 색깔 점점 검게
+        yield return StartCoroutine(WindupEffectRoutine());
+
+        
+        
+
+        // 색깔 원래대로
+        _spriteRenderer.color = _originalColor;
+
         // 돌진 시작
         _isRushing = true;
         Vector2 rushDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
@@ -41,6 +64,19 @@ public class RushEnemy : EnemyBase
         _isRushing = false;
     }
 
+    IEnumerator WindupEffectRoutine()
+    {
+        float t = 0;
+        while (t < _rushWindupTime)
+        {
+            t += Time.deltaTime;
+            // 0 → 1로 진행되면서 원래색 → 검정으로
+            float ratio = t / _rushWindupTime;
+            _spriteRenderer.color = Color.Lerp(_originalColor, Color.black, ratio);
+            yield return null;
+        }
+    }
+
     // =====================
     // 충돌 처리
     // =====================
@@ -48,13 +84,11 @@ public class RushEnemy : EnemyBase
     {
         if (!col.gameObject.CompareTag("Player")) return;
 
-        //col.gameObject.GetComponent<IDamageable>().TakeDamage(_attackDamage);
-
-        // 돌진 중이면 충돌하는 순간 돌진 종료
         if (_isRushing)
         {
             _isRushing = false;
             _rb.linearVelocity = Vector2.zero;
+            _spriteRenderer.color = _originalColor;  // 색깔 복구
             StopCoroutine(nameof(RushRoutine));
         }
     }
@@ -64,13 +98,9 @@ public class RushEnemy : EnemyBase
     // =====================
     protected override IEnumerator OnDieRoutine()
     {
-        // TODO: 사망 이펙트
         yield return new WaitForSeconds(0.2f);
     }
 
-    // =====================
-    // 디버그
-    // =====================
     protected override void OnDrawGizmosSelected()
     {
         base.OnDrawGizmosSelected();

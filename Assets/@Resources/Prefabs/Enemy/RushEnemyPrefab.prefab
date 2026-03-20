@@ -503,6 +503,7 @@ MonoBehaviour:
   _rushSpeed: 20
   _rushDuration: 0.5
   _rushWindupTime: 0.5
+  _rushParticle: {fileID: 3372789133515972625, guid: d85031b4274493e4ab61530e226e11fc, type: 3}
 --- !u!1 &5968299136915955422
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,7 +7,6 @@ public class SO_WeaponBase : ScriptableObject
 
     [Header("Recoil")]
     public float recoilForce;
-    public float shootXMul = 1.5f;
     
     [Header("Bullet")]
     public GameObject bulletPrefab;

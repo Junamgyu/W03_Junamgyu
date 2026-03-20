@@ -35,7 +35,7 @@ public class RushEnemy : EnemyBase
         while (t < _rushDuration)
         {
             t += Time.deltaTime;
-            _rb.linearVelocity = new Vector2(rushDir.x * _rushSpeed, _rb.linearVelocity.y);
+            _rb.linearVelocity = rushDir * _rushSpeed;
             yield return null;
         }
 

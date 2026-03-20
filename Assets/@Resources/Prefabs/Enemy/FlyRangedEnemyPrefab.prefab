@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 7712969428421578591}
   - component: {fileID: 7928101473943729962}
   - component: {fileID: 414652855104781699}
+  - component: {fileID: 8320303540111667643}
   m_Layer: 15
   m_Name: FlyRangedEnemyPrefab
   m_TagString: Enemy
@@ -356,3 +357,16 @@ MonoBehaviour:
   _retreatRange: 0
   _preferredRange: 10
   _gunPivot: {fileID: 8175451469513102941}
+--- !u!114 &8320303540111667643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9089860811144379622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ca43af1d43038499e93725044f8683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DespawnController
+  _mode: 2

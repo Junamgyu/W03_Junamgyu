@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 8156559328087893542}
   - component: {fileID: 7965816820322047130}
   - component: {fileID: 9166221463573044941}
+  - component: {fileID: -5584717973967424058}
   m_Layer: 15
   m_Name: SuicideEnemyPrefab
   m_TagString: Enemy
@@ -220,6 +221,7 @@ MonoBehaviour:
   _attackCooldown: 1.5
   _hitStunDuration: 0.2
   _attackMotionDuration: 0.3
+  _isFlying: 0
   _patrolDistance: 3
   _idleWaitTime: 2
   _markIndicator: {fileID: 0}
@@ -229,3 +231,16 @@ MonoBehaviour:
   _explosionDamage: 30
   _explosionRange: 3
   _explosionWindupTime: 5
+--- !u!114 &-5584717973967424058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7642101275804863714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ca43af1d43038499e93725044f8683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DespawnController
+  _mode: 2

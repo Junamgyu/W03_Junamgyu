@@ -226,9 +226,10 @@ GameObject:
   - component: {fileID: 7712969428421578591}
   - component: {fileID: 7928101473943729962}
   - component: {fileID: 414652855104781699}
-  - component: {fileID: -5413730522875593320}
+  - component: {fileID: 8465349152581242081}
+  - component: {fileID: -665641119756365411}
   m_Layer: 15
-  m_Name: BurstRangedEnemyPrefab
+  m_Name: FlyBurstRangedEnemyPrefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -243,12 +244,13 @@ Transform:
   m_GameObject: {fileID: 9089860811144379622}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 78.2, y: -0.6, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 142320894039484032}
   - {fileID: 8175451469513102941}
+  - {fileID: 325958841565579389}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &7712969428421578591
@@ -266,7 +268,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -337,15 +339,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemy
   _maxHp: 100
-  _moveSpeed: 5
   _attackDamage: 10
-  _knockBackForce: 5
+  _moveSpeed: 5
   _attackRange: 15
   _detectionRange: 25
   _attackCooldown: 1.5
   _hitStunDuration: 0.2
   _attackMotionDuration: 0.3
-  _isFlying: 0
+  _isFlying: 1
   _patrolDistance: 5
   _idleWaitTime: 2
   _markIndicator: {fileID: 0}
@@ -357,7 +358,7 @@ MonoBehaviour:
   _retreatRange: 0
   _preferredRange: 10
   _gunPivot: {fileID: 8175451469513102941}
---- !u!114 &-5413730522875593320
+--- !u!114 &8465349152581242081
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -370,16 +371,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BurstRangedEnemy
   _maxHp: 100
-  _moveSpeed: 5
   _attackDamage: 10
-  _knockBackForce: 5
+  _moveSpeed: 5
   _attackRange: 15
   _detectionRange: 25
   _attackCooldown: 1.5
   _hitStunDuration: 0.2
   _attackMotionDuration: 0.3
   _isFlying: 1
-  _patrolDistance: 3
+  _patrolDistance: 5
   _idleWaitTime: 2
   _markIndicator: {fileID: 0}
   _excludeLayer:
@@ -392,3 +392,82 @@ MonoBehaviour:
   _gunPivot: {fileID: 8175451469513102941}
   _burstCount: 3
   _burstInterval: 0.15
+--- !u!114 &-665641119756365411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9089860811144379622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ca43af1d43038499e93725044f8683, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DespawnController
+  _mode: 2
+--- !u!1001 &9170659650445246336
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4829456613068701628}
+    m_Modifications:
+    - target: {fileID: 5299990052806935206, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_Name
+      value: EnemyMark
+      objectReference: {fileID: 0}
+    - target: {fileID: 5299990052806935206, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+--- !u!4 &325958841565579389 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
+  m_PrefabInstance: {fileID: 9170659650445246336}
+  m_PrefabAsset: {fileID: 0}

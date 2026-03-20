@@ -26,7 +26,6 @@ public class RushEnemy : EnemyBase
         _rb.linearVelocity = Vector2.zero;
         // TODO: 예고 이펙트
         yield return new WaitForSeconds(_rushWindupTime);
-        Debug.Log("Rush!");
         // 돌진 시작
         _isRushing = true;
         Vector2 rushDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;

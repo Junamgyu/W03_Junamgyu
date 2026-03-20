@@ -11,6 +11,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     [SerializeField] private CheckpointManager _checkpointManager;
     // TODO: Add EnemyManager etc.
 
+    #region Debugging
     [ContextMenu("Debug Die")]
     private void DebugDie()
     {
@@ -28,10 +29,10 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     {
         RestartGame();
     }
+    #endregion
 
     private Player _player;
-    // 게임 매니저는 플레이어의 체력을 감시
-    private PlayerHealth _playerHealth;
+    private PlayerHealth _playerHealth;    // 게임 매니저는 플레이어의 체력을 감시
 
     protected override void OnInitialized()
     {
@@ -49,21 +50,6 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     {
         BindPlayerHealth();
     }
-
-    #region Debugging
-
-    private void DebugPlayerDie()
-    {
-        if (_playerHealth == null)
-        {
-            Debug.LogWarning("PlayerHealth not found.");
-            return;
-        }
-
-        _playerHealth.TakeDamage(9999);
-    }
-
-    #endregion
 
     private void OnDestroy()
     {
@@ -108,7 +94,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             // TODO: 죽는 애니메이션 재생 후 비활성화하는 방식으로 변경 필요
         }
 
-        _inputManager.enabled = false;
+        _inputManager.DisablePlayerInput();
         Debug.Log("Input Disabled");
 
         _gameStateManager.ChangeState(GameState.GameOver);
@@ -192,14 +178,13 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     // 다시 시작 (마지막 체크포인트로)
     public void RestartGame()
     {
-        Player player = FindAnyObjectByType<Player>();
-        if (player == null)
+        if (_player == null)
         {
             Debug.LogWarning("Player not found.");
             return;
         }
 
-        PlayerHealth playerHealth = player.playerHealth;
+        PlayerHealth playerHealth = _player.playerHealth;
         if (playerHealth == null)
         {
             Debug.LogWarning("PlayerHealth not found.");
@@ -213,23 +198,24 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
-        player.transform.position = respawnPoint.position;
+        _player.transform.position = respawnPoint.position;
 
-        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = _player.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
         }
 
-        player.IsRecoiling = false;
-        player.HasAirRecoil = false;
-        player.IsGravityOverridden = false;
+        _player.IsRecoiling = false;
+        _player.HasAirRecoil = false;
+        _player.IsGravityOverridden = false;
 
         playerHealth.ResetHP();
 
-        player.gameObject.SetActive(true); // 플레이어 다시 활성화
+        _player.gameObject.SetActive(true); // 플레이어 다시 활성화
 
+        _inputManager.EnablePlayerInput();
         _gameStateManager.ChangeState(GameState.Playing);
     }
 }

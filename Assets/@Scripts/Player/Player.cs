@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     public PlayerMove playerMove{ get; private set; }
     public PlayerAimer playerAimer { get; private set; }
     public PlayerJump playerJump { get; private set; }
+    public PlayerHealth playerHealth { get; private set; }
     public DeadeyeSkill deadeyeSkill { get; private set; }
 
     Rigidbody2D _rb;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
         playerMove= GetComponent<PlayerMove>(); // 좌우 이동 + 땅 여부 판단 담당
         playerAimer = GetComponent<PlayerAimer>(); 
         playerJump = GetComponent<PlayerJump>(); // 점프 담당
+        playerHealth = GetComponent<PlayerHealth>();
         deadeyeSkill = GetComponent<DeadeyeSkill>();
         _rb = GetComponent<Rigidbody2D>();
         OriginalGravity = _rb.gravityScale;

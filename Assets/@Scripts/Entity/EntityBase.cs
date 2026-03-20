@@ -6,9 +6,7 @@ public abstract class EntityBase : MonoBehaviour, IDamageable
     // 공통 스탯
     // =====================
     [SerializeField] protected int _maxHp = 5;
-    [SerializeField] protected float _moveSpeed = 5f;
     [SerializeField] protected int _attackDamage = 1;
-    [SerializeField] protected float _knockBackForce = 5f;
 
     protected int _currentHp;
     protected Rigidbody2D _rb;

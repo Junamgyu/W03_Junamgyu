@@ -19,3 +19,4 @@ MonoBehaviour:
   pelletCount: 1
   spreadAngle: 0
   maxAmmo: 6
+  fireRate: 0.12

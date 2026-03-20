@@ -76,6 +76,7 @@ public class PlayerJump : MonoBehaviour
 
     void ApplyGravity()
     {
+
         // 중력 배율 결정
         // 올라가는 중
         if (_rb.linearVelocity.y > 0.01f)
@@ -120,7 +121,6 @@ public class PlayerJump : MonoBehaviour
     void DoJump()
     {
         _desiredJump = false;
-
         _gravMultiplier = 1f;
         Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
         _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
@@ -139,5 +139,6 @@ public class PlayerJump : MonoBehaviour
 
         _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, _rb.linearVelocity.y + jumpSpeed);
         _currentlyJumping = true;
+
     }
 }

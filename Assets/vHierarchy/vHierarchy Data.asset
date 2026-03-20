@@ -20,6 +20,8 @@ MonoBehaviour:
         keys:
         - globalObjectIdString: GlobalObjectId_V1-2-282b2b8a56264644da2ae0bc6b1d9590-8188686934479407690-8317103452322090210
         - globalObjectIdString: GlobalObjectId_V1-2-282b2b8a56264644da2ae0bc6b1d9590-1542305805289372434-3497611089197497118
+        - globalObjectIdString: GlobalObjectId_V1-2-282b2b8a56264644da2ae0bc6b1d9590-1037601267-0
+        - globalObjectIdString: GlobalObjectId_V1-2-282b2b8a56264644da2ae0bc6b1d9590-28961231-0
         values:
         - colorIndex: 0
           iconNameOrGuid: Settings Icon
@@ -27,6 +29,14 @@ MonoBehaviour:
           isColorRecursive: 0
         - colorIndex: 0
           iconNameOrGuid: AvatarMask On Icon
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: PreMatCube
+          isIconRecursive: 0
+          isColorRecursive: 0
+        - colorIndex: 0
+          iconNameOrGuid: PreMatCube
           isIconRecursive: 0
           isColorRecursive: 0
   bookmarks: []

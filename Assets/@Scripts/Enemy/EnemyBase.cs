@@ -1,11 +1,16 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public abstract class EnemyBase : EntityBase
 {
+
+    //이벤트
+    public event Action<EnemyBase> OnDeathFinished;
     // =====================
     // 스탯 (EntityBase에 없는 것만)
     // =====================
+    [SerializeField] protected float _moveSpeed = 5f;
     [SerializeField] protected float _attackRange = 1.5f;
     [SerializeField] protected float _detectionRange = 5f;
     [SerializeField] protected float _attackCooldown = 1.5f;
@@ -14,6 +19,7 @@ public abstract class EnemyBase : EntityBase
     [SerializeField] protected bool _isFlying = false;
 
     protected bool _canAttack = true;
+    protected bool isAddGauge = false;
 
     // =====================
     // 상태
@@ -33,7 +39,7 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 마킹
     // =====================
-    [SerializeField] private GameObject _markIndicator;
+    [SerializeField] private CircleDrawer _markIndicator;
     private bool _isMarked = false;
 
     // =====================
@@ -70,7 +76,10 @@ public abstract class EnemyBase : EntityBase
     protected override void Initialize()
     {
         base.Initialize(); // EntityBase의 _currentHp = _maxHp
+        _markIndicator = GetComponentInChildren<CircleDrawer>();
         ShowMark(false);
+        
+        Debug.Log(_markIndicator);
         ChangeState(EnemyState.Idle);
     }
 
@@ -140,6 +149,7 @@ public abstract class EnemyBase : EntityBase
     {
         StopAllCoroutines();
         ShowMark(false);
+        GetComponent<Collider2D>().enabled = false;
         StartCoroutine(nameof(DieRoutine));
     }
 
@@ -237,7 +247,7 @@ public abstract class EnemyBase : EntityBase
     {
         if (_markIndicator == null) return;
         _isMarked = show;
-        _markIndicator.SetActive(show);
+        _markIndicator.gameObject.SetActive(show);
     }
 
     public bool IsMarked() => _isMarked;
@@ -245,18 +255,27 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 전투
     // =====================
+    public void TakeDamage(int damage, bool isAddGauge = false)
+    {
+        if (_currentState == EnemyState.Dead) return;
+        base.TakeDamage(damage);
+        this.isAddGauge = isAddGauge;
+        ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
+    }
     public override void TakeDamage(int damage)
     {
         if (_currentState == EnemyState.Dead) return;
         base.TakeDamage(damage);
+        this.isAddGauge = false;
         ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
     }
 
 
+
     protected virtual void OnCollisionEnter2D(Collision2D col)
     {
-        //if (col.gameObject.CompareTag("Player")) 
-            //col.gameObject.GetComponent<IDamageable>().TakeDamage(_attackDamage);
+        //if (col.gameObject.CompareTag("Player"))
+        //    col.gameObject.GetComponent<IDamageable>().TakeDamage(_attackDamage);
     }
 
     public override void Die()
@@ -294,11 +313,15 @@ public abstract class EnemyBase : EntityBase
     private IEnumerator DieRoutine()
     {
         yield return StartCoroutine(OnDieRoutine());
-        Destroy(gameObject);
+        OnDeathFinished?.Invoke(this);
     }
 
     protected virtual IEnumerator OnDieRoutine()
     {
+        if (isAddGauge)
+        {
+            //_player.GetComponent<DeadeyeSkill>().
+        }
         yield break;
     }
 

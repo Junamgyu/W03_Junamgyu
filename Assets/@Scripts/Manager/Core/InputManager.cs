@@ -112,4 +112,20 @@ public class InputManager : MonoBehaviour, IInitializable
 
         _input.Player.Disable();
     }
+
+    public void EnablePlayerInput()
+    {
+        if (_input == null)
+            return;
+
+        _input.Player.Enable();
+    }
+
+    public void DisablePlayerInput()
+    {
+        if (_input == null)
+            return;
+
+        _input.Player.Disable();
+    }
 }

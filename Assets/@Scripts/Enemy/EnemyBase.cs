@@ -15,6 +15,7 @@ public abstract class EnemyBase : EntityBase
     [SerializeField] protected bool _isFlying = false;
 
     protected bool _canAttack = true;
+    protected bool _DamagedByBullet = false;
 
     // =====================
     // 상태
@@ -34,7 +35,7 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 마킹
     // =====================
-    [SerializeField] private GameObject _markIndicator;
+    [SerializeField] private CircleDrawer _markIndicator;
     private bool _isMarked = false;
 
     // =====================
@@ -66,12 +67,16 @@ public abstract class EnemyBase : EntityBase
     protected virtual void Update()
     {
         UpdateState();
+        ShowMark(true);
     }
 
     protected override void Initialize()
     {
         base.Initialize(); // EntityBase의 _currentHp = _maxHp
+        _markIndicator = GetComponentInChildren<CircleDrawer>();
         ShowMark(false);
+        
+        Debug.Log(_markIndicator);
         ChangeState(EnemyState.Idle);
     }
 
@@ -238,7 +243,7 @@ public abstract class EnemyBase : EntityBase
     {
         if (_markIndicator == null) return;
         _isMarked = show;
-        _markIndicator.SetActive(show);
+        _markIndicator.gameObject.SetActive(show);
     }
 
     public bool IsMarked() => _isMarked;
@@ -246,12 +251,21 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 전투
     // =====================
+    public void TakeDamage(int damage, bool isBullet = false)
+    {
+        if (_currentState == EnemyState.Dead) return;
+        base.TakeDamage(damage);
+        _DamagedByBullet = isBullet;
+        ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
+    }
     public override void TakeDamage(int damage)
     {
         if (_currentState == EnemyState.Dead) return;
         base.TakeDamage(damage);
+        _DamagedByBullet = false;
         ChangeState(_currentHp > 0f ? EnemyState.Hit : EnemyState.Dead);
     }
+
 
 
     protected virtual void OnCollisionEnter2D(Collision2D col)
@@ -300,6 +314,10 @@ public abstract class EnemyBase : EntityBase
 
     protected virtual IEnumerator OnDieRoutine()
     {
+        if (_DamagedByBullet)
+        {
+            //player 게이지 증가
+        }
         yield break;
     }
 

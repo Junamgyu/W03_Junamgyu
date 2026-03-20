@@ -11,6 +11,25 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     [SerializeField] private CheckpointManager _checkpointManager;
     // TODO: Add EnemyManager etc.
 
+    [ContextMenu("Debug Die")]
+    private void DebugDie()
+    {
+        if (_playerHealth == null)
+        {
+            Debug.LogWarning("PlayerHealth not found.");
+            return;
+        }
+
+        _playerHealth.TakeDamage(9999);
+    }
+
+    [ContextMenu("Debug Restart")]
+    private void DebugRestart()
+    {
+        RestartGame();
+    }
+
+    private Player _player;
     // 게임 매니저는 플레이어의 체력을 감시
     private PlayerHealth _playerHealth;
 
@@ -31,6 +50,21 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         BindPlayerHealth();
     }
 
+    #region Debugging
+
+    private void DebugPlayerDie()
+    {
+        if (_playerHealth == null)
+        {
+            Debug.LogWarning("PlayerHealth not found.");
+            return;
+        }
+
+        _playerHealth.TakeDamage(9999);
+    }
+
+    #endregion
+
     private void OnDestroy()
     {
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -41,11 +75,11 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     {
         UnbindPlayerHealth();
 
-        Player player = FindAnyObjectByType<Player>();
-        if (player == null)
+        _player = FindAnyObjectByType<Player>();
+        if (_player == null)
             return;
 
-        _playerHealth = player.playerHealth;
+        _playerHealth = _player.playerHealth;
         if (_playerHealth == null)
             return;
 
@@ -64,7 +98,21 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     private void HandlePlayerDie()
     {
         Debug.Log("Player Die");
+
+        Player player = FindAnyObjectByType<Player>();
+        if (player != null)
+        {
+            Debug.Log("Player Disabled");
+            player.gameObject.SetActive(false);
+
+            // TODO: 죽는 애니메이션 재생 후 비활성화하는 방식으로 변경 필요
+        }
+
+        _inputManager.enabled = false;
+        Debug.Log("Input Disabled");
+
         _gameStateManager.ChangeState(GameState.GameOver);
+        Debug.Log("GameState -> GameOver");
 
         // TODO: Show Game Over UI, Restart Button, etc.
     }
@@ -141,8 +189,47 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         _sceneManager.LoadStage("Stage_01");
     }
 
+    // 다시 시작 (마지막 체크포인트로)
     public void RestartGame()
     {
-        // TODO: Restart Game Logic (e.g., Reset Score, Clear Enemies, etc.)
+        Player player = FindAnyObjectByType<Player>();
+        if (player == null)
+        {
+            Debug.LogWarning("Player not found.");
+            return;
+        }
+
+        PlayerHealth playerHealth = player.playerHealth;
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("PlayerHealth not found.");
+            return;
+        }
+
+        Transform respawnPoint = _checkpointManager.CurrentRespawnPoint;
+        if (respawnPoint == null)
+        {
+            Debug.LogWarning("RespawnPoint not found.");
+            return;
+        }
+
+        player.transform.position = respawnPoint.position;
+
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        player.IsRecoiling = false;
+        player.HasAirRecoil = false;
+        player.IsGravityOverridden = false;
+
+        playerHealth.ResetHP();
+
+        player.gameObject.SetActive(true); // 플레이어 다시 활성화
+
+        _gameStateManager.ChangeState(GameState.Playing);
     }
 }

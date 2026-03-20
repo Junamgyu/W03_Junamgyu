@@ -5,6 +5,8 @@ public class CheckpointManager : MonoBehaviour, IInitializable
 {
     [SerializeField] private Checkpoint[] _checkpoints;
     [SerializeField] private Transform _currentRespawnPoint;
+    [SerializeField] private Transform _startRespawnPoint;
+
     public Transform CurrentRespawnPoint => _currentRespawnPoint;
 
     public bool IsInitialized { get; private set; }
@@ -17,8 +19,19 @@ public class CheckpointManager : MonoBehaviour, IInitializable
         if (IsInitialized)
             return;
 
-        BindCheckpoints(); // 체크포인트 이벤트 바인딩
+        CacheStartRespawnPoint();
+        BindCheckpoints();
         IsInitialized = true;
+    }
+
+    private void CacheStartRespawnPoint()
+    {
+        Player player = FindAnyObjectByType<Player>();
+        if (player == null || _startRespawnPoint == null)
+            return;
+
+        _startRespawnPoint.position = player.transform.position;
+        _currentRespawnPoint = _startRespawnPoint;
     }
 
     private void BindCheckpoints()
@@ -43,8 +56,6 @@ public class CheckpointManager : MonoBehaviour, IInitializable
 
         CurrentCheckpoint = checkpoint;
         _currentRespawnPoint = checkpoint.RespawnPoint;
-
-        Debug.Log($"Checkpoint Updated: {_currentRespawnPoint.name}");
     }
 
     public bool TryGetCheckpointPosition(out Vector3 position)
@@ -62,6 +73,7 @@ public class CheckpointManager : MonoBehaviour, IInitializable
     public void ClearCheckpoint()
     {
         CurrentCheckpoint = null;
+        _currentRespawnPoint = _startRespawnPoint;
     }
 
     private void OnDestroy()

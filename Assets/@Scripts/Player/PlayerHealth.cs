@@ -43,6 +43,19 @@ public class PlayerHealth : EntityBase
         OnHeal?.Invoke(actual);
     }
 
+    // Jaein 추가: 풀피 회복 (리스폰 시 필요)
+    public void ResetHP()
+    {
+        StopAllCoroutines();
+        _isInvincible = false;
+
+        int restored = _maxHp - _currentHp;
+        _currentHp = _maxHp;
+
+        if (restored > 0)
+            OnHeal?.Invoke(restored);
+    }
+
     public override void Die()
     {
         _isInvincible = false;

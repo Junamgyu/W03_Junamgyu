@@ -8,6 +8,9 @@ public class InputManager : MonoBehaviour, IInitializable
 
     private InputSystem_Actions _input;
 
+    // Mouse - Gamepad Look
+    public event Action<InputAction.CallbackContext> OnLook;
+
     // Player Input
     public event Action<InputAction.CallbackContext> OnMove;
     public event Action<InputAction.CallbackContext> OnJump;
@@ -38,6 +41,9 @@ public class InputManager : MonoBehaviour, IInitializable
     {
         var player = _input.Player;
         var ui = _input.UI;
+
+        player.Look.performed += HandleLook;
+        player.Look.canceled += HandleLook;
 
         player.Move.started += HandleMove;
         player.Move.performed += HandleMove;
@@ -73,6 +79,7 @@ public class InputManager : MonoBehaviour, IInitializable
         ui.Pause.started += HandlePause;
     }
 
+    private void HandleLook(InputAction.CallbackContext ctx) => OnLook?.Invoke(ctx);
     private void HandleMove(InputAction.CallbackContext ctx) => OnMove?.Invoke(ctx);
     private void HandleJump(InputAction.CallbackContext ctx) => OnJump?.Invoke(ctx);
     private void HandlePrimaryAttack(InputAction.CallbackContext ctx) => OnPrimaryAttack?.Invoke(ctx);
@@ -92,6 +99,9 @@ public class InputManager : MonoBehaviour, IInitializable
 
         var player = _input.Player;
         var ui = _input.UI;
+
+        player.Look.performed -= HandleLook;
+        player.Look.canceled -= HandleLook;
 
         player.Move.started -= HandleMove;
         player.Move.performed -= HandleMove;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        _inputManager.OnLook += HandleLook;
         _inputManager.OnMove += HandleMove;
         _inputManager.OnJump += HandleJump;
         _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
@@ -31,6 +33,7 @@ public class PlayerController : MonoBehaviour
         if (_inputManager == null)
             return;
 
+        _inputManager.OnLook -= HandleLook;
         _inputManager.OnMove -= HandleMove;
         _inputManager.OnJump -= HandleJump;
         _inputManager.OnPrimaryAttack -= HandlePrimaryAttack;
@@ -38,6 +41,11 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnDeadeyeSkill -= HandleDeadeyeSkill;
         _inputManager.OnSlowMotionSkill -= HandleSlowMotionSkill;
         _inputManager.OnMarkTarget -= HandleMarkTarget;
+    }
+
+    private void HandleLook(InputAction.CallbackContext ctx)
+    {
+        _player.playerAimer.HandleLook(ctx);
     }
 
     private void HandleMove(InputAction.CallbackContext ctx)

@@ -230,9 +230,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             rb.angularVelocity = 0f;
         }
 
-        _player.IsRecoiling = false;
-        _player.HasAirRecoil = false;
-        _player.IsGravityOverridden = false;
+        _player.SetActionState(ActionState.None);
+        _player.SetLocomotionState(LocomotionState.Idle);
+        _player.CanJump = true;
 
         playerHealth.ResetHP();
 

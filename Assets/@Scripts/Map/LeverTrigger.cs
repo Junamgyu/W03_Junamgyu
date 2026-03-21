@@ -11,22 +11,22 @@ public class LeverTrigger : MonoBehaviour
         changeTile
     }
 
-    [Header("¿òÁ÷ÀÌ´Â ¹ßÆÇ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½Ì´ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject _moveObj;
     [SerializeField] private Vector2 _objStartPos;
     [SerializeField] private Vector2 _objEndPos;
     [SerializeField] private float _moveTime;
     private bool isMove;
 
-    [Header("¹® ¿©´Â ·¹¹ö")]
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject _door;
     [SerializeField] private float _closeTime;
     Coroutine runningCo;
 
-    [Header("Àû ¼ÒÈ¯ ·¹¹ö")]
+    [Header("ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject[] _enemySpawners;
 
-    [Header("Å¸ÀÏ º¯È¯ ·¹¹ö")]
+    [Header("Å¸ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject[] _changeTile_01;
     [SerializeField] private GameObject[] _changeTile_02;
     [SerializeField] private bool _isChangeTile;
@@ -38,7 +38,6 @@ public class LeverTrigger : MonoBehaviour
     {
         isMove = false;
         _isChangeTile = false;
-        LeverFeature();
     }
 
     private void Update()
@@ -67,8 +66,8 @@ public class LeverTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //ÇÑ ¹ø ¸Â¾ÒÀ» ¶§ ¹«Àû ½Ã°£À» ÁÙÁö ¸»Áö ¾Æ¸¶ Áà¾ß ÇÏÁö ¾ÊÀ»±î --> ¼¦°Ç ¶§¹®¿¡
-        Bullet bullet = GetComponent<Bullet>();
+        //ï¿½ï¿½ ï¿½ï¿½ ï¿½Â¾ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Æ¸ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ --> ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        Bullet bullet = collision.GetComponent<Bullet>();
         if (bullet != null)
         {
             LeverFeature();
@@ -92,7 +91,7 @@ public class LeverTrigger : MonoBehaviour
             case LeverType.spawnEnemy:
                 if(_enemySpawners != null)
                 {
-                    //Àû ¼ÒÈ¯ ÇÔ¼ö °¡Á®¿À±â
+                    //ï¿½ï¿½ ï¿½ï¿½È¯ ï¿½Ô¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                     //_enemySpawners
                 }
                 break;

@@ -8,6 +8,7 @@ public class InputManager : MonoBehaviour, IInitializable
 
     private InputSystem_Actions _input;
 
+    // Player Input
     public event Action<InputAction.CallbackContext> OnMove;
     public event Action<InputAction.CallbackContext> OnJump;
     public event Action<InputAction.CallbackContext> OnPrimaryAttack;
@@ -17,6 +18,9 @@ public class InputManager : MonoBehaviour, IInitializable
     public event Action<InputAction.CallbackContext> OnMarkTarget;
     public event Action<InputAction.CallbackContext> OnCheatOne;
 
+    // System Input
+    public event Action<InputAction.CallbackContext> OnPause;
+
     public void Initialize()
     {
         if (IsInitialized) return;
@@ -25,6 +29,7 @@ public class InputManager : MonoBehaviour, IInitializable
 
         BindActions();
         _input.Player.Enable();
+        _input.UI.Enable();
 
         IsInitialized = true;
     }
@@ -32,6 +37,7 @@ public class InputManager : MonoBehaviour, IInitializable
     private void BindActions()
     {
         var player = _input.Player;
+        var ui = _input.UI;
 
         player.Move.started += HandleMove;
         player.Move.performed += HandleMove;
@@ -62,6 +68,9 @@ public class InputManager : MonoBehaviour, IInitializable
         player.MarkTarget.canceled += HandleMarkTarget;
 
         player.CheatOne.started += HandleCheatOne;
+
+        // UI Actions
+        ui.Pause.started += HandlePause;
     }
 
     private void HandleMove(InputAction.CallbackContext ctx) => OnMove?.Invoke(ctx);
@@ -73,12 +82,16 @@ public class InputManager : MonoBehaviour, IInitializable
     private void HandleMarkTarget(InputAction.CallbackContext ctx) => OnMarkTarget?.Invoke(ctx);
     private void HandleCheatOne(InputAction.CallbackContext ctx) => OnCheatOne?.Invoke(ctx);
 
+    // UI Handlers
+    private void HandlePause(InputAction.CallbackContext ctx) => OnPause?.Invoke(ctx);
+
     private void OnDestroy()
     {
         if (_input == null)
             return;
 
         var player = _input.Player;
+        var ui = _input.UI;
 
         player.Move.started -= HandleMove;
         player.Move.performed -= HandleMove;
@@ -110,7 +123,10 @@ public class InputManager : MonoBehaviour, IInitializable
 
         player.CheatOne.started -= HandleCheatOne;
 
+        ui.Pause.started -= HandlePause;
+
         _input.Player.Disable();
+        _input.UI.Disable();
     }
 
     public void EnablePlayerInput()
@@ -127,5 +143,21 @@ public class InputManager : MonoBehaviour, IInitializable
             return;
 
         _input.Player.Disable();
+    }
+
+    public void EnableUIInput()
+    {
+        if (_input == null)
+            return;
+
+        _input.UI.Enable();
+    }
+
+    public void DisableUIInput()
+    {
+        if (_input == null)
+            return;
+
+        _input.UI.Disable();
     }
 }

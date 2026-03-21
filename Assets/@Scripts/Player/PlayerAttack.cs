@@ -33,6 +33,13 @@ public class PlayerAttack : MonoBehaviour
     private PoolManager _poolManager;
     private HapticManager _hapticManager;
 
+    // Temp: 둘 다 끝났는지 추적
+    bool _gravityDone = false;
+    bool _dampingDone = false;
+
+    // Temp: 상태 관리를 스킬이랑 반동이랑 묶어놔서 생긴 문제를 해결하기 위한 변수.
+    ActionState _previousAction;
+
     private void Awake()
     {
         _player = GetComponent<Player>();
@@ -151,6 +158,14 @@ public class PlayerAttack : MonoBehaviour
 
     void TriggerRecoilRoutines(Vector2 shootDir)
     {
+        // Recoiling 중에 다시 쏘면 이전 상태를 유지
+        if (_player.CurrentAction != ActionState.Recoiling)
+            _previousAction = _player.CurrentAction;
+
+        _player.SetActionState(ActionState.Recoiling);
+        _gravityDone = false;
+        _dampingDone = false;
+
         StopCoroutine(nameof(GravityRoutine));
         StopCoroutine(nameof(DampingRoutine));
         StartCoroutine(nameof(GravityRoutine));
@@ -160,7 +175,6 @@ public class PlayerAttack : MonoBehaviour
 
     IEnumerator GravityRoutine()
     {
-        _player.SetActionState(ActionState.Recoiling);
         _rb.gravityScale = 0f;
 
         float elapsed = 0f;
@@ -178,19 +192,30 @@ public class PlayerAttack : MonoBehaviour
         _rb.gravityScale = _player.OriginalGravity;
         //_player.SetActionState(ActionState.None);
 
-        if (!_player.IsGrounded)
-            _player.CanJump = false; 
-
+        _gravityDone = true;
+        TryExitRecoiling();
 
     }
 
     IEnumerator DampingRoutine()
     {
-        //_player.SetActionState(ActionState.Recoiling); // TODO: 더 오래 걸리는 곳에서 담당, 근데 서로 바뀔 수 있어서 ...
         _rb.linearDamping = _player.dampingValue;
         yield return new WaitForSeconds(_player.dampingDuration);
         _rb.linearDamping = 0f;
-        _player.SetActionState(ActionState.None);
+
+        _dampingDone = true;
+        TryExitRecoiling();
+    }
+
+    void TryExitRecoiling()
+    {
+        if (!_gravityDone || !_dampingDone) return; // 둘 다 끝나야 해제
+
+        ActionState previousAction = _previousAction;
+        _player.SetActionState(previousAction);
+
+        if (!_player.IsGrounded)
+            _player.CanJump = false;
     }
 
     public void ReloadAll()

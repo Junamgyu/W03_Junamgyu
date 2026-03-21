@@ -6,7 +6,7 @@ public class DamageObject : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        PlayerHealth playerHealth = GetComponent<PlayerHealth>();
+        PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(_obejctDamage);

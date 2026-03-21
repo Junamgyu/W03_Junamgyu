@@ -11,6 +11,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     [SerializeField] private CheckpointManager _checkpointManager;
     [SerializeField] private PauseController _pauseController;
     [SerializeField] private HapticManager _hapticManager;
+    [SerializeField] private UIManager _uiManager;
     // TODO: Add EnemyManager etc.
 
     [SerializeField] private bool _autoStartInEditor = true;
@@ -159,6 +160,12 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
+        if (_uiManager == null)
+        {
+            Debug.LogError("UIManager is not assigned!");
+            return;
+        }
+
         ManagerRegistry.Register<GameManager>(this);
         ManagerRegistry.Register<GameStateManager>(_gameStateManager);
         ManagerRegistry.Register<PoolManager>(_poolManager);
@@ -167,6 +174,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         ManagerRegistry.Register<CheckpointManager>(_checkpointManager);
         ManagerRegistry.Register<PauseController>(_pauseController);
         ManagerRegistry.Register<HapticManager>(_hapticManager);
+        ManagerRegistry.Register<UIManager>(_uiManager);
     }
 
     // 매니저 초기화는 여기서 진행
@@ -179,6 +187,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         Initialize(_checkpointManager);
         Initialize(_pauseController);
         Initialize(_hapticManager);
+        Initialize(_uiManager);
     }
 
     private void Initialize(IInitializable manager)

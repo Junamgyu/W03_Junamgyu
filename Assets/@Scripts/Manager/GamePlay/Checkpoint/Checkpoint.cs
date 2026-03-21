@@ -21,9 +21,12 @@ public class Checkpoint : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        Vector3 position = _respawnPoint != null ? _respawnPoint.position : transform.position;
-        OnCheckpointReached?.Invoke(this);
-
         _isActivated = true;
+        OnCheckpointReached?.Invoke(this);
+    }
+
+    public void SetActivated(bool value)
+    {
+        _isActivated = value;
     }
 }

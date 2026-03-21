@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class PoolManager : MonoBehaviour, IInitializable
 {
@@ -13,6 +14,7 @@ public class PoolManager : MonoBehaviour, IInitializable
     private readonly Dictionary<GameObject, Queue<GameObject>> _pools = new();
     private readonly Dictionary<GameObject, GameObject> _instanceToPrefab = new();
     private readonly Dictionary<GameObject, Transform> _poolContainers = new();
+    private readonly HashSet<GameObject> _activeInstances = new();
 
     public void Initialize()
     {
@@ -55,17 +57,23 @@ public class PoolManager : MonoBehaviour, IInitializable
 
         GameObject instance;
 
-        if (pool.Count > 0)
+        while (pool.Count > 0)
         {
             instance = pool.Dequeue();
-        }
-        else
-        {
-            instance = CreateNewInstance(prefab);
+
+            if (instance != null)
+            {
+                instance.transform.SetPositionAndRotation(position, rotation);
+                instance.SetActive(true);
+                _activeInstances.Add(instance);
+                return instance;
+            }
         }
 
+        instance = CreateNewInstance(prefab);
         instance.transform.SetPositionAndRotation(position, rotation);
         instance.SetActive(true);
+        _activeInstances.Add(instance);
 
         return instance;
     }
@@ -89,7 +97,7 @@ public class PoolManager : MonoBehaviour, IInitializable
     {
         Transform container = GetOrCreateContainer(prefab);
         GameObject instance = Instantiate(prefab, container);
-        
+
         instance.SetActive(false);
 
         _instanceToPrefab[instance] = prefab;
@@ -98,13 +106,20 @@ public class PoolManager : MonoBehaviour, IInitializable
 
     private void ReturnInternal(GameObject prefab, GameObject instance)
     {
+        if (instance == null)
+            return;
+
+        _activeInstances.Remove(instance);
+
+        DOTween.Kill(instance.transform, complete: false);
+
+        instance.transform.SetParent(GetOrCreateContainer(prefab), false);
         instance.SetActive(false);
 
         Queue<GameObject> pool = GetOrCreatePool(prefab);
         pool.Enqueue(instance);
     }
 
-    // 풀을 반환하거나 없으면 생성해서 반환 (빈 큐 생성만 함)
     private Queue<GameObject> GetOrCreatePool(GameObject prefab)
     {
         if (!_pools.TryGetValue(prefab, out var pool))
@@ -128,5 +143,24 @@ public class PoolManager : MonoBehaviour, IInitializable
         var container = containerGo.transform;
         _poolContainers[prefab] = container;
         return container;
+    }
+
+    public void ClearRuntimeObjects()
+    {
+        if (_activeInstances.Count == 0)
+            return;
+
+        List<GameObject> runtimeObjects = new(_activeInstances);
+
+        for (int i = 0; i < runtimeObjects.Count; i++)
+        {
+            GameObject instance = runtimeObjects[i];
+            if (instance == null)
+                continue;
+
+            Return(instance);
+        }
+
+        _activeInstances.Clear();
     }
 }

@@ -9,11 +9,12 @@ public class UIManager : MonoBehaviour, IInitializable
     [SerializeField] private GameObject _gameOverPanel;
 
     [Header("Panel Scripts")]
-    [SerializeField] private UI_PausePanel _uiPausePanel;
+    [SerializeField] private UI_Pause _uiPausePanel;
 
     private GameStateManager _gameStateManager;
     private PauseController _pauseController;
     private SceneFlowManager _sceneFlowManager;
+    private PoolManager _poolManager;
 
     public void Initialize()
     {
@@ -28,16 +29,54 @@ public class UIManager : MonoBehaviour, IInitializable
 
         ManagerRegistry.TryGet(out _pauseController);
         ManagerRegistry.TryGet(out _sceneFlowManager);
+        ManagerRegistry.TryGet(out _poolManager);
 
         _gameStateManager.OnStateChanged += HandleStateChanged;
 
+        RebindUI();
+
+        IsInitialized = true;
+    }
+
+    public void RebindUI()
+    {
+        UnbindPanelEvents();
+        FindUIReferences();
+        BindPanelEvents();
+        HideAll();
+    }
+
+    private void FindUIReferences()
+    {
+        _uiPausePanel = FindAnyObjectByType<UI_Pause>(FindObjectsInactive.Include);
+
+        _pausePanel = null;
+        _gameOverPanel = null;
+
+        if (_uiPausePanel != null)
+            _pausePanel = _uiPausePanel.gameObject;
+
+        UI_GameOver gameOverPanel = FindAnyObjectByType<UI_GameOver>(FindObjectsInactive.Include);
+        if (gameOverPanel != null)
+            _gameOverPanel = gameOverPanel.gameObject;
+    }
+
+    private void BindPanelEvents()
+    {
         if (_uiPausePanel != null)
         {
             _uiPausePanel.OnRetryRequested += HandleRetryRequested;
+            _uiPausePanel.OnMainMenuRequested += HandleMainMenuRequested;
         }
+    }
 
-        HideAll();
-        IsInitialized = true;
+    private void UnbindPanelEvents()
+    {
+        if (_uiPausePanel != null)
+        {
+            _uiPausePanel.OnRetryRequested -= HandleRetryRequested;
+            _uiPausePanel.OnMainMenuRequested -= HandleMainMenuRequested;
+        }
     }
 
     private void HandleStateChanged(GameState state)
@@ -61,7 +100,13 @@ public class UIManager : MonoBehaviour, IInitializable
     private void HandleRetryRequested()
     {
         _pauseController?.ResumeGame();
+        _poolManager?.ClearRuntimeObjects();
         _sceneFlowManager?.ReloadStage();
+    }
+
+    private void HandleMainMenuRequested()
+    {
+        Debug.Log("MainMenuRequested");
     }
 
     public void ShowPause()
@@ -73,6 +118,12 @@ public class UIManager : MonoBehaviour, IInitializable
             _gameOverPanel.SetActive(false);
     }
 
+    public void HidePause()
+    {
+        if (_pausePanel != null)
+            _pausePanel.SetActive(false);
+    }
+
     public void ShowGameOver()
     {
         if (_pausePanel != null)
@@ -80,6 +131,12 @@ public class UIManager : MonoBehaviour, IInitializable
 
         if (_gameOverPanel != null)
             _gameOverPanel.SetActive(true);
+    }
+
+    public void HideGameOver()
+    {
+        if (_gameOverPanel != null)
+            _gameOverPanel.SetActive(false);
     }
 
     public void HideAll()
@@ -96,7 +153,6 @@ public class UIManager : MonoBehaviour, IInitializable
         if (_gameStateManager != null)
             _gameStateManager.OnStateChanged -= HandleStateChanged;
 
-        if (_uiPausePanel != null)
-            _uiPausePanel.OnRetryRequested -= HandleRetryRequested;
+        UnbindPanelEvents();
     }
 }

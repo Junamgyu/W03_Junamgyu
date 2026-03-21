@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class UI_PausePanel : MonoBehaviour
+public class UI_Pause : MonoBehaviour
 {
     [SerializeField] private Button _resumeButton;
     [SerializeField] private Button _retryButton;

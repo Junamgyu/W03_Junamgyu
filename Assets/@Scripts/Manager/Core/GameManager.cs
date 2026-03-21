@@ -217,7 +217,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         _inputManager.EnableUIInput();
 
         _gameStateManager.ChangeState(GameState.Playing);
-        //_sceneManager.LoadStage("JaeinScene"); // Debugging
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        _sceneManager.SetCurrentStage(activeScene.name);
     }
 
     // 다시 시작 (마지막 체크포인트로)
@@ -236,14 +238,14 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
-        Transform respawnPoint = _checkpointManager.CurrentRespawnPoint;
+        Vector3 respawnPoint = _checkpointManager.CurrentRespawnPosition;
         if (respawnPoint == null)
         {
             Debug.LogWarning("RespawnPoint not found.");
             return;
         }
 
-        _player.transform.position = respawnPoint.position;
+        _player.transform.position = respawnPoint;
 
         Rigidbody2D rb = _player.GetComponent<Rigidbody2D>();
         if (rb != null)
@@ -269,5 +271,16 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         Debug.Log($"Stage Reload Completed: {stageName}");
 
         BindPlayerHealth();
+        _uiManager?.RebindUI();
+        _checkpointManager?.RebindCheckpoints();
+
+        Player player = FindAnyObjectByType<Player>();
+        if (player != null)
+        {
+            _checkpointManager?.MovePlayerToCheckpoint(player);
+        }
+
+        _inputManager.EnablePlayerInput();
+        _gameStateManager.ChangeState(GameState.Playing);
     }
 }

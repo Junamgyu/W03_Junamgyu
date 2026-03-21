@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,50 +6,34 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
 {
     public bool IsInitialized { get; private set; }
 
-    [SerializeField] private string _currentStage;
+    [SerializeField] private string _currentStageSceneName;
+    public string CurrentStageSceneName => _currentStageSceneName;
 
-    public string CurrentStage => _currentStage;
     public bool IsLoading { get; private set; }
 
-    public event Action<string> OnStageReloadStarted;
     public event Action<string> OnStageReloadCompleted;
-    public event Action<string> OnStageLoaded;
 
     public void Initialize()
     {
         if (IsInitialized)
             return;
 
-        if (string.IsNullOrEmpty(_currentStage))
+        if (string.IsNullOrEmpty(_currentStageSceneName))
         {
             Scene activeScene = SceneManager.GetActiveScene();
-            if (activeScene.IsValid())
-                _currentStage = activeScene.name;
+            _currentStageSceneName = activeScene.name;
         }
 
+        SceneManager.sceneLoaded += HandleSceneLoaded;
         IsInitialized = true;
     }
 
-    public void SetCurrentStage(string stageName)
+    public void SetCurrentStage(string stageSceneName)
     {
-        if (string.IsNullOrEmpty(stageName))
+        if (string.IsNullOrEmpty(stageSceneName))
             return;
 
-        _currentStage = stageName;
-    }
-
-    public void LoadStage(string stageName)
-    {
-        if (IsLoading)
-            return;
-
-        if (string.IsNullOrEmpty(stageName))
-        {
-            Debug.LogWarning($"{name}: stageName is null or empty.");
-            return;
-        }
-
-        StartCoroutine(CoLoadStage(stageName));
+        _currentStageSceneName = stageSceneName;
     }
 
     public void ReloadStage()
@@ -58,65 +41,30 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         if (IsLoading)
             return;
 
-        if (string.IsNullOrEmpty(_currentStage))
+        if (string.IsNullOrEmpty(_currentStageSceneName))
         {
-            Debug.LogWarning($"{name}: CurrentStage is empty.");
+            Debug.LogWarning($"{name}: CurrentStageSceneName is empty.");
             return;
         }
 
-        StartCoroutine(CoReloadStage(_currentStage));
+        IsLoading = true;
+        SceneManager.LoadScene(_currentStageSceneName, LoadSceneMode.Single);
     }
 
-    private IEnumerator CoLoadStage(string stageName)
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        IsLoading = true;
+        if (!IsLoading)
+            return;
 
-        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(stageName, LoadSceneMode.Additive);
-        if (loadOperation == null)
-        {
-            IsLoading = false;
-            yield break;
-        }
-
-        yield return loadOperation;
-
-        Scene loadedScene = SceneManager.GetSceneByName(stageName);
-        if (loadedScene.IsValid() && loadedScene.isLoaded)
-        {
-            SceneManager.SetActiveScene(loadedScene);
-            _currentStage = stageName;
-            OnStageLoaded?.Invoke(stageName);
-        }
+        if (scene.name != _currentStageSceneName)
+            return;
 
         IsLoading = false;
+        OnStageReloadCompleted?.Invoke(scene.name);
     }
 
-    private IEnumerator CoReloadStage(string stageName)
+    private void OnDestroy()
     {
-        IsLoading = true;
-        OnStageReloadStarted?.Invoke(stageName);
-
-        Scene scene = SceneManager.GetSceneByName(stageName);
-
-        if (scene.IsValid() && scene.isLoaded)
-        {
-            AsyncOperation unloadOperation = SceneManager.UnloadSceneAsync(stageName);
-            if (unloadOperation != null)
-                yield return unloadOperation;
-        }
-
-        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(stageName, LoadSceneMode.Additive);
-        if (loadOperation != null)
-            yield return loadOperation;
-
-        Scene loadedScene = SceneManager.GetSceneByName(stageName);
-        if (loadedScene.IsValid() && loadedScene.isLoaded)
-        {
-            SceneManager.SetActiveScene(loadedScene);
-            _currentStage = stageName;
-            OnStageReloadCompleted?.Invoke(stageName);
-        }
-
-        IsLoading = false;
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
     }
 }

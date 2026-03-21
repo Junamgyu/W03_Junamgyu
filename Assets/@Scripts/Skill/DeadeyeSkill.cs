@@ -87,12 +87,11 @@ public class DeadeyeSkill : MonoBehaviour
 
     [SerializeField] private float _slowTimeScale = 0.2f;
     [Tooltip("초당 게이지 소모량")][SerializeField] private float _gaugeConsumeRate = 10f;
-    private bool _isSlowActive = false;
     private float _originalFixedDeltaTime;
 
     public void OnSlowMotion(InputAction.CallbackContext context)
     {
-        if (_isDeadeyeActive) return; // 데드아이 중엔 슬로우 입력 무시
+        if (_player.CurrentAction == ActionState.Deadeye) return; // 데드아이 중엔 슬로우 입력 무시
 
         if (context.started)
         {
@@ -107,22 +106,23 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void EnterSlow()
     {
-        _isSlowActive = true;
+        _player.SetActionState(ActionState.Slow);
         Time.timeScale = _slowTimeScale;
         Time.fixedDeltaTime = _originalFixedDeltaTime * _slowTimeScale;
     }
 
     private void ExitSlow()
     {
-        _isSlowActive = false;
+        // Deadeye 중엔 Slow만 단독으로 해제하지 않음
+        if (_player.CurrentAction != ActionState.Deadeye)
+            _player.SetActionState(ActionState.Idle);
         Time.timeScale = 1f;
         Time.fixedDeltaTime = _originalFixedDeltaTime;
     }
 
     private void UpdateSlowGauge()
     {
-        if (!_isSlowActive) return;
-        if (_isDeadeyeActive) return; // 데드아이 중엔 슬로우 게이지 소모 안 함
+        if (_player.CurrentAction != ActionState.Slow) return; // 데드아이일 땐 게이지 감소 없음
 
         ConsumeGauge(_gaugeConsumeRate * Time.unscaledDeltaTime);
 
@@ -143,12 +143,10 @@ public class DeadeyeSkill : MonoBehaviour
     [SerializeField] private float _gaugeCostDeadeye = 50f;
     [SerializeField] private float _markingDuration = 3f;
 
-    private bool _isDeadeyeActive = false;
     private bool _isAiming = false;
     private bool _isFiring = false;
     private List<EnemyBase> _targets = new List<EnemyBase>();
-
-    public bool IsDeadeyeActive => _isDeadeyeActive;
+    public bool IsDeadeyeActive => _player.CurrentAction == ActionState.Deadeye;
 
     private Coroutine _markingTimer;
 
@@ -159,14 +157,14 @@ public class DeadeyeSkill : MonoBehaviour
         {
             if (_isFiring) return; // 데드아이로 다라라 죽이고 있는 중이라면 리턴
 
-            if (_isDeadeyeActive)
+            if (IsDeadeyeActive)
             {
                 ExitDeadeye(); // 이미 활성 중이면 취소 (이미 느려지는 것을 쓴거니 게이지 회복 같은 것은 없음)
                 return;
             }
 
             if (!CanDeadeye) return;
-            _isDeadeyeActive = true;
+            _player.SetActionState(ActionState.Deadeye);
             ConsumeGauge(_gaugeCostDeadeye);
             EnterSlow();
             _markingTimer = StartCoroutine(MarkingTimerRoutine());
@@ -183,7 +181,7 @@ public class DeadeyeSkill : MonoBehaviour
 
     public void OnMarkTarget(InputAction.CallbackContext context)
     {
-        if (!_isDeadeyeActive) return;
+        if (_player.CurrentAction != ActionState.Deadeye) return;
 
         if (context.started)
         {
@@ -208,7 +206,7 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void UpdateMarking()
     {
-        if (!_isDeadeyeActive || !_isAiming) return;
+        if (_player.CurrentAction != ActionState.Deadeye || !_isAiming) return;
         if (_targets.Count >= _maxTargets) return;
 
         Vector2 mouseWorld = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
@@ -265,7 +263,7 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void ExitDeadeye()
     {
-        _isDeadeyeActive = false;
+        _player.SetActionState(ActionState.Idle);
         _isAiming = false;
         ExitSlow(); // 슬로우 자동 해제
         foreach (EnemyBase enemy in _targets)
@@ -274,12 +272,5 @@ public class DeadeyeSkill : MonoBehaviour
     }
 
     #endregion
-
-    
-
-
-    
-
-    
 
 }

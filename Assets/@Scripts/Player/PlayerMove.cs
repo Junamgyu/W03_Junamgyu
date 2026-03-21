@@ -22,8 +22,7 @@ public class PlayerMove : MonoBehaviour
         // TODO 반동으로 인해 뜨게 되었을 경우 IsRecoiling이 짧기도 하고 HasAirRecoil가 true가 되어야 하는데 안됨
         //Debug.Log($"IsRecoiling => {_player.IsRecoiling},  HasAirRecoil => {_player.HasAirRecoil}");
 
-        if (_player.IsRecoiling) return;
-
+        if (_player.IsRecoiling) return; // 반동 받는 동안 못 움직임.
         _rb.linearVelocity = new Vector2(_player.moveSpeed * _dir.x, _rb.linearVelocityY);
 
     }
@@ -36,10 +35,10 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded && !_player.IsGrounded)
         {
             _player.playerAttack.ReloadAll(); // 무기 전체 재장전
-            _player.HasAirRecoil = false; // 공중 반동 상태 초기화
+            _player.CanJump = true;
         }
             
-        _player.IsGrounded = isGrounded;
+        _player.SetGroundState(isGrounded ? GroundState.Grounded : GroundState.Airborne);
     }
 
     public void CanMove(Vector2 input)

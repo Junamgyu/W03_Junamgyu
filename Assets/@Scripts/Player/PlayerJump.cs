@@ -10,13 +10,12 @@ public class PlayerJump : MonoBehaviour
     [Tooltip("떨어질 때의 낙하 가속 배율")][SerializeField] private float _downwardMultiplier = 3f;
     [Tooltip("점프 버튼 땔 시 중력 적용 배율")][SerializeField] private float _jumpCutOff = 2f;       // 버튼 떼면 이 배율로 전환
     [SerializeField] private float _speedLimit = 20f;
-
     [SerializeField] private float _coyoteTime = 0.15f;
 
     Rigidbody2D _rb;
     Player _player;
 
-    // 점프
+    // 점프 내부 상태
     bool _desiredJump; // 점프 실행해줘
     bool _pressingJump; // 점프 버튼 누르는 중이야
     bool _currentlyJumping; // 점프 중
@@ -39,8 +38,7 @@ public class PlayerJump : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        // 공중 반동 상태면 점프 불가
-        if (_player.HasAirRecoil) return;
+        if (!_player.CanJump) return;
 
         if (context.started)
         {
@@ -57,7 +55,7 @@ public class PlayerJump : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_player.IsGravityOverridden) return; // Attack의 GravityRoutine이 관할 중이면 스킵
+        if (_player.CurrentAction == ActionState.Recoiling) return; // 반동 중이면 막음.
 
         // 코요테 타임 카운터
         if (!_player.IsGrounded && !_currentlyJumping)
@@ -74,10 +72,10 @@ public class PlayerJump : MonoBehaviour
         }
     }
 
+    // 중력 배율 결정
     void ApplyGravity()
     {
 
-        // 중력 배율 결정
         // 올라가는 중
         if (_rb.linearVelocity.y > 0.01f)
         {
@@ -104,12 +102,11 @@ public class PlayerJump : MonoBehaviour
         // 중력 스케일 적용
         // PlayerAttack의 GravityRoutine과 충돌 방지:
         // IsRecoiling 중엔 gravityScale을 건드리지 않음
-        if (!_player.IsRecoiling)
-        {
-            // 원하는 점프 높이와 정점 도달 시간으로부터 필요한 중력을 역산하는 로직
-            Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
-            _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
-        }
+        
+        // 원하는 점프 높이와 정점 도달 시간으로부터 필요한 중력을 역산하는 로직
+        Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
+        _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
+        
 
         // Y속도 상한 (터미널 속도)
         _rb.linearVelocity = new Vector2(
@@ -118,10 +115,13 @@ public class PlayerJump : MonoBehaviour
         );
     }
 
+    // 실제 점프 로직
     void DoJump()
     {
         _desiredJump = false;
-        _gravMultiplier = 1f;
+        _gravMultiplier = 1f; // 점프 시작 시점에 중력 배율을 초기화해서 jumpSpeed 계산을 깔끔하게 하기 위함.
+        _player.SetActionState(ActionState.Jumping);
+
         Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
         _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
 

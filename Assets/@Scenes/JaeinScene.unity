@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 238593087}
   m_Layer: 10
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -455,7 +455,7 @@ GameObject:
   - component: {fileID: 1022412451}
   m_Layer: 10
   m_Name: SmallGround  (1)
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -745,7 +745,7 @@ GameObject:
   - component: {fileID: 1393301382}
   m_Layer: 10
   m_Name: 'SmallGround '
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1061,7 +1061,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1931111535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1359,10 +1359,6 @@ PrefabInstance:
       propertyPath: _startRespawnPoint
       value: 
       objectReference: {fileID: 1873779966}
-    - target: {fileID: 7711112655822185066, guid: 96008f570eb2c9f48a1005af12edb091, type: 3}
-      propertyPath: _checkpointManager
-      value: 
-      objectReference: {fileID: 8317103452322090211}
     - target: {fileID: 8188686934479407690, guid: 96008f570eb2c9f48a1005af12edb091, type: 3}
       propertyPath: m_Name
       value: GameManager
@@ -1372,17 +1368,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96008f570eb2c9f48a1005af12edb091, type: 3}
---- !u!114 &8317103452322090211 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4387843078383570158, guid: 96008f570eb2c9f48a1005af12edb091, type: 3}
-  m_PrefabInstance: {fileID: 8317103452322090210}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 665acb66fd3bedb4f88a8560411ddfd2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CheckpointManager
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

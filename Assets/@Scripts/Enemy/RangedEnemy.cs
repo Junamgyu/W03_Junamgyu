@@ -13,6 +13,14 @@ public class RangedEnemy : EnemyBase
     [SerializeField] protected float _preferredRange = 4f;    // 유지하려는 거리
     [SerializeField] protected Transform _gunPivot;
 
+    // Jaein 추가
+    protected PoolManager _pool;
+
+    private void Awake()
+    {
+        ManagerRegistry.TryGet(out _pool);
+    }
+
     // =====================
     // OnEnter 오버라이드
     // =====================
@@ -82,13 +90,21 @@ public class RangedEnemy : EnemyBase
             return;
         }
 
-
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
 
-        
-        GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+        GameObject projectile;
+
+        if (_pool != null)
+        {
+            projectile = _pool.Get(_projectilePrefab, transform.position, rotation);
+        }
+        else
+        {
+            projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+        }
+
         projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
     }
 

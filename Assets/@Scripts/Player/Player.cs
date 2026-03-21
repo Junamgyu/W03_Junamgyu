@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오리고 있는 상태를 의미, Run 추가 예정.
 public enum ActionState { None, Recoiling, Deadeye, Slow }
@@ -29,6 +30,8 @@ public class Player : MonoBehaviour
         if (CurrentLocomotion == LocomotionState.Land && state != LocomotionState.Idle) return;
 
         CurrentLocomotion = state;
+
+        OnLocomotionChanged?.Invoke(state);
     }
 
     public void SetActionState(ActionState state)
@@ -50,6 +53,7 @@ public class Player : MonoBehaviour
 
     Rigidbody2D _rb;
 
+    public event Action<LocomotionState> OnLocomotionChanged;
 
     void Awake()
     {

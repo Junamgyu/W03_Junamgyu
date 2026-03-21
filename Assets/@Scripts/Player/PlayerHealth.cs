@@ -8,7 +8,7 @@ public class PlayerHealth : EntityBase
     [Header("Invincibility")]
     [SerializeField] private float _invincibleDuration = 1.5f;
     private bool _isInvincible = false;
-
+    private HapticManager _hapticManager;
 
     public bool IsInvincible => _isInvincible;
 
@@ -16,6 +16,11 @@ public class PlayerHealth : EntityBase
     public event Action<int> OnHeal;
     public event Action OnDie;
 
+    private void Awake()
+    {
+        if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
+            _hapticManager = null;
+    }
 
     public override void TakeDamage(int damage)
     {
@@ -25,7 +30,7 @@ public class PlayerHealth : EntityBase
         base.TakeDamage(damage);
 
         Debug.Log("currentHp: " + _currentHp + ", damage: " + damage);
-
+        _hapticManager?.PlayPlayerHit();
         OnHit?.Invoke(damage);
 
         if (_currentHp > 0)

@@ -225,8 +225,8 @@ GameObject:
   - component: {fileID: 4829456613068701628}
   - component: {fileID: 7712969428421578591}
   - component: {fileID: 7928101473943729962}
-  - component: {fileID: -5413730522875593320}
-  - component: {fileID: -5479935365318916259}
+  - component: {fileID: 7653655037728564368}
+  - component: {fileID: -665641119756365411}
   m_Layer: 15
   m_Name: BurstRangedEnemyPrefab
   m_TagString: Enemy
@@ -249,7 +249,7 @@ Transform:
   m_Children:
   - {fileID: 142320894039484032}
   - {fileID: 8175451469513102941}
-  - {fileID: 3441469949845744068}
+  - {fileID: 325958841565579389}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!50 &7712969428421578591
@@ -267,7 +267,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -325,7 +325,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &-5413730522875593320
+--- !u!114 &7653655037728564368
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -334,32 +334,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 9089860811144379622}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6696b167179a9294687c36d3d35bd353, type: 3}
+  m_Script: {fileID: 11500000, guid: 3937b16f660e42948ba96b2248df1513, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BurstRangedEnemy
-  _maxHp: 100
+  m_EditorClassIdentifier: Assembly-CSharp::RangedEnemy
+  _maxHp: 5
   _attackDamage: 1
-  _moveSpeed: 5
-  _attackRange: 15
-  _detectionRange: 25
-  _attackCooldown: 1.5
-  _hitStunDuration: 0.2
-  _attackMotionDuration: 0.3
-  _isFlying: 1
-  _patrolDistance: 3
-  _idleWaitTime: 2
   _markIndicator: {fileID: 0}
-  _excludeLayer:
+  _moveSpeed: 5
+  _attackRange: 20
+  _detectionRange: 25
+  _attackCooldown: 2
+  _isFlying: 0
+  _patrolRadius: 0
+  _wallLayer:
     serializedVersion: 2
-    m_Bits: 32768
+    m_Bits: 0
   _projectilePrefab: {fileID: 3618253558596877259, guid: dc4f46b1dc080234aafccf704533149a, type: 3}
-  _projectileSpeed: 8
+  _projectileSpeed: 15
   _retreatRange: 2
-  _preferredRange: 4
+  _preferredRange: 10
   _gunPivot: {fileID: 8175451469513102941}
   _burstCount: 3
-  _burstInterval: 0.15
---- !u!114 &-5479935365318916259
+  _burstInterval: 0.2
+--- !u!114 &-665641119756365411
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -372,7 +369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DespawnController
   _mode: 2
---- !u!1001 &6052905125349776953
+--- !u!1001 &9170659650445246336
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -433,8 +430,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
---- !u!4 &3441469949845744068 stripped
+--- !u!4 &325958841565579389 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8917887625052944381, guid: 4fdf0e560961e9d458f38fa1ea4113f2, type: 3}
-  m_PrefabInstance: {fileID: 6052905125349776953}
+  m_PrefabInstance: {fileID: 9170659650445246336}
   m_PrefabAsset: {fileID: 0}

@@ -215,22 +215,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SuicideEnemy
   _maxHp: 100
   _attackDamage: 1
-  _moveSpeed: 5
-  _attackRange: 14.81
-  _detectionRange: 17.97
-  _attackCooldown: 1.5
-  _hitStunDuration: 0.2
-  _attackMotionDuration: 0.3
-  _isFlying: 0
-  _patrolDistance: 3
-  _idleWaitTime: 2
   _markIndicator: {fileID: 0}
-  _excludeLayer:
+  _moveSpeed: 8
+  _attackRange: 15
+  _detectionRange: 25
+  _attackCooldown: 1.5
+  _isFlying: 0
+  _patrolRadius: 0
+  _wallLayer:
     serializedVersion: 2
     m_Bits: 32768
   _explosionDamage: 1
   _explosionRange: 5
   _explosionWindupTime: 5
+  _explosionMoveSpeed: 10
   _explosionParticle: {fileID: 5298437731249275528, guid: 324f177e92e0f654cbb40be90ec0bc61, type: 3}
 --- !u!114 &-5584717973967424058
 MonoBehaviour:

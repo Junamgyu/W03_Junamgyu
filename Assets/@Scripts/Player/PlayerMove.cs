@@ -7,7 +7,6 @@ public class PlayerMove : MonoBehaviour
     Player _player;
     Vector2 _dir;
 
-    // 이게 여기에 있는게 맞을까???
     [SerializeField] private Transform _groundCheck;
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _groundCheckRadius = 0.1f;

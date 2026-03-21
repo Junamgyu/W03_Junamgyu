@@ -34,26 +34,76 @@ public abstract class NormalEnemyBase : EnemyBase
     {
         base.Start();
 
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
-        {
-            _player = playerObj.transform;
-        }
-        else
-        {
-            Debug.LogWarning($"{gameObject.name}: Player를 찾을 수 없습니다.");
-            enabled = false;
-            return;
-        }
+        // Jaein 추가
+        TryFindPlayer();
 
         _originalPos = transform.position;
         _patrolTarget = GetRandomPatrolTarget();
     }
 
+    // Jaein 추가
+    protected virtual void OnEnable()
+    {
+        if (_rb == null)
+            _rb = GetComponent<Rigidbody2D>();
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = true;
+
+        if (_rb != null)
+            _rb.linearVelocity = Vector2.zero;
+
+        _isDead = false;
+        _canAttack = true;
+        _isAddGauge = false;
+        _wasDetecting = false;
+        _currentHp = _maxHp;
+
+        _player = null;
+        TryFindPlayer();
+
+        _originalPos = transform.position;
+        _patrolTarget = GetRandomPatrolTarget();
+
+        ShowMark(false);
+    }
+
+    // Jaein 추가
+    protected virtual void OnDisable()
+    {
+        _player = null;
+        StopAllCoroutines();
+
+        if (_rb != null)
+            _rb.linearVelocity = Vector2.zero;
+    }
+
+    // Jaein 추가
+    protected bool TryFindPlayer()
+    {
+        if (_player != null)
+            return true;
+
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj == null)
+            return false;
+
+        _player = playerObj.transform;
+        return _player != null;
+    }
+
     protected virtual void Update()
     {
-        
         if (_isDead) return;
+
+        // Jaein 추가
+        if (!TryFindPlayer())
+        {
+            _rb.linearVelocity = Vector2.zero;
+            Patrol();
+            return;
+        }
 
         bool detecting = DetectPlayer();
         if (detecting)
@@ -73,7 +123,6 @@ public abstract class NormalEnemyBase : EnemyBase
         }
         else
         {
-            // 감지 → 비감지 전환 순간 한 번만 갱신
             if (_wasDetecting)
             {
                 _wasDetecting = false;
@@ -126,46 +175,40 @@ public abstract class NormalEnemyBase : EnemyBase
     // =====================
     protected virtual bool DetectPlayer()
     {
-        if (_player == null) return false;
+        // Jaein 추가
+        if (!TryFindPlayer())
+            return false;
 
         float dist = Vector2.Distance(transform.position, _player.position);
         if (dist > _detectionRange) return false;
 
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, dist, _wallLayer);
-        Debug.Log(hit.collider);
         return hit.collider == null;
     }
 
     protected bool IsInAttackRange()
     {
+        // Jaein 추가
+        if (!TryFindPlayer())
+            return false;
+
         return Vector2.Distance(transform.position, _player.position) <= _attackRange;
     }
 
     // =====================
     // 전투
     // =====================
-    //public override void TakeDamage(int damage)
-    //{
-    //    if (_isDead) return;
-    //    base.TakeDamage(damage);
-
-    //    if (_currentHp <= 0)
-    //        Die();
-    //}
-
-    //public override void TakeDamage(int damage, bool isAddGauge = false)
-    //{
-    //    _isAddGauge = isAddGauge;
-    //    TakeDamage(damage);
-    //}
-
     public override void Die()
     {
         if (_isDead) return;
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
-        GetComponent<Collider2D>().enabled = false;
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
+
         ShowMark(false);
         StartCoroutine(DieRoutine());
     }
@@ -203,6 +246,4 @@ public abstract class NormalEnemyBase : EnemyBase
             Gizmos.DrawLine(transform.position, (Vector2)transform.position + dir * _detectionRange);
         }
     }
-
-
 }

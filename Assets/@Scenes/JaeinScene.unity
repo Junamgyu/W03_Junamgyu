@@ -1689,6 +1689,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3448346577748485413, guid: 2e190b4bf07d70746820d03e4a07b1a0, type: 3}
   m_PrefabInstance: {fileID: 461117698517185866}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2071533073 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7927426312342890976, guid: 2e190b4bf07d70746820d03e4a07b1a0, type: 3}
+  m_PrefabInstance: {fileID: 461117698517185866}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2071533069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e402993aa62a8b84ebe5f454b60688c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI_GameOver
 --- !u!1001 &461117698517185866
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1954,11 +1965,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3888408631523722136, guid: a6b2f93e2afa48f4aa6cf58ce27d040c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 68.7
       objectReference: {fileID: 0}
     - target: {fileID: 3888408631523722136, guid: a6b2f93e2afa48f4aa6cf58ce27d040c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 3888408631523722136, guid: a6b2f93e2afa48f4aa6cf58ce27d040c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2078,6 +2089,10 @@ PrefabInstance:
       propertyPath: _gameOverPanel
       value: 
       objectReference: {fileID: 2071533069}
+    - target: {fileID: 1615416476636817570, guid: 96008f570eb2c9f48a1005af12edb091, type: 3}
+      propertyPath: _uiGameOverPanel
+      value: 
+      objectReference: {fileID: 2071533073}
     - target: {fileID: 3690215996671242045, guid: 96008f570eb2c9f48a1005af12edb091, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.15191

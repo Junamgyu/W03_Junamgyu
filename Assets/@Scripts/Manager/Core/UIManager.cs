@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour, IInitializable
 
     [Header("Panel Scripts")]
     [SerializeField] private UI_Pause _uiPausePanel;
+    [SerializeField] private UI_GameOver _uiGameOverPanel;
 
     private GameStateManager _gameStateManager;
     private PauseController _pauseController;
@@ -49,6 +50,7 @@ public class UIManager : MonoBehaviour, IInitializable
     private void FindUIReferences()
     {
         _uiPausePanel = FindAnyObjectByType<UI_Pause>(FindObjectsInactive.Include);
+        _uiGameOverPanel = FindAnyObjectByType<UI_GameOver>(FindObjectsInactive.Include);
 
         _pausePanel = null;
         _gameOverPanel = null;
@@ -56,9 +58,8 @@ public class UIManager : MonoBehaviour, IInitializable
         if (_uiPausePanel != null)
             _pausePanel = _uiPausePanel.gameObject;
 
-        UI_GameOver gameOverPanel = FindAnyObjectByType<UI_GameOver>(FindObjectsInactive.Include);
-        if (gameOverPanel != null)
-            _gameOverPanel = gameOverPanel.gameObject;
+        if (_uiGameOverPanel != null)
+            _gameOverPanel = _uiGameOverPanel.gameObject;
     }
 
     private void BindPanelEvents()
@@ -67,6 +68,9 @@ public class UIManager : MonoBehaviour, IInitializable
         {
             _uiPausePanel.OnRetryRequested += HandleRetryRequested;
             _uiPausePanel.OnMainMenuRequested += HandleMainMenuRequested;
+
+            _uiGameOverPanel.OnRetryRequested += HandleRetryRequested;
+            _uiGameOverPanel.OnMainMenuRequested += HandleMainMenuRequested;
         }
     }
 
@@ -76,6 +80,9 @@ public class UIManager : MonoBehaviour, IInitializable
         {
             _uiPausePanel.OnRetryRequested -= HandleRetryRequested;
             _uiPausePanel.OnMainMenuRequested -= HandleMainMenuRequested;
+
+            _uiGameOverPanel.OnRetryRequested -= HandleRetryRequested;
+            _uiGameOverPanel.OnMainMenuRequested -= HandleMainMenuRequested;
         }
     }
 

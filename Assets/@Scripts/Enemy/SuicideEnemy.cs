@@ -6,7 +6,7 @@ public class SuicideEnemy : NormalEnemyBase
     [SerializeField] private int _explosionDamage = 30;
     [SerializeField] private float _explosionRange = 2f;
     [SerializeField] private float _explosionWindupTime = 3f;
-    [SerializeField] private float _explosionMoveSpeed = 10f; // 자폭 준비 중 이속
+    [SerializeField] private float _explosionMoveSpeed = 10f;
     [SerializeField] private ParticleSystem _explosionParticle;
 
     private SpriteRenderer _spriteRenderer;
@@ -16,6 +16,20 @@ public class SuicideEnemy : NormalEnemyBase
     {
         base.Start();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+    }
+
+    // Jaein 추가
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        if (_spriteRenderer == null)
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = Color.white;
+
+        _isExploding = false;
     }
 
     protected override void Update()
@@ -32,7 +46,6 @@ public class SuicideEnemy : NormalEnemyBase
         base.Update();
     }
 
-    // 자폭 준비 중 이속 적용
     protected override void MoveToward(Vector2 target)
     {
         float speed = _isExploding ? _explosionMoveSpeed : _moveSpeed;
@@ -53,7 +66,9 @@ public class SuicideEnemy : NormalEnemyBase
 
     protected override void DoAttack()
     {
-        StartCoroutine(ExplosionRoutine());
+        // Jaein 추가
+        StopCoroutine(nameof(ExplosionRoutine));
+        StartCoroutine(nameof(ExplosionRoutine));
     }
 
     IEnumerator ExplosionRoutine()

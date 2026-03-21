@@ -13,7 +13,6 @@ public class RangedEnemy : NormalEnemyBase
     [SerializeField] private int _burstCount = 1;
     [SerializeField] private float _burstInterval = 0.15f;
 
-
     protected PoolManager _pool;
 
     private void Awake()
@@ -23,9 +22,24 @@ public class RangedEnemy : NormalEnemyBase
 
     private bool _isBursting = false;
 
+    // Jaein 추가
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        _isBursting = false;
+    }
+
     protected override void Update()
     {
         if (_isDead) return;
+
+        // Jaein 추가
+        if (!TryFindPlayer())
+        {
+            _rb.linearVelocity = Vector2.zero;
+            Patrol();
+            return;
+        }
 
         bool detecting = DetectPlayer();
 
@@ -35,14 +49,12 @@ public class RangedEnemy : NormalEnemyBase
 
             float dist = Vector2.Distance(transform.position, _player.position);
 
-            // 총구 방향 플레이어로 (발사 중에는 고정)
             if (_gunPivot != null && !_isBursting)
             {
                 Vector2 aimDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
                 _gunPivot.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg);
             }
 
-            // 발사 중에는 이동 정지
             if (!_isBursting)
             {
                 if (dist <= _retreatRange)
@@ -82,18 +94,32 @@ public class RangedEnemy : NormalEnemyBase
 
     protected override void DoAttack()
     {
+        // Jaein 추가
+        if (!TryFindPlayer())
+            return;
+
         if (_projectilePrefab == null)
         {
             Debug.LogWarning($"{gameObject.name}: 투사체가 없습니다.");
             return;
         }
-        StartCoroutine(BurstRoutine());
+
+        // Jaein 추가
+        StopCoroutine(nameof(BurstRoutine));
+        StartCoroutine(nameof(BurstRoutine));
     }
 
     IEnumerator BurstRoutine()
     {
         _isBursting = true;
         _rb.linearVelocity = Vector2.zero;
+
+        // Jaein 추가
+        if (!TryFindPlayer())
+        {
+            _isBursting = false;
+            yield break;
+        }
 
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         Quaternion rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
@@ -115,9 +141,8 @@ public class RangedEnemy : NormalEnemyBase
 
             if (i < _burstCount - 1)
                 yield return new WaitForSeconds(_burstInterval);
-
-
         }
+
         _isBursting = false;
     }
 

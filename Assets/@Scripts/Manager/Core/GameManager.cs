@@ -11,6 +11,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     [SerializeField] private CheckpointManager _checkpointManager;
     [SerializeField] private PauseController _pauseController;
     [SerializeField] private HapticManager _hapticManager;
+    [SerializeField] private UIManager _uiManager;
     // TODO: Add EnemyManager etc.
 
     [SerializeField] private bool _autoStartInEditor = true;
@@ -45,7 +46,8 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         RegisterManagers(); // Awake에서 매니저 등록
         InitializeManagers();
 
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded; 
+        _sceneManager.OnStageReloadCompleted += HandleStageReloadCompleted;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
 
         Debug.Log("GameManager Initialized");
 
@@ -64,6 +66,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
     private void OnDestroy()
     {
+        if (_sceneManager != null)
+            _sceneManager.OnStageReloadCompleted -= HandleStageReloadCompleted;
+
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
         UnbindPlayerHealth();
     }
@@ -159,6 +164,12 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
+        if (_uiManager == null)
+        {
+            Debug.LogError("UIManager is not assigned!");
+            return;
+        }
+
         ManagerRegistry.Register<GameManager>(this);
         ManagerRegistry.Register<GameStateManager>(_gameStateManager);
         ManagerRegistry.Register<PoolManager>(_poolManager);
@@ -167,6 +178,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         ManagerRegistry.Register<CheckpointManager>(_checkpointManager);
         ManagerRegistry.Register<PauseController>(_pauseController);
         ManagerRegistry.Register<HapticManager>(_hapticManager);
+        ManagerRegistry.Register<UIManager>(_uiManager);
     }
 
     // 매니저 초기화는 여기서 진행
@@ -179,6 +191,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         Initialize(_checkpointManager);
         Initialize(_pauseController);
         Initialize(_hapticManager);
+        Initialize(_uiManager);
     }
 
     private void Initialize(IInitializable manager)
@@ -204,7 +217,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         _inputManager.EnableUIInput();
 
         _gameStateManager.ChangeState(GameState.Playing);
-        //_sceneManager.LoadStage("JaeinScene"); // Debugging
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        _sceneManager.SetCurrentStage(activeScene.name);
     }
 
     // 다시 시작 (마지막 체크포인트로)
@@ -223,14 +238,14 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
-        Transform respawnPoint = _checkpointManager.CurrentRespawnPoint;
+        Vector3 respawnPoint = _checkpointManager.CurrentRespawnPosition;
         if (respawnPoint == null)
         {
             Debug.LogWarning("RespawnPoint not found.");
             return;
         }
 
-        _player.transform.position = respawnPoint.position;
+        _player.transform.position = respawnPoint;
 
         Rigidbody2D rb = _player.GetComponent<Rigidbody2D>();
         if (rb != null)
@@ -246,6 +261,24 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         playerHealth.ResetHP();
 
         _player.gameObject.SetActive(true); // 플레이어 다시 활성화
+
+        _inputManager.EnablePlayerInput();
+        _gameStateManager.ChangeState(GameState.Playing);
+    }
+
+    private void HandleStageReloadCompleted(string stageName)
+    {
+        Debug.Log($"Stage Reload Completed: {stageName}");
+
+        BindPlayerHealth();
+        _uiManager?.RebindUI();
+        _checkpointManager?.RebindCheckpoints();
+
+        Player player = FindAnyObjectByType<Player>();
+        if (player != null)
+        {
+            _checkpointManager?.MovePlayerToCheckpoint(player);
+        }
 
         _inputManager.EnablePlayerInput();
         _gameStateManager.ChangeState(GameState.Playing);

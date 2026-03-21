@@ -14,13 +14,13 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 
   - Ground
   - Obstacle
-  - 
+  - BreakableTile
   - 
   - 
   - Enemy

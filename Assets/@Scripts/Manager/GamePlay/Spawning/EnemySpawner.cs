@@ -197,8 +197,8 @@ public class EnemySpawner : MonoBehaviour
         {
             // 중복 구독 방어
             // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독
-            //enemyBase.OnDeathFinished -= HandleEnemyDeathFinished;
-            //enemyBase.OnDeathFinished += HandleEnemyDeathFinished;
+            enemyBase.OnDeathFinished -= HandleEnemyDeathFinished;
+            enemyBase.OnDeathFinished += HandleEnemyDeathFinished;
         }
     }
 
@@ -232,7 +232,7 @@ public class EnemySpawner : MonoBehaviour
         if (enemy != null)
         {
             // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독 해제
-            //enemy.OnDeathFinished -= HandleEnemyDeathFinished;
+            enemy.OnDeathFinished -= HandleEnemyDeathFinished;
         }
 
         if (_isChangingWave)

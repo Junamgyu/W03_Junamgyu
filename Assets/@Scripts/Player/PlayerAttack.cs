@@ -14,7 +14,6 @@ public class PlayerAttack : MonoBehaviour
     // 좌클릭 무기 (교체 가능한.)
     [SerializeField] private SO_WeaponBase currentWeaponData;
     private WeaponInstance _currentWeaponInstance;
-
     public WeaponInstance Current => _currentWeaponInstance;
 
     // 머리 쿵 관련
@@ -36,9 +35,7 @@ public class PlayerAttack : MonoBehaviour
     {
         // 풀매니저 세팅
         if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
-        {
             _poolManager = null;
-        }
 
     }
 
@@ -47,9 +44,6 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_shotgunInstance)) return;
         Fire(_shotgunData);
 
-        // 공중에서 쐈으면 공중 반동 상태 진입
-        if (!_player.IsGrounded)
-            _player.HasAirRecoil = true;
     }
 
     public void FireCurrentWeapon()
@@ -59,10 +53,6 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_currentWeaponInstance)) return;
 
         Fire(currentWeaponData);
-
-        // 공중에서 쐈으면 공중 반동 상태 진입
-        if (!_player.IsGrounded)
-            _player.HasAirRecoil = true;
     }
 
     void Fire(SO_WeaponBase data)
@@ -86,16 +76,12 @@ public class PlayerAttack : MonoBehaviour
         TriggerRecoilRoutines(shootDir);
     }
 
-    // 총알이 없을 시 땅이면 재장전.
     bool TryFireWeapon(WeaponInstance instance)
     {
-        if (!instance.TryConsume())
-        {
-            if (!_player.IsGrounded) return false;
+        if (_player.IsGrounded && instance.NeedsReload)
             ReloadAll();
-            if (!instance.TryConsume()) return false;
-        }
-        return true;
+
+        return instance.TryConsume();
     }
 
     Vector2 SnapTo8Direction(Vector2 dir)
@@ -150,23 +136,19 @@ public class PlayerAttack : MonoBehaviour
         StopCoroutine(nameof(DampingRoutine));
         StartCoroutine(nameof(GravityRoutine));
         StartCoroutine(nameof(DampingRoutine));
-        //Time.timeScale = 1f;
 
     }
 
     IEnumerator GravityRoutine()
     {
-        _player.IsGravityOverridden = true;
+        _player.SetActionState(ActionState.Recoiling);
         _rb.gravityScale = 0f;
 
         float elapsed = 0f;
         while (elapsed < _player.gravityOffDuration)
         {
-            // 천장 감지 시 즉시 중단
-            if (Physics2D.OverlapCircle(
-                _ceilingCheck.position,
-                _ceilingCheckRadius,
-                _groundLayer))
+            // 천장 감지 시 즉시 중단 (자연스럽게 떨어지기 위함)
+            if (Physics2D.OverlapCircle(_ceilingCheck.position, _ceilingCheckRadius, _groundLayer))
             {
                 _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, 0f);
                 break;
@@ -175,16 +157,21 @@ public class PlayerAttack : MonoBehaviour
             yield return null; // 매 프레임 체크
         }
         _rb.gravityScale = _player.OriginalGravity;
-        _player.IsGravityOverridden = false;
+        //_player.SetActionState(ActionState.None);
+
+        if (!_player.IsGrounded)
+            _player.CanJump = false; 
+
+
     }
 
     IEnumerator DampingRoutine()
     {
-        _player.IsRecoiling = true;
+        //_player.SetActionState(ActionState.Recoiling); // TODO: 더 오래 걸리는 곳에서 담당, 근데 서로 바뀔 수 있어서 ...
         _rb.linearDamping = _player.dampingValue;
         yield return new WaitForSeconds(_player.dampingDuration);
         _rb.linearDamping = 0f;
-        _player.IsRecoiling = false;
+        _player.SetActionState(ActionState.None);
     }
 
     public void ReloadAll()

@@ -8,7 +8,7 @@ public class BurstRangedEnemy : RangedEnemy
     // =====================
     [SerializeField] private int _burstCount = 3;           // 발사 횟수
     [SerializeField] private float _burstInterval = 0.15f;  // 발사 간격
-    Quaternion rotation;
+    private Quaternion _rotation;
 
     // =====================
     // 삼점사 공격
@@ -17,7 +17,7 @@ public class BurstRangedEnemy : RangedEnemy
     {
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        rotation = Quaternion.Euler(0, 0, angle);
+        _rotation = Quaternion.Euler(0, 0, angle);
         StartCoroutine(nameof(BurstRoutine));
     }
 
@@ -30,7 +30,7 @@ public class BurstRangedEnemy : RangedEnemy
         }
     }
 
-    void FireProjectile()
+    private void FireProjectile()
     {
         if (_projectilePrefab == null)
         {
@@ -38,7 +38,17 @@ public class BurstRangedEnemy : RangedEnemy
             return;
         }
 
-        GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+        GameObject projectile;
+
+        if (_pool != null)
+        {
+            projectile = _pool.Get(_projectilePrefab, transform.position, _rotation);
+        }
+        else
+        {
+            projectile = Instantiate(_projectilePrefab, transform.position, _rotation);
+        }
+
         projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
     }
 }

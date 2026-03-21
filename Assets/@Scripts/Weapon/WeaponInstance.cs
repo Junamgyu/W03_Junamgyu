@@ -7,6 +7,7 @@ public class WeaponInstance
     public int CurrentAmmo { get; private set; }
     private float _nextFireTime = 0f;
     public bool IsReady => Time.time >= _nextFireTime;
+    public bool NeedsReload => CurrentAmmo < Data.maxAmmo;
 
     public event Action<int> OnAmmoChanged;
 
@@ -29,6 +30,7 @@ public class WeaponInstance
 
     public void Reload()
     {
+        if (CurrentAmmo == Data.maxAmmo) return;
         CurrentAmmo = Data.maxAmmo;
         OnAmmoChanged?.Invoke(CurrentAmmo);
     }

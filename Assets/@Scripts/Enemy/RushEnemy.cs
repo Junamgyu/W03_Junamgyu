@@ -1,24 +1,18 @@
 using System.Collections;
 using UnityEngine;
 
-public class RushEnemy : EnemyBase
+public class RushEnemy : NormalEnemyBase
 {
-    // =====================
-    // 돌진 전용 변수
-    // =====================
     [SerializeField] private float _rushSpeed = 100f;
     [SerializeField] private float _rushDuration = 0.5f;
     [SerializeField] private float _rushWindupTime = 0.5f;
-
-    [SerializeField] private ParticleSystem _rushParticle;  // 돌진 파티클
+    [SerializeField] private ParticleSystem _rushParticle;
 
     private bool _isRushing = false;
     private SpriteRenderer _spriteRenderer;
     private Color _originalColor;
+    private Coroutine _rushCoroutine;
 
-    // =====================
-    // 생명주기
-    // =====================
     protected override void Start()
     {
         base.Start();
@@ -26,34 +20,63 @@ public class RushEnemy : EnemyBase
         _originalColor = _spriteRenderer.color;
     }
 
-    // =====================
-    // 공격 (돌진)
-    // =====================
-    protected override void DoAttack()
+    protected override void Update()
     {
-        StartCoroutine(nameof(RushRoutine));
+        if (_isDead) return;
+
+        bool detecting = DetectPlayer();
+
+        if (detecting)
+        {
+            _wasDetecting = true;
+
+            // 돌진 중이 아닐 때는 항상 플레이어 추격
+            if (!_isRushing)
+                MoveToward(_player.position);
+
+            // 공격 사거리 안이고 쿨타임 끝났으면 돌진
+            if (IsInAttackRange() && _canAttack)
+                StartCoroutine(AttackRoutine());
+        }
+        else
+        {
+            if (_wasDetecting)
+            {
+                _wasDetecting = false;
+                _originalPos = transform.position;
+                _patrolTarget = GetRandomPatrolTarget();
+            }
+
+            Patrol();
+        }
     }
+
+    // 돌진 끝날 때까지 canAttack 막음
+    protected override IEnumerator AttackRoutine()
+    {
+        _canAttack = false;
+        yield return StartCoroutine(RushRoutine());
+        yield return new WaitForSeconds(_attackCooldown);
+        _canAttack = true;
+    }
+
+    protected override void DoAttack() { } // AttackRoutine에서 직접 처리
 
     IEnumerator RushRoutine()
     {
         _rb.linearVelocity = Vector2.zero;
+
         if (_rushParticle != null)
             _rushParticle.Play();
 
-        // 색깔 점점 검게
         yield return StartCoroutine(WindupEffectRoutine());
 
-        
-        
-
-        // 색깔 원래대로
         _spriteRenderer.color = _originalColor;
 
-        // 돌진 시작
         _isRushing = true;
         Vector2 rushDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
 
-        float t = 0;
+        float t = 0f;
         while (t < _rushDuration)
         {
             t += Time.deltaTime;
@@ -62,40 +85,30 @@ public class RushEnemy : EnemyBase
         }
 
         _isRushing = false;
+        _rb.linearVelocity = Vector2.zero;
     }
 
     IEnumerator WindupEffectRoutine()
     {
-        float t = 0;
+        float t = 0f;
         while (t < _rushWindupTime)
         {
             t += Time.deltaTime;
-            // 0 → 1로 진행되면서 원래색 → 검정으로
-            float ratio = t / _rushWindupTime;
-            _spriteRenderer.color = Color.Lerp(_originalColor, Color.black, ratio);
+            _spriteRenderer.color = Color.Lerp(_originalColor, Color.black, t / _rushWindupTime);
             yield return null;
         }
     }
 
-    // =====================
-    // 충돌 처리
-    // =====================
-    protected override void OnCollisionEnter2D(Collision2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
         if (!col.gameObject.CompareTag("Player")) return;
+        if (!_isRushing) return;
 
-        if (_isRushing)
-        {
-            _isRushing = false;
-            _rb.linearVelocity = Vector2.zero;
-            _spriteRenderer.color = _originalColor;  // 색깔 복구
-            StopCoroutine(nameof(RushRoutine));
-        }
+        _isRushing = false;
+        _rb.linearVelocity = Vector2.zero;
+        _spriteRenderer.color = _originalColor;
     }
 
-    // =====================
-    // 사망
-    // =====================
     protected override IEnumerator OnDieRoutine()
     {
         yield return new WaitForSeconds(0.2f);
@@ -105,4 +118,7 @@ public class RushEnemy : EnemyBase
     {
         base.OnDrawGizmosSelected();
     }
+
+
 }
+

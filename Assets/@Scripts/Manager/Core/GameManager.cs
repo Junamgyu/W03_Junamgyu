@@ -10,6 +10,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     [SerializeField] private InputManager _inputManager;
     [SerializeField] private CheckpointManager _checkpointManager;
     [SerializeField] private PauseController _pauseController;
+    [SerializeField] private HapticManager _hapticManager;
     // TODO: Add EnemyManager etc.
 
     [SerializeField] private bool _autoStartInEditor = true;
@@ -152,6 +153,12 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
+        if (_hapticManager == null)
+        {
+            Debug.LogError("HapticManager is not assigned!");
+            return;
+        }
+
         ManagerRegistry.Register<GameManager>(this);
         ManagerRegistry.Register<GameStateManager>(_gameStateManager);
         ManagerRegistry.Register<PoolManager>(_poolManager);
@@ -159,6 +166,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         ManagerRegistry.Register<SceneFlowManager>(_sceneManager);
         ManagerRegistry.Register<CheckpointManager>(_checkpointManager);
         ManagerRegistry.Register<PauseController>(_pauseController);
+        ManagerRegistry.Register<HapticManager>(_hapticManager);
     }
 
     // 매니저 초기화는 여기서 진행
@@ -170,6 +178,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         Initialize(_sceneManager);
         Initialize(_checkpointManager);
         Initialize(_pauseController);
+        Initialize(_hapticManager);
     }
 
     private void Initialize(IInitializable manager)
@@ -230,9 +239,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             rb.angularVelocity = 0f;
         }
 
-        _player.IsRecoiling = false;
-        _player.HasAirRecoil = false;
-        _player.IsGravityOverridden = false;
+        _player.SetActionState(ActionState.None);
+        _player.SetLocomotionState(LocomotionState.Idle);
+        _player.CanJump = true;
 
         playerHealth.ResetHP();
 

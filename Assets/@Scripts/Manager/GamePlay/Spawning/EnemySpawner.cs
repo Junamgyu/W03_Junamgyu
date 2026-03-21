@@ -7,6 +7,9 @@ public class EnemySpawner : MonoBehaviour
     [Header("Wave Data")]
     [SerializeField] private List<SO_WaveData> _waveDatas = new();
 
+    [Header("Stop Block")]
+    [SerializeField] private GameObject[] _blocks;
+
     [Header("Spawn Points")]
     [SerializeField] private List<Transform> _spawnPoints = new();
 
@@ -98,6 +101,10 @@ public class EnemySpawner : MonoBehaviour
         if (nextIndex >= _waveDatas.Count)
         {
             Debug.Log($"{name}: 모든 웨이브 완료");
+            for (int i = 0; i < _blocks.Length; i++)
+            {
+                _blocks[i].SetActive(false);
+            }
             // 보상이나 다음 스포너 호출?은 여기에 추가하면 될듯
             return;
         }

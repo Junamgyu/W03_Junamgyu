@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneManager : MonoBehaviour, IInitializable
+public class SceneFlowManager : MonoBehaviour, IInitializable
 {
     public bool IsInitialized { get; private set; }
 

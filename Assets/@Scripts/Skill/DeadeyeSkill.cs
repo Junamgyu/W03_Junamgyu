@@ -6,12 +6,17 @@ using UnityEngine.InputSystem;
 
 public class DeadeyeSkill : MonoBehaviour
 {
+    // Temp
+    [SerializeField] private GameObject _deadeyeBulletPrefab;
+    [SerializeField] private float _deadeyeBulletSpeed = 20f;
+
+    Player _player;
+    Camera _cam;
+    private PoolManager _poolManager;
 
     // =====================
     // 생명주기
     // =====================
-    Player _player;
-    Camera _cam;
 
     void Start()
     {
@@ -19,6 +24,13 @@ public class DeadeyeSkill : MonoBehaviour
         _cam = Camera.main;
         _originalFixedDeltaTime = Time.fixedDeltaTime;
         _player.playerHealth.OnDie += OnPlayerDie;
+
+        // 풀매니저 세팅
+        if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
+        {
+            _poolManager = null;
+        }
+
     }
 
     void Update()
@@ -31,7 +43,6 @@ public class DeadeyeSkill : MonoBehaviour
     {
         _player.playerHealth.OnDie -= OnPlayerDie;
     }
-
     void OnPlayerDie()
     {
         ExitSlow();
@@ -43,7 +54,7 @@ public class DeadeyeSkill : MonoBehaviour
     // 게이지
     // =====================
     #region Gauge
-    [SerializeField] private float _maxGauge = 100f;
+    private float _maxGauge = 100f;
     [Tooltip("적을 죽일 때마다 차는 게이지량")][SerializeField] private float _gaugePerKill = 15f;
     private float _currentGauge = 0f;
 
@@ -52,9 +63,9 @@ public class DeadeyeSkill : MonoBehaviour
 
     public event Action<float> OnGaugeChanged; // UI 연동용
 
-    public void AddGauge(float amount)
+    public void AddGauge()
     {
-        _currentGauge = Mathf.Min(_maxGauge, _currentGauge + amount);
+        _currentGauge = Mathf.Min(_maxGauge, _currentGauge + _gaugePerKill);
         Debug.Log("현재 게이지: " + _currentGauge);
         OnGaugeChanged?.Invoke(_currentGauge);
     }
@@ -212,20 +223,41 @@ public class DeadeyeSkill : MonoBehaviour
         }
     }
 
+    // TODO: 꼼수
     IEnumerator FireAtTargets()
     {
         // 순서대로 처치
         _isFiring = true;
         
+        // 연출용 총알
         foreach (EnemyBase enemy in _targets)
         {
             if (enemy != null && enemy.CurrentHp > 0)
             {
                 enemy.ShowMark(false);
-                enemy.TakeDamage(_damagePerShot);
+
+                Vector2 dir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
+
+                GameObject go = _poolManager != null
+                    ? _poolManager.Get(_deadeyeBulletPrefab, transform.position, Quaternion.identity)
+                    : Instantiate(_deadeyeBulletPrefab, transform.position, Quaternion.identity);
+
+                if (go.TryGetComponent<Rigidbody2D>(out var rb))
+                    rb.linearVelocity = dir * _deadeyeBulletSpeed;
+
             }
+            yield return new WaitForSecondsRealtime(_timeBetweenShots);
+        }
+
+        // 실제 공격
+        foreach (EnemyBase enemy in _targets)
+        {
+            if (enemy != null && enemy.CurrentHp > 0)
+                enemy.TakeDamage(_damagePerShot, false);
+
             yield return new WaitForSeconds(_timeBetweenShots);
         }
+
 
         ExitDeadeye(); // 시간 복구
         _isFiring = false;

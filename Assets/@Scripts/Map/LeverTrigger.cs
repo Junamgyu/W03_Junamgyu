@@ -19,7 +19,7 @@ public class LeverTrigger : MonoBehaviour
     private bool isMove;
 
     [Header("�� ���� ����")]
-    [SerializeField] private GameObject _door;
+    [SerializeField] private GameObject[] _door;
     [SerializeField] private float _closeTime;
     Coroutine runningCo;
 
@@ -84,7 +84,10 @@ public class LeverTrigger : MonoBehaviour
             case LeverType.openDoor:
                 if (_door != null)
                 {
-                    _door.SetActive(true);
+                    for(int i = 0; i < _door.Length; i++)
+                    {
+                        _door[i].SetActive(true);
+                    }
                     runningCo = StartCoroutine(OpenDoor());
                 }
                 break;
@@ -112,6 +115,10 @@ public class LeverTrigger : MonoBehaviour
     IEnumerator OpenDoor()
     {
         yield return new WaitForSeconds(_closeTime);
-        _door.SetActive(false);
+        for(int i = 0; i < _door.Length; i++)
+        {
+            _door[i].SetActive(false);    
+        }
+        
     }
 }

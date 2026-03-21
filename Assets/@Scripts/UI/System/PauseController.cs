@@ -1,0 +1,78 @@
+using UnityEngine;
+
+public class PauseController : MonoBehaviour, IInitializable
+{
+    public bool IsInitialized { get; private set; }
+
+    private InputManager _inputManager;
+    private GameStateManager _gameStateManager;
+
+    public void Initialize()
+    {
+        if (IsInitialized)
+            return;
+
+        ManagerRegistry.TryGet(out _inputManager);
+        ManagerRegistry.TryGet(out _gameStateManager);
+
+        if (_inputManager == null || _gameStateManager == null)
+        {
+            Debug.LogError($"{name}: PauseController Initialize failed.");
+            return;
+        }
+
+        _inputManager.OnPause += HandlePauseInput;
+
+        IsInitialized = true;
+    }
+
+    private void HandlePauseInput(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
+    {
+        if (!ctx.started)
+            return;
+
+        GameState currentState = _gameStateManager.CurrentState;
+
+        if (currentState == GameState.Playing)
+        {
+            PauseGame();
+            return;
+        }
+
+        if (currentState == GameState.Paused)
+        {
+            ResumeGame();
+        }
+    }
+
+    private void PauseGame()
+    {
+        Time.timeScale = 0f;
+        _inputManager.DisablePlayerInput();
+        _gameStateManager.ChangeState(GameState.Paused);
+
+        Debug.Log("Game Paused");
+    }
+
+    private void ResumeGame()
+    {
+        Time.timeScale = 1f;
+        _inputManager.EnablePlayerInput();
+        _gameStateManager.ChangeState(GameState.Playing);
+
+        Debug.Log("Game Resumed");
+    }
+
+    private void OnDestroy()
+    {
+        if (_inputManager != null)
+        {
+            _inputManager.OnPause -= HandlePauseInput;
+        }
+
+        if (Time.timeScale == 0f)
+        {
+            Time.timeScale = 1f;
+        }
+    }
+}

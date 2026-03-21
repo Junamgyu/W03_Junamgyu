@@ -9,7 +9,10 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     [SerializeField] private PoolManager _poolManager;
     [SerializeField] private InputManager _inputManager;
     [SerializeField] private CheckpointManager _checkpointManager;
+    [SerializeField] private PauseController _pauseController;
     // TODO: Add EnemyManager etc.
+
+    [SerializeField] private bool _autoStartInEditor = true;
 
     #region Debugging
     [ContextMenu("Debug Die")]
@@ -44,6 +47,13 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded; 
 
         Debug.Log("GameManager Initialized");
+
+#if UNITY_EDITOR
+        if (_autoStartInEditor)
+        {
+            StartGame();
+        }
+#endif
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -136,12 +146,19 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             return;
         }
 
+        if (_pauseController == null)
+        {
+            Debug.LogError("PauseController is not assigned!");
+            return;
+        }
+
         ManagerRegistry.Register<GameManager>(this);
         ManagerRegistry.Register<GameStateManager>(_gameStateManager);
         ManagerRegistry.Register<PoolManager>(_poolManager);
         ManagerRegistry.Register<InputManager>(_inputManager);
         ManagerRegistry.Register<SceneFlowManager>(_sceneManager);
         ManagerRegistry.Register<CheckpointManager>(_checkpointManager);
+        ManagerRegistry.Register<PauseController>(_pauseController);
     }
 
     // 매니저 초기화는 여기서 진행
@@ -152,6 +169,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         Initialize(_inputManager);
         Initialize(_sceneManager);
         Initialize(_checkpointManager);
+        Initialize(_pauseController);
     }
 
     private void Initialize(IInitializable manager)
@@ -171,8 +189,13 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         }
 
         Debug.Log("Game Start!");
+
+        Time.timeScale = 1f;
+        _inputManager.EnablePlayerInput();
+        _inputManager.EnableUIInput();
+
         _gameStateManager.ChangeState(GameState.Playing);
-        _sceneManager.LoadStage("Stage_01");
+        //_sceneManager.LoadStage("JaeinScene"); // Debugging
     }
 
     // 다시 시작 (마지막 체크포인트로)

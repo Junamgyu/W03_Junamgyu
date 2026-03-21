@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -11,15 +12,20 @@ public class CameraManager : MonoBehaviour
         Locked,
         Boss,
     }
-    [SerializeField] private CameraMode _cameraMode;
 
-    //[SerializeField] private CameraFollowController followController;
-    [SerializeField] private CameraBoundsController boundsController;
-    //[SerializeField] private CameraEffectController effectController;
-    [SerializeField] private CameraZoneController zoneController;
+    [SerializeField] private CameraBoundsController _boundsController;
+    [SerializeField] private CameraZoneController _zoneController;
+    [SerializeField] private CameraDollyController _dollyController;
+
+    [SerializeField] private Transform _playerZoneCameraAnchor;
+    [SerializeField] private Transform _playerDefaultCameraAnchor;
+    [SerializeField] private float _baseCameraSize=15f;
+    public GameObject _cineCam;
+    public GameObject _cutSceneCam;
+
 
     public CameraZone CurrentZone { get; private set; }
-    public CameraMode CurrentMode { get; private set; } = CameraMode.Follow;
+    public CameraMode CurrentMode = CameraMode.Follow;
 
     private void Awake()
     {
@@ -35,9 +41,12 @@ public class CameraManager : MonoBehaviour
     public void SetZone(CameraZone zone)
     {
         CurrentZone = zone;
-        CurrentMode = zone != null ? CameraMode.ZoneFollow : CameraMode.Follow;
-
-        zoneController.ApplyZone(zone);
+        if(zone != null)
+            CurrentMode = CameraMode.ZoneFollow;
+        else
+            CurrentMode = CameraMode.Follow;
+        _zoneController.ApplyZone(zone);
+        SettingFollow();
     }
 
     public void ClearZone(CameraZone zone)
@@ -46,7 +55,30 @@ public class CameraManager : MonoBehaviour
 
         CurrentZone = null;
         CurrentMode = CameraMode.Follow;
+        _zoneController.ApplyZone(null);
+        SettingFollow();
+    }
 
-        zoneController.ApplyZone(null);
+    public void SettingFollow()
+    {
+        if(CurrentMode != CameraMode.Follow)
+            _cineCam.GetComponent<CinemachineCamera>().Target.TrackingTarget = _playerZoneCameraAnchor;
+        else
+            _cineCam.GetComponent<CinemachineCamera>().Target.TrackingTarget = _playerDefaultCameraAnchor;
+    }
+
+    public void SetSize(float size)
+    {
+        _cineCam.GetComponent<CinemachineCamera>().Lens.OrthographicSize = size;
+    }
+
+    public void ResetSize()
+    {
+        _cineCam.GetComponent<CinemachineCamera>().Lens.OrthographicSize = _baseCameraSize;
+    }
+
+    public void BossIntroCutScene(CameraCutScene cutScene)
+    {
+        _dollyController.PlayerBossIntro(_cineCam, _cutSceneCam, cutScene);
     }
 }

@@ -25,25 +25,24 @@ public class Explosives : MonoBehaviour
         Collider2D[] _hits = Physics2D.OverlapCircleAll(transform.position, _explosionRadius, _interactionMask);
         foreach (Collider2D _hit in _hits)
         {
-            //PlayerHealth playerHealth;
+            PlayerHealth playerHealth;
             BreakableTile tile;
             EnemyBase _enemy;
             
-            if(tile = _hit.GetComponent<BreakableTile>())
+            if((tile = _hit.GetComponent<BreakableTile>()) != null)
             {
                 Destroy(tile.gameObject);
-            }else if(_enemy = _hit.GetComponent<EnemyBase>())
+            }else if((_enemy = _hit.GetComponent<EnemyBase>())!= null)
             {
                 _enemy.TakeDamage(_explosionDamage *100);
-            }/*
-            else if (playerHealth = _hit.gameObject.GetComponent<PlayerHealth>() != null)
+            }
+            else if ((playerHealth = _hit.gameObject.GetComponent<PlayerHealth>()) != null)
             {
-                if (playerHealth != null && !_isInvincible)
+                if (playerHealth != null)
                 {
                     playerHealth.TakeDamage(_explosionDamage);
                 }
             }
-            */
         }
     }
 

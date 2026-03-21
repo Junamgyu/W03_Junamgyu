@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerAimer : MonoBehaviour
 {
     [SerializeField] private Camera _cam;
+    [SerializeField] private Transform _gunPivot;
 
     public Vector2 AimDirection { get; private set; } = Vector2.right;
 
@@ -30,5 +31,11 @@ public class PlayerAimer : MonoBehaviour
             if (input.sqrMagnitude > 0.001f)
                 AimDirection = input.normalized;
         }
+
+        // GunPivot 회전
+        float angle = Mathf.Atan2(AimDirection.y, AimDirection.x) * Mathf.Rad2Deg;
+        _gunPivot.rotation = Quaternion.Euler(0f, 0f, angle);
+
+
     }
 }

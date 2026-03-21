@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -21,6 +22,14 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _ceilingCheckRadius = 0.1f;
 
+    // 총알 스폰 위치
+    [SerializeField] private Transform _gunMuzzle;      
+    [SerializeField] private Transform _shotgunMuzzle;
+
+    // 샷건 위치 조정
+    [SerializeField] private Transform _shotgunPivot;
+    [SerializeField] private float _shotgunIdleAngle = 270f; // 평소 위로 든 각도
+
     private PoolManager _poolManager;
     private HapticManager _hapticManager;
 
@@ -40,7 +49,15 @@ public class PlayerAttack : MonoBehaviour
 
         if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
             _hapticManager = null;
+
+        _player.OnLocomotionChanged += OnLocomotionChanged;
     }
+
+    void OnDestroy()
+    {
+        _player.OnLocomotionChanged -= OnLocomotionChanged;
+    }
+
 
     public void FireShotgun()
     {
@@ -48,6 +65,10 @@ public class PlayerAttack : MonoBehaviour
         Fire(_shotgunData);
 
         _hapticManager?.PlayShotgunShot();
+
+        float angle = Mathf.Atan2(_player.playerAimer.AimDirection.y, _player.playerAimer.AimDirection.x) * Mathf.Rad2Deg + 180f;
+        _shotgunPivot.DORotate(new Vector3(0f, 0f, angle), 0f); // 0f = 즉시 회전
+
     }
 
     public void FireCurrentWeapon()
@@ -116,23 +137,15 @@ public class PlayerAttack : MonoBehaviour
 
     void SpawnBullet(SO_WeaponBase data, Vector2 dir)
     {
-        if (data.bulletPrefab == null) return;
+        // 무기에 따라 스폰 위치 결정
+        Transform muzzle = data == _shotgunData ? _shotgunMuzzle : _gunMuzzle;
+        Vector3 spawnPos = muzzle != null ? muzzle.position : _player.transform.position;
 
-        Vector3 spawnPos = _player.transform.position;
-        GameObject bullet;
+        GameObject bullet = _poolManager != null
+            ? _poolManager.Get(data.bulletPrefab, spawnPos, Quaternion.identity)
+            : Instantiate(data.bulletPrefab, spawnPos, Quaternion.identity);
 
-        // 풀매니저 연동: 풀매니저가 있으면 풀에서, 없으면 Instantiate
-        if (_poolManager != null)
-        {
-            bullet = _poolManager.Get(data.bulletPrefab, spawnPos, Quaternion.identity);
-        }
-        else
-        {
-            bullet = Instantiate(data.bulletPrefab, _player.transform.position, Quaternion.identity);
-        }
-
-        Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
-        if (bulletRb != null)
+        if (bullet.TryGetComponent<Rigidbody2D>(out var bulletRb))
             bulletRb.linearVelocity = dir * data.bulletSpeed;
     }
 
@@ -191,6 +204,17 @@ public class PlayerAttack : MonoBehaviour
     {
         currentWeaponData = newWeapon;
         _currentWeaponInstance = new WeaponInstance(newWeapon); // 교체 시 인스턴스도 새로 생성 (기존꺼는 자동으로 GC가 해결.)
+    }
+
+
+    // 지워야 할 코드
+    void OnLocomotionChanged(LocomotionState state)
+    {
+        if (state == LocomotionState.Land)
+        {
+            // 착지 시 샷건 원래 자세로 복귀
+            _shotgunPivot.DORotate(new Vector3(0f, 0f, _shotgunIdleAngle), 0.2f);
+        }
     }
 
     // 디버그용 필드

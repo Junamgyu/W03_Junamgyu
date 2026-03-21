@@ -976,6 +976,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 993215271875635910, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1185342892894980315, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1348349986208752300, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1638868598281984233, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2674894031652311625, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2961116773577654796, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
       propertyPath: m_Name
       value: Explosives
@@ -1018,6 +1038,34 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3087086275426070889, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3483659585412292998, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4146809386941029014, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5521172806898910965, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6092001756785598063, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7499768477322085031, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8063285127178846926, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8087631869198405861, guid: 02fadedba430c8940acef9e4456a3e9b, type: 3}
+      propertyPath: m_SortingOrder
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

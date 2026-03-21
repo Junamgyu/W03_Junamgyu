@@ -12,6 +12,6 @@ public class CameraZoneController : MonoBehaviour
             return;
         }
 
-        boundsController.SetBounds(zone.MinBounds, zone.MaxBounds, zone.UseBounds);
+        boundsController.SetBounds(zone.MinBounds, zone.MaxBounds, zone.UseBounds, zone.CorrectionX, zone.CorrectionY);
     }
 }

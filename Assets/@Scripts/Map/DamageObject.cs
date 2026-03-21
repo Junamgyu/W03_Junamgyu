@@ -2,17 +2,14 @@ using UnityEngine;
 
 public class DamageObject : MonoBehaviour
 {
-    [SerializeField] float _obejctDamage;
+    [SerializeField] int _obejctDamage;
 
-    /*
-    private void OnTriggerStay2D(Collider other)
+    private void OnTriggerStay2D(Collider2D other)
     {
-        무적 시간을 불러와서 체크 한 번 더 해줘야 함.
         PlayerHealth playerHealth = GetComponent<PlayerHealth>();
-        if (playerHealth != null && !_isInvincible)
+        if (playerHealth != null)
         {
             playerHealth.TakeDamage(_obejctDamage);
         }
     }
-    */
 }

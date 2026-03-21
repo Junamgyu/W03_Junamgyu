@@ -1376,6 +1376,10 @@ PrefabInstance:
       propertyPath: _groundCheckRadius
       value: 0.4
       objectReference: {fileID: 0}
+    - target: {fileID: 2265137919045883275, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
+      propertyPath: _airRecoilMoveInfluence
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 3104665959337544455, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
       propertyPath: landDuration
       value: 0.1

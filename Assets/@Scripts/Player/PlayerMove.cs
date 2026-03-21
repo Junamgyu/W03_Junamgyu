@@ -11,6 +11,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _groundCheckRadius = 0.1f;
 
+    [Tooltip("공중 반동아닐 시의 좌우 이동 저항")][SerializeField] private float _recoilMoveInfluence = 0.3f; 
+    [Tooltip("공중 반동일 시의 좌우 이동 저항")][SerializeField] private float _airRecoilMoveInfluence = 0.1f; 
+
     private float _landTimer = 0f;
 
     void Start()
@@ -21,7 +24,20 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_player.IsRecoiling) return; // 반동 받는 동안 못 움직임.
+        if (_player.IsRecoiling && !_player.IsGrounded)
+        {
+            float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _airRecoilMoveInfluence;
+            _rb.linearVelocity = new Vector2(newX, _rb.linearVelocityY);
+            return;
+        }
+
+        if (_player.IsRecoiling && _player.IsGrounded)
+        {
+            float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _recoilMoveInfluence;
+            _rb.linearVelocity = new Vector2(newX, _rb.linearVelocityY);
+            return;
+        }
+
         _rb.linearVelocity = new Vector2(_player.moveSpeed * _dir.x, _rb.linearVelocityY);
 
     }

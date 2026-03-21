@@ -13,6 +13,14 @@ public class RangedEnemy : NormalEnemyBase
     [SerializeField] private int _burstCount = 1;
     [SerializeField] private float _burstInterval = 0.15f;
 
+
+    protected PoolManager _pool;
+
+    private void Awake()
+    {
+        ManagerRegistry.TryGet(out _pool);
+    }
+
     private bool _isBursting = false;
 
     protected override void Update()
@@ -92,12 +100,24 @@ public class RangedEnemy : NormalEnemyBase
 
         for (int i = 0; i < _burstCount; i++)
         {
-            GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+            GameObject projectile;
+
+            if (_pool != null)
+            {
+                projectile = _pool.Get(_projectilePrefab, transform.position, rotation);
+            }
+            else
+            {
+                projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+            }
+
             projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
+
             if (i < _burstCount - 1)
                 yield return new WaitForSeconds(_burstInterval);
-        }
 
+
+        }
         _isBursting = false;
     }
 

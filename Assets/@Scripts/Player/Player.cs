@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오리고 있는 상태를 의미, Walk, Run 추가 예정.
+public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오리고 있는 상태를 의미, Run 추가 예정.
 public enum ActionState { None, Recoiling, Deadeye, Slow }
 
 public class Player : MonoBehaviour
@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
     void Awake()
     {
         playerAttack= GetComponent<PlayerAttack>(); // 샷건, 주무기 반동 담당 (반동 시 중력 제어 추가 됨)
-        playerMove= GetComponent<PlayerMove>(); // 좌우 이동 + 땅 여부 판단 담당
+        playerMove= GetComponent<PlayerMove>(); // 좌우 이동 + 땅 여부 판단 담당 + Locomotion
         playerAimer = GetComponent<PlayerAimer>(); 
         playerJump = GetComponent<PlayerJump>(); // 점프 + 올라갈 때, 내려갈 때의 중력 담당
         playerHealth = GetComponent<PlayerHealth>();

@@ -22,6 +22,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float _ceilingCheckRadius = 0.1f;
 
     private PoolManager _poolManager;
+    private HapticManager _hapticManager;
 
     private void Awake()
     {
@@ -37,6 +38,8 @@ public class PlayerAttack : MonoBehaviour
         if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))
             _poolManager = null;
 
+        if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
+            _hapticManager = null;
     }
 
     public void FireShotgun()
@@ -44,6 +47,7 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_shotgunInstance)) return;
         Fire(_shotgunData);
 
+        _hapticManager?.PlayShotgunShot();
     }
 
     public void FireCurrentWeapon()
@@ -53,6 +57,8 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_currentWeaponInstance)) return;
 
         Fire(currentWeaponData);
+
+        _hapticManager?.PlayPistolShot();
     }
 
     void Fire(SO_WeaponBase data)

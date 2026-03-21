@@ -1,71 +1,77 @@
 using System.Collections;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
 
 public class RangedEnemy : NormalEnemyBase
 {
-    // =====================
-    // 원거리 전용 변수
-    // =====================
     [SerializeField] protected GameObject _projectilePrefab;
     [SerializeField] protected float _projectileSpeed = 8f;
-    [SerializeField] protected float _retreatRange = 2f;      // 이 거리보다 가까우면 후퇴
-    [SerializeField] protected float _preferredRange = 4f;    // 유지하려는 거리
+    [SerializeField] protected float _retreatRange = 2f;
+    [SerializeField] protected float _preferredRange = 4f;
     [SerializeField] protected Transform _gunPivot;
 
-    // =====================
-    // OnEnter 오버라이드
-    // =====================
-    protected override void OnEnterChase()
+    [Header("연사 설정")]
+    [SerializeField] private int _burstCount = 1;
+    [SerializeField] private float _burstInterval = 0.15f;
+
+    private bool _isBursting = false;
+
+    protected override void Update()
     {
-        // 원거리는 Chase 진입 시 거리 체크 후 후퇴 or 추격
+        if (_isDead) return;
+
+        bool detecting = DetectPlayer();
+
+        if (detecting)
+        {
+            _wasDetecting = true;
+
+            float dist = Vector2.Distance(transform.position, _player.position);
+
+            // 총구 방향 플레이어로 (발사 중에는 고정)
+            if (_gunPivot != null && !_isBursting)
+            {
+                Vector2 aimDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+                _gunPivot.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg);
+            }
+
+            // 발사 중에는 이동 정지
+            if (!_isBursting)
+            {
+                if (dist <= _retreatRange)
+                {
+                    Vector2 retreatDir = ((Vector2)transform.position - (Vector2)_player.position).normalized;
+                    MoveToward((Vector2)transform.position + retreatDir);
+                }
+                else if (dist > _preferredRange)
+                {
+                    MoveToward(_player.position);
+                }
+                else
+                {
+                    _rb.linearVelocity = Vector2.zero;
+                }
+            }
+            else
+            {
+                _rb.linearVelocity = Vector2.zero;
+            }
+
+            if (dist <= _attackRange && _canAttack)
+                StartCoroutine(AttackRoutine());
+        }
+        else
+        {
+            if (_wasDetecting)
+            {
+                _wasDetecting = false;
+                _originalPos = transform.position;
+                _patrolTarget = GetRandomPatrolTarget();
+            }
+
+            Patrol();
+        }
     }
 
-    // =====================
-    // OnUpdate 오버라이드
-    // =====================
-    protected override void OnUpdateChase()
-    {
-        if (!DetectPlayer())
-        {
-            ChangeState(EnemyState.Idle);
-            return;
-        }
-
-        float distToPlayer = Vector2.Distance(transform.position, _player.position);
-
-        if (distToPlayer <= _retreatRange)
-        {
-            // 너무 가까우면 뒤로 빠짐
-            Vector2 retreatDir = ((Vector2)transform.position - (Vector2)_player.position).normalized;
-            Move(retreatDir);
-        }
-        else if (distToPlayer > _preferredRange)
-        {
-            // 너무 멀면 가까이 이동
-            Vector2 chaseDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
-            Move(chaseDir);
-        }
-
-        if (_gunPivot != null)
-        {
-            Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            Quaternion rotation = Quaternion.Euler(0, 0, angle);
-            _gunPivot.rotation = rotation;
-        }
-
-        if (distToPlayer <= _attackRange && _canAttack)
-        {
-            // 사거리 안이고 쿨타임 끝났으면 공격
-            ChangeState(EnemyState.Attack);
-        }
-
-    }
-
-    // =====================
-    // 공격
-    // =====================
     protected override void DoAttack()
     {
         if (_projectilePrefab == null)
@@ -73,23 +79,30 @@ public class RangedEnemy : NormalEnemyBase
             Debug.LogWarning($"{gameObject.name}: 투사체가 없습니다.");
             return;
         }
-
-
-        Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        Quaternion rotation = Quaternion.Euler(0, 0, angle);
-
-        
-        GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
-        projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
+        StartCoroutine(BurstRoutine());
     }
 
-    // =====================
-    // 사망 오버라이드 (예시)
-    // =====================
+    IEnumerator BurstRoutine()
+    {
+        _isBursting = true;
+        _rb.linearVelocity = Vector2.zero;
+
+        Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
+        Quaternion rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
+
+        for (int i = 0; i < _burstCount; i++)
+        {
+            GameObject projectile = Instantiate(_projectilePrefab, transform.position, rotation);
+            projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
+            if (i < _burstCount - 1)
+                yield return new WaitForSeconds(_burstInterval);
+        }
+
+        _isBursting = false;
+    }
+
     protected override IEnumerator OnDieRoutine()
     {
-        // TODO: 사망 이펙트
         yield return new WaitForSeconds(0.3f);
     }
 }

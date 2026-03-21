@@ -671,19 +671,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RushEnemy
   _maxHp: 100
   _attackDamage: 1
+  _markIndicator: {fileID: 0}
   _moveSpeed: 5
   _attackRange: 15
-  _detectionRange: 20
-  _attackCooldown: 5
-  _hitStunDuration: 0.2
-  _attackMotionDuration: 0.3
+  _detectionRange: 25
+  _attackCooldown: 4
   _isFlying: 1
-  _patrolDistance: 3
-  _idleWaitTime: 2
-  _markIndicator: {fileID: 0}
-  _excludeLayer:
+  _patrolRadius: 3
+  _wallLayer:
     serializedVersion: 2
-    m_Bits: 32768
+    m_Bits: 0
   _rushSpeed: 30
   _rushDuration: 1
   _rushWindupTime: 0.5

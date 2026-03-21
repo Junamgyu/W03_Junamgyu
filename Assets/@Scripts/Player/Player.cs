@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-public enum ActionState { Idle, Jumping, Recoiling, Deadeye, Slow }
-public enum GroundState { Grounded, Airborne } // 오르는 상태, 떨어지는 상태 같은 것으로 구체화?
+public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오리고 있는 상태를 의미, Walk, Run 추가 예정.
+public enum ActionState { None, Recoiling, Deadeye, Slow }
 
 public class Player : MonoBehaviour
 {
@@ -12,15 +12,33 @@ public class Player : MonoBehaviour
     public float dampingValue = 8f;
     public float OriginalGravity { get; private set; }
 
-    public ActionState CurrentAction { get; private set; } = ActionState.Idle;
-    public GroundState CurrentGround { get; private set; } = GroundState.Airborne; // TODO: 캐릭터가 정확히 땅에서 시작하면 수정 필요.
-    public bool CanJump { get; set; } = true; // 샷건 반동을 받고 조금이라도 떠 있으면 막힘, 2단 점프 없음.
+    // 반동 뒤 점프 막기 위함
+    public bool CanJump { get; set; } = true;
 
-    public void SetActionState(ActionState state) => CurrentAction = state;
-    public void SetGroundState(GroundState state) => CurrentGround = state;
+    // Temp
+    [Header("Land")]
+    public float landDuration = 0.1f;
+
+    public LocomotionState CurrentLocomotion { get; private set; } = LocomotionState.Idle;
+    public ActionState CurrentAction { get; private set; } = ActionState.None;
+
+    public void SetLocomotionState(LocomotionState state)
+    {
+        if (CurrentLocomotion == state) return;
+
+        if (CurrentLocomotion == LocomotionState.Land && state != LocomotionState.Idle) return;
+
+        CurrentLocomotion = state;
+    }
+
+    public void SetActionState(ActionState state)
+    {
+        if (CurrentAction == state) return; // 같은 상태면 무시
+        CurrentAction = state;
+    }
 
     // 편의 프로퍼티
-    public bool IsGrounded => CurrentGround == GroundState.Grounded;
+    public bool IsGrounded => CurrentLocomotion == LocomotionState.Idle || CurrentLocomotion == LocomotionState.Land;
     public bool IsRecoiling => CurrentAction == ActionState.Recoiling;
 
     public PlayerAttack playerAttack{ get; private set; }

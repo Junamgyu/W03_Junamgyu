@@ -38,8 +38,6 @@ public class PlayerJump : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (!_player.CanJump) return;
-
         if (context.started)
         {
             // 지상이거나 코요테 타임 안이면 점프 가능
@@ -58,9 +56,10 @@ public class PlayerJump : MonoBehaviour
         if (_player.CurrentAction == ActionState.Recoiling) return; // 반동 중이면 막음.
 
         // 코요테 타임 카운터
-        if (!_player.IsGrounded && !_currentlyJumping)
+        // (참고) Land 중엔 코요테 타임 카운터 증가 안 함
+        if (_player.CurrentLocomotion == LocomotionState.Falling)
             _coyoteTimeCounter += Time.fixedDeltaTime;
-        else if (_player.IsGrounded)  // 지상일 때만 리셋
+        else
             _coyoteTimeCounter = 0f;
 
         ApplyGravity();
@@ -75,7 +74,6 @@ public class PlayerJump : MonoBehaviour
     // 중력 배율 결정
     void ApplyGravity()
     {
-
         // 올라가는 중
         if (_rb.linearVelocity.y > 0.01f)
         {
@@ -99,10 +97,6 @@ public class PlayerJump : MonoBehaviour
             _gravMultiplier = 1f;
         }
 
-        // 중력 스케일 적용
-        // PlayerAttack의 GravityRoutine과 충돌 방지:
-        // IsRecoiling 중엔 gravityScale을 건드리지 않음
-        
         // 원하는 점프 높이와 정점 도달 시간으로부터 필요한 중력을 역산하는 로직
         Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
         _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
@@ -118,9 +112,11 @@ public class PlayerJump : MonoBehaviour
     // 실제 점프 로직
     void DoJump()
     {
+        if (!_player.CanJump) return;
+
         _desiredJump = false;
         _gravMultiplier = 1f; // 점프 시작 시점에 중력 배율을 초기화해서 jumpSpeed 계산을 깔끔하게 하기 위함.
-        _player.SetActionState(ActionState.Jumping);
+        //_player.SetLocomotionState(LocomotionState.Jumping); // Move에서 해줌.
 
         Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
         _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;

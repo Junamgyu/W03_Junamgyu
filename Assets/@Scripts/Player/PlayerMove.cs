@@ -11,6 +11,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     [SerializeField] private float _groundCheckRadius = 0.1f;
 
+    private float _landTimer = 0f;
+
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -19,9 +21,6 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
-        // TODO 반동으로 인해 뜨게 되었을 경우 IsRecoiling이 짧기도 하고 HasAirRecoil가 true가 되어야 하는데 안됨
-        //Debug.Log($"IsRecoiling => {_player.IsRecoiling},  HasAirRecoil => {_player.HasAirRecoil}");
-
         if (_player.IsRecoiling) return; // 반동 받는 동안 못 움직임.
         _rb.linearVelocity = new Vector2(_player.moveSpeed * _dir.x, _rb.linearVelocityY);
 
@@ -36,9 +35,34 @@ public class PlayerMove : MonoBehaviour
         {
             _player.playerAttack.ReloadAll(); // 무기 전체 재장전
             _player.CanJump = true;
+            _player.SetLocomotionState(LocomotionState.Land);
+            _landTimer = 0f;
         }
-            
-        _player.SetGroundState(isGrounded ? GroundState.Grounded : GroundState.Airborne);
+
+        // Land 타이머
+        if (_player.CurrentLocomotion == LocomotionState.Land)
+        {
+            _landTimer += Time.deltaTime;
+            if (_landTimer >= _player.landDuration)
+            {
+                _player.SetLocomotionState(LocomotionState.Idle);
+            }
+            return; // Land 중엔 아래 로직 스킵
+        }
+
+        // LocomotionState 세팅
+        if (isGrounded)
+        {
+            _player.SetLocomotionState(LocomotionState.Idle);
+        }
+        else
+        {
+            if (_rb.linearVelocity.y > 0.01f)
+                _player.SetLocomotionState(LocomotionState.Jumping);
+            else
+                _player.SetLocomotionState(LocomotionState.Falling);
+        }
+
     }
 
     public void CanMove(Vector2 input)

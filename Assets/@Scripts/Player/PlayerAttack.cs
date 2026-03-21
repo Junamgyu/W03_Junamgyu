@@ -157,11 +157,12 @@ public class PlayerAttack : MonoBehaviour
             yield return null; // 매 프레임 체크
         }
         _rb.gravityScale = _player.OriginalGravity;
-        _player.SetActionState(ActionState.Idle);
+        //_player.SetActionState(ActionState.None);
 
-        // 반동 끝난 후 공중이면 점프 봉인
         if (!_player.IsGrounded)
-            _player.CanJump = false;
+            _player.CanJump = false; 
+
+
     }
 
     IEnumerator DampingRoutine()
@@ -170,7 +171,7 @@ public class PlayerAttack : MonoBehaviour
         _rb.linearDamping = _player.dampingValue;
         yield return new WaitForSeconds(_player.dampingDuration);
         _rb.linearDamping = 0f;
-        //_player.SetActionState(ActionState.Idle);
+        _player.SetActionState(ActionState.None);
     }
 
     public void ReloadAll()

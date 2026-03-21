@@ -207,8 +207,8 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             rb.angularVelocity = 0f;
         }
 
-        _player.SetActionState(ActionState.Idle);
-        _player.SetGroundState(GroundState.Airborne); // 리스폰 직후엔 낙하 상태로 시작
+        _player.SetActionState(ActionState.None);
+        _player.SetLocomotionState(LocomotionState.Idle);
         _player.CanJump = true;
 
         playerHealth.ResetHP();

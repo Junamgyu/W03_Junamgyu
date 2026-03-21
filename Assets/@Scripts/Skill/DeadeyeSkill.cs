@@ -43,6 +43,7 @@ public class DeadeyeSkill : MonoBehaviour
     {
         _player.playerHealth.OnDie -= OnPlayerDie;
     }
+
     void OnPlayerDie()
     {
         ExitSlow();
@@ -106,7 +107,8 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void EnterSlow()
     {
-        _player.SetActionState(ActionState.Slow);
+        if (_player.CurrentAction != ActionState.Deadeye)
+            _player.SetActionState(ActionState.Slow);
         Time.timeScale = _slowTimeScale;
         Time.fixedDeltaTime = _originalFixedDeltaTime * _slowTimeScale;
     }
@@ -115,7 +117,7 @@ public class DeadeyeSkill : MonoBehaviour
     {
         // Deadeye 중엔 Slow만 단독으로 해제하지 않음
         if (_player.CurrentAction != ActionState.Deadeye)
-            _player.SetActionState(ActionState.Idle);
+            _player.SetActionState(ActionState.None);
         Time.timeScale = 1f;
         Time.fixedDeltaTime = _originalFixedDeltaTime;
     }
@@ -263,7 +265,7 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void ExitDeadeye()
     {
-        _player.SetActionState(ActionState.Idle);
+        _player.SetActionState(ActionState.None);
         _isAiming = false;
         ExitSlow(); // 슬로우 자동 해제
         foreach (EnemyBase enemy in _targets)

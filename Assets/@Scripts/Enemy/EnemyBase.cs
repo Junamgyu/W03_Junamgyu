@@ -255,8 +255,9 @@ public abstract class EnemyBase : EntityBase
     // =====================
     // 전투
     // =====================
-    public void TakeDamage(int damage, bool isAddGauge = false)
+    public virtual void TakeDamage(int damage, bool isAddGauge = false)
     {
+        Debug.Log("1이거다");
         if (_currentState == EnemyState.Dead) return;
         base.TakeDamage(damage);
         this.isAddGauge = isAddGauge;

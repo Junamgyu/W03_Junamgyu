@@ -2,7 +2,7 @@
 using UnityEngine;
 
 public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오리고 있는 상태를 의미, Run 추가 예정.
-public enum ActionState { None, Recoiling, Deadeye, Slow }
+public enum ActionState { None, Recoiling, Deadeye, Slow } // TODO: Recoiling이랑 스킬 부분 따로 해야 할듯, Recoiling 이랑 스킬은 공존 할 수 없는 것이었음.
 
 public class Player : MonoBehaviour
 {

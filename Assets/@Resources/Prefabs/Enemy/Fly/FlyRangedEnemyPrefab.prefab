@@ -339,6 +339,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemy
   _maxHp: 100
   _attackDamage: 10
+  _markIndicator: {fileID: 0}
   _moveSpeed: 5
   _attackRange: 15
   _detectionRange: 25
@@ -348,7 +349,6 @@ MonoBehaviour:
   _isFlying: 1
   _patrolDistance: 5
   _idleWaitTime: 2
-  _markIndicator: {fileID: 0}
   _excludeLayer:
     serializedVersion: 2
     m_Bits: 32768

@@ -8,34 +8,124 @@ public class BossController : MonoBehaviour
     public BossEye[] eyes;
 
     [Header("회전 설정")]
-    public float rotationSpeed = 30f;
+    public float rotationSpeedMin = 30f;  // 기본 속도
+    public float rotationSpeedMax = 60f; // 눈 전부 죽었을 때 속도
 
     [Header("레이저 페이즈 설정")]
     public float laserDuration = 5f;
     public float idleDuration = 5f;
 
-    [Header("소환 설정")]
-    public GameObject[] minionPrefabs;
-    public Transform spawnPoint;
-    public float spawnInterval = 5f;
-    public int spawnCountPerWave = 2;
+    [Header("돌진 설정")]
+    public float dashBackDistance = 1.5f;
+    public float dashBackSpeed = 2f;
+    public float dashSpeed = 15f;
+    public float dashDistance = 8f;
+    public float returnSpeed = 5f;
+    public float dashCooldown = 1f;
 
     public float TotalHp => CalculateTotalHp();
 
+    private float _currentRotationSpeed;
     private bool _isDead = false;
-    private bool _summonStarted = false;
     private int _prevDeadCount = 0;
+    private Transform _player;
+    private Vector3 _originPos;
 
     void Start()
     {
-        StartCoroutine(AttackCycleRoutine());
+        _originPos = transform.position;
+        _currentRotationSpeed = rotationSpeedMin;
+
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null) _player = playerObj.transform;
+
+        StartCoroutine(PatternCycleRoutine());
         StartCoroutine(DeathCheckRoutine());
     }
 
     void Update()
     {
         if (_isDead) return;
-        transform.Rotate(0f, 0f, -rotationSpeed * Time.deltaTime);
+        transform.Rotate(0f, 0f, -_currentRotationSpeed * Time.deltaTime);
+    }
+
+    // =====================
+    // 회전 속도 갱신
+    // =====================
+    void UpdateRotationSpeed()
+    {
+        float t = (float)DeadCount() / eyes.Length;
+        _currentRotationSpeed = Mathf.Lerp(rotationSpeedMin, rotationSpeedMax, t);
+    }
+
+    // =====================
+    // 패턴 사이클
+    // =====================
+    IEnumerator PatternCycleRoutine()
+    {
+        while (!_isDead)
+        {
+            int pattern = Random.Range(0, 2);
+
+            if (pattern == 0)
+                yield return StartCoroutine(LaserPattern());
+            else
+                yield return StartCoroutine(DashPattern());
+
+            yield return new WaitForSeconds(idleDuration);
+        }
+    }
+
+    // =====================
+    // 레이저 패턴
+    // =====================
+    IEnumerator LaserPattern()
+    {
+        BossEye[] ready = GetReadyEyes();
+        if (ready.Length == 0) yield break;
+
+        int count = Mathf.Min(Random.Range(1, 4), ready.Length);
+        List<BossEye> targets = PickRandom(ready, count);
+        foreach (var eye in targets)
+            eye.BeginLaser(laserDuration);
+
+        yield return new WaitForSeconds(laserDuration);
+    }
+
+    // =====================
+    // 돌진 패턴
+    // =====================
+    IEnumerator DashPattern()
+    {
+        if (_player == null) yield break;
+
+        float savedRotSpeed = _currentRotationSpeed;
+        _currentRotationSpeed = 0f;
+
+        Vector3 startPos = transform.position;
+        Vector3 toPlayer = (_player.position - transform.position).normalized;
+
+        Vector3 backTarget = startPos + (-toPlayer * dashBackDistance);
+        yield return StartCoroutine(MoveToPosition(backTarget, dashBackSpeed));
+
+        Vector3 dashTarget = startPos + (toPlayer * dashDistance);
+        yield return StartCoroutine(MoveToPosition(dashTarget, dashSpeed));
+
+        yield return new WaitForSeconds(dashCooldown);
+
+        yield return StartCoroutine(MoveToPosition(_originPos, returnSpeed));
+
+        _currentRotationSpeed = savedRotSpeed;
+    }
+
+    IEnumerator MoveToPosition(Vector3 target, float speed)
+    {
+        while (Vector3.Distance(transform.position, target) > 0.05f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+            yield return null;
+        }
+        transform.position = target;
     }
 
     // =====================
@@ -50,12 +140,6 @@ public class BossController : MonoBehaviour
         return total;
     }
 
-    BossEye[] GetAliveEyes()
-    {
-        return System.Array.FindAll(eyes, e => !e.IsDead);
-    }
-
-    // CanBeginLaser인 Eye만 — 전환 중인 Eye 제외
     BossEye[] GetReadyEyes()
     {
         return System.Array.FindAll(eyes, e => e.CanBeginLaser);
@@ -64,28 +148,6 @@ public class BossController : MonoBehaviour
     int DeadCount()
     {
         return System.Array.FindAll(eyes, e => e.IsDead).Length;
-    }
-
-    // =====================
-    // 공격 사이클
-    // =====================
-    IEnumerator AttackCycleRoutine()
-    {
-        while (!_isDead)
-        {
-            // 준비된 Eye 기준으로 뽑기
-            BossEye[] ready = GetReadyEyes();
-
-            if (ready.Length > 0)
-            {
-                int count = Mathf.Min(Random.Range(1, 4), ready.Length);
-                List<BossEye> targets = PickRandom(ready, count);
-                foreach (var eye in targets)
-                    eye.BeginLaser(laserDuration);
-            }
-
-            yield return new WaitForSeconds(laserDuration + idleDuration);
-        }
     }
 
     List<BossEye> PickRandom(BossEye[] pool, int count)
@@ -100,7 +162,7 @@ public class BossController : MonoBehaviour
     }
 
     // =====================
-    // 사망 / 소환 감지
+    // 사망 감지
     // =====================
     IEnumerator DeathCheckRoutine()
     {
@@ -110,8 +172,8 @@ public class BossController : MonoBehaviour
 
             if (deadNow > _prevDeadCount)
             {
-                OnEyeDied(deadNow);
                 _prevDeadCount = deadNow;
+                UpdateRotationSpeed(); // Eye 죽을 때마다 속도 갱신
             }
 
             if (deadNow >= eyes.Length)
@@ -124,53 +186,21 @@ public class BossController : MonoBehaviour
         }
     }
 
-    void OnEyeDied(int deadCount)
-    {
-        if (!_summonStarted)
-        {
-            _summonStarted = true;
-            StartCoroutine(SummonRoutine());
-        }
-
-        spawnInterval = Mathf.Max(1f, spawnInterval - 0.5f);
-        spawnCountPerWave += 1;
-    }
-
     void Die()
     {
         if (_isDead) return;
         _isDead = true;
         StopAllCoroutines();
-        Debug.Log("보스 사망");
-        gameObject.SetActive(false);
-    }
 
-    // =====================
-    // 소환 루틴
-    // =====================
-    IEnumerator SummonRoutine()
-    {
-        while (!_isDead)
+        // Eye 오브젝트 전부 제거
+        foreach (var eye in eyes)
         {
-            yield return new WaitForSeconds(spawnInterval);
-            SpawnWave();
-        }
-    }
-
-    void SpawnWave()
-    {
-        if (minionPrefabs.Length == 0) return;
-        if (spawnPoint == null)
-        {
-            Debug.LogWarning("BossController: spawnPoint가 할당되지 않았습니다.");
-            return;
+            if (eye != null)
+                Destroy(eye.gameObject);
         }
 
-        for (int i = 0; i < spawnCountPerWave; i++)
-        {
-            GameObject prefab = minionPrefabs[Random.Range(0, minionPrefabs.Length)];
-            Vector3 pos = spawnPoint.position + (Vector3)(Random.insideUnitCircle * 2f);
-            Instantiate(prefab, pos, Quaternion.identity);
-        }
+        // 2페이즈 시작 후 1페이즈 제거
+        gameObject.GetComponent<BossPhase2>().SetPhase2();
+        Destroy(this);
     }
 }

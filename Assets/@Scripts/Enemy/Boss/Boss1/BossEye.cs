@@ -10,89 +10,56 @@ public class BossEye : EnemyBase
     public float blinkInterval = 0.1f;
     public int blinkCount = 4;
 
+    [Header("레이저 오브젝트")]
+    [SerializeField] private GameObject _warningLaser;
+    [SerializeField] private GameObject _fireLaser;
+
     [Header("레이저 설정")]
-    public float laserRange = 40f;
-    public float laserWidth = 1.2f;
-    public float warningWidth = 0.15f;
     public float warningDuration = 0.8f;
-    public int laserDamage = 10;
+    public float laserExpandTime = 0.15f;
+
+    [Header("소환 설정")]
+    [SerializeField] private GameObject[] _minionPrefabs;
+    [SerializeField] private Vector3 _spawnOffset = new Vector3(0f, 0.6f, 0f);
+    public float spawnInterval = 20f;
 
     public EyeState EyeCurrentState { get; private set; } = EyeState.Idle;
     public bool IsDead => EyeCurrentState == EyeState.Dead;
     public bool CanBeginLaser => EyeCurrentState == EyeState.Idle && !_isTransitioning;
+    public bool IsLaserFinished { get; private set; } = true;
     public float CurrentHp => _currentHp;
 
-    private static readonly Color ColorIdle  = Color.white;
+    private static readonly Color ColorIdle = Color.white;
     private static readonly Color ColorLaser = Color.red;
-    private static readonly Color ColorDead  = Color.black;
-    private static readonly Color ColorHit   = Color.yellow;
+    private static readonly Color ColorDead = Color.black;
+    private static readonly Color ColorHit = Color.yellow;
 
     private Renderer _rend;
-    private LineRenderer _lineRenderer;
     private bool _isTransitioning;
     private bool _isBlinking;
     private Coroutine _transitionCoroutine;
+    private Vector3 _fireLaserOriginalScale;
 
     // =====================
-    // EnemyBase 차단
+    // 초기화
     // =====================
     void Awake()
     {
         _rend = GetComponentInChildren<Renderer>();
         _currentHp = _maxHp;
         _rend.material.color = ColorIdle;
-        SetupLineRenderer();
+
+        _warningLaser.SetActive(false);
+        _fireLaser.SetActive(false);
+        _fireLaserOriginalScale = _fireLaser.transform.localScale;
     }
 
-    protected override void Start() { }
-    protected override void Update() { }
-    protected override void Initialize() { }
-
-    protected override void OnEnterIdle()   { }
-    protected override void OnEnterPatrol() { }
-    protected override void OnEnterChase()  { }
-    protected override void OnEnterAttack() { }
-    protected override void OnEnterHit()    { }
-    protected override void OnEnterDead()   { }
-
-    protected override void OnUpdateIdle()   { }
-    protected override void OnUpdatePatrol() { }
-    protected override void OnUpdateChase()  { }
-    protected override void OnUpdateAttack() { }
-
-    protected override void Move(Vector2 direction) { }
-    protected override bool DetectPlayer() => false;
-    protected override void DoAttack() { }
-
-    // =====================
-    // LineRenderer 초기화
-    // =====================
-    void SetupLineRenderer()
-    {
-        _lineRenderer = gameObject.AddComponent<LineRenderer>();
-        _lineRenderer.positionCount = 2;
-        _lineRenderer.useWorldSpace = true;
-        _lineRenderer.enabled = false;
-        _lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        _lineRenderer.startColor = new Color(1f, 0.1f, 0.1f, 1f);
-        _lineRenderer.endColor   = new Color(1f, 0.1f, 0.1f, 1f);
-        _lineRenderer.numCapVertices = 8;
-        _lineRenderer.numCornerVertices = 8;
-        _lineRenderer.alignment = LineAlignment.View;
-
-        AnimationCurve curve = new AnimationCurve();
-        curve.AddKey(new Keyframe(0f, 1f, 0f, 0f));
-        curve.AddKey(new Keyframe(1f, 1f, 0f, 0f));
-        _lineRenderer.widthCurve = curve;
-        _lineRenderer.widthMultiplier = laserWidth;
-    }
 
     // =====================
     // TakeDamage
     // =====================
-    public override void TakeDamage(int damage)
+    void ProcessDamage(int damage)
     {
-
         if (IsDead) return;
         if (EyeCurrentState == EyeState.Laser) return;
         if (_isTransitioning) return;
@@ -111,11 +78,8 @@ public class BossEye : EnemyBase
             StartCoroutine(HitBlinkRoutine());
     }
 
-    public override void TakeDamage(int damage, bool isAddGauge)
-    {
-        
-    }
-
+    public override void TakeDamage(int damage) => ProcessDamage(damage);
+    public override void TakeDamage(int damage, bool isAddGauge = false) => ProcessDamage(damage);
     public override void Die() => EyeDie();
 
     // =====================
@@ -124,7 +88,7 @@ public class BossEye : EnemyBase
     public void BeginLaser(float duration)
     {
         if (!CanBeginLaser) return;
-
+        IsLaserFinished = false;
         StartEyeTransition(EyeState.Laser, ColorLaser, () =>
         {
             StartCoroutine(LaserRoutine(duration));
@@ -136,61 +100,79 @@ public class BossEye : EnemyBase
     // =====================
     IEnumerator LaserRoutine(float duration)
     {
-        if (IsDead) yield break;
+        if (IsDead) { IsLaserFinished = true; yield break; }
 
-        _lineRenderer.enabled = true;
-
-        // 1단계 : 예고선
-        _lineRenderer.widthMultiplier = warningWidth;
-        _lineRenderer.startColor = new Color(1f, 0.3f, 0.3f, 0.5f);
-        _lineRenderer.endColor   = new Color(1f, 0.3f, 0.3f, 0.5f);
+        // 1단계 : 예고
+        _warningLaser.SetActive(true);
 
         float elapsed = 0f;
         while (elapsed < warningDuration)
         {
-            if (IsDead) { _lineRenderer.enabled = false; yield break; }
-            UpdateLaserLine(dealDamage: false);
+            if (IsDead)
+            {
+                _warningLaser.SetActive(false);
+                IsLaserFinished = true;
+                yield break;
+            }
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // 2단계 : 실제 발사
-        _lineRenderer.widthMultiplier = laserWidth;
-        _lineRenderer.startColor = new Color(1f, 0.1f, 0.1f, 1f);
-        _lineRenderer.endColor   = new Color(1f, 0.1f, 0.1f, 1f);
+        // 2단계 : 레이저 펼치기
+        _warningLaser.SetActive(false);
+        _fireLaser.transform.localScale = new Vector3(0f, _fireLaserOriginalScale.y, _fireLaserOriginalScale.z);
+        _fireLaser.SetActive(true);
 
+        elapsed = 0f;
+        while (elapsed < laserExpandTime)
+        {
+            if (IsDead)
+            {
+                _fireLaser.SetActive(false);
+                _fireLaser.transform.localScale = _fireLaserOriginalScale;
+                IsLaserFinished = true;
+                yield break;
+            }
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / laserExpandTime);
+            _fireLaser.transform.localScale = new Vector3(
+                Mathf.Lerp(0f, _fireLaserOriginalScale.x, t),
+                _fireLaserOriginalScale.y,
+                _fireLaserOriginalScale.z
+            );
+            yield return null;
+        }
+        _fireLaser.transform.localScale = _fireLaserOriginalScale;
+
+        // 3단계 : 레이저 지속
         elapsed = 0f;
         while (elapsed < duration)
         {
-            if (IsDead) { _lineRenderer.enabled = false; yield break; }
-            UpdateLaserLine(dealDamage: true);
+            if (IsDead)
+            {
+                _fireLaser.SetActive(false);
+                _fireLaser.transform.localScale = _fireLaserOriginalScale;
+                IsLaserFinished = true;
+                yield break;
+            }
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        _lineRenderer.enabled = false;
+        _fireLaser.SetActive(false);
+        _fireLaser.transform.localScale = _fireLaserOriginalScale;
 
         if (!IsDead)
-            StartEyeTransition(EyeState.Idle, ColorIdle);
-    }
-
-    void UpdateLaserLine(bool dealDamage)
-    {
-        Vector2 origin    = transform.position;
-        Vector2 direction = transform.up;
-
-        int layerMask = ~LayerMask.GetMask("Enemy", "Ground");
-        RaycastHit2D hit = Physics2D.Raycast(origin, direction, laserRange, layerMask);
-
-        Vector2 end = hit.collider != null
-            ? hit.point
-            : origin + direction * laserRange;
-
-        _lineRenderer.SetPosition(0, origin);
-        _lineRenderer.SetPosition(1, end);
-
-        if (dealDamage && hit.collider != null && hit.collider.CompareTag("Player"))
-            hit.collider.GetComponent<IDamageable>()?.TakeDamage(laserDamage);
+        {
+            StartEyeTransition(EyeState.Idle, ColorIdle, () =>
+            {
+                IsLaserFinished = true;
+            });
+        }
+        else
+        {
+            IsLaserFinished = true;
+        }
     }
 
     // =====================
@@ -200,12 +182,31 @@ public class BossEye : EnemyBase
     {
         if (IsDead) return;
 
+        EyeCurrentState = EyeState.Dead;
+        IsLaserFinished = true;
         StopAllCoroutines();
 
-        _lineRenderer.enabled = false;
+        _warningLaser.SetActive(false);
+        _fireLaser.SetActive(false);
+        _fireLaser.transform.localScale = _fireLaserOriginalScale;
         GetComponent<Collider2D>().enabled = false;
 
-        _transitionCoroutine = StartCoroutine(TransitionRoutine(EyeState.Dead, ColorDead, null));
+        _transitionCoroutine = StartCoroutine(TransitionRoutine(EyeState.Dead, ColorDead, () =>
+        {
+            if (_minionPrefabs.Length > 0)
+                StartCoroutine(SummonRoutine());
+        }));
+    }
+
+    IEnumerator SummonRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(spawnInterval);
+            GameObject prefab = _minionPrefabs[Random.Range(0, _minionPrefabs.Length)];
+            Vector3 spawnPos = transform.TransformPoint(_spawnOffset);
+            Instantiate(prefab, spawnPos, Quaternion.identity);
+        }
     }
 
     void StartEyeTransition(EyeState next, Color target, System.Action onComplete = null)

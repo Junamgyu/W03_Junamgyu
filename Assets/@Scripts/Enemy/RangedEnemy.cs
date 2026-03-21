@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using static UnityEditor.FilePathAttribute;
 
-public class RangedEnemy : EnemyBase
+public class RangedEnemy : NormalEnemyBase
 {
     // =====================
     // 원거리 전용 변수
@@ -39,26 +39,12 @@ public class RangedEnemy : EnemyBase
             // 너무 가까우면 뒤로 빠짐
             Vector2 retreatDir = ((Vector2)transform.position - (Vector2)_player.position).normalized;
             Move(retreatDir);
-            if (_canAttack)
-            {
-                ChangeState(EnemyState.Attack);
-            }
-        }
-        else if (distToPlayer <= _attackRange && _canAttack)
-        {
-            // 사거리 안이고 쿨타임 끝났으면 공격
-            ChangeState(EnemyState.Attack);
         }
         else if (distToPlayer > _preferredRange)
         {
             // 너무 멀면 가까이 이동
             Vector2 chaseDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
             Move(chaseDir);
-        }
-        else
-        {
-            // 적정 거리면 멈추고 대기
-            _rb.linearVelocity = Vector2.zero;
         }
 
         if (_gunPivot != null)
@@ -68,7 +54,13 @@ public class RangedEnemy : EnemyBase
             Quaternion rotation = Quaternion.Euler(0, 0, angle);
             _gunPivot.rotation = rotation;
         }
-        
+
+        if (distToPlayer <= _attackRange && _canAttack)
+        {
+            // 사거리 안이고 쿨타임 끝났으면 공격
+            ChangeState(EnemyState.Attack);
+        }
+
     }
 
     // =====================

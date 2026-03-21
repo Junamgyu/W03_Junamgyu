@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class RushEnemy : EnemyBase
+public class RushEnemy : NormalEnemyBase
 {
     // =====================
     // 돌진 전용 변수

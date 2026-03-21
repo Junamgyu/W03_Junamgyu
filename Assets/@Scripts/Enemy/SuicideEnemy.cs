@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SuicideEnemy : EnemyBase
+public class SuicideEnemy : NormalEnemyBase
 {
     // =====================
     // 자폭 전용 변수

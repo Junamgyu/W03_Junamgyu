@@ -344,19 +344,18 @@ MonoBehaviour:
   _attackRange: 15
   _detectionRange: 25
   _attackCooldown: 1.5
-  _hitStunDuration: 0.2
-  _attackMotionDuration: 0.3
   _isFlying: 1
-  _patrolDistance: 5
-  _idleWaitTime: 2
-  _excludeLayer:
+  _patrolRadius: 0
+  _wallLayer:
     serializedVersion: 2
-    m_Bits: 32768
+    m_Bits: 0
   _projectilePrefab: {fileID: 3618253558596877259, guid: dc4f46b1dc080234aafccf704533149a, type: 3}
   _projectileSpeed: 8
   _retreatRange: 0
   _preferredRange: 1
   _gunPivot: {fileID: 8175451469513102941}
+  _burstCount: 1
+  _burstInterval: 0.15
 --- !u!114 &8320303540111667643
 MonoBehaviour:
   m_ObjectHideFlags: 0

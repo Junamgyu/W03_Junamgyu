@@ -221,7 +221,7 @@ MonoBehaviour:
   _detectionRange: 25
   _attackCooldown: 1.5
   _isFlying: 0
-  _patrolRadius: 3
+  _patrolRadius: 0
   _wallLayer:
     serializedVersion: 2
     m_Bits: 32768

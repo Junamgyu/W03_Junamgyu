@@ -1,19 +1,18 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
+using System.Collections;
 
 public class UI_PausePanel : MonoBehaviour
 {
-    [Header("Buttons")]
     [SerializeField] private Button _resumeButton;
     [SerializeField] private Button _retryButton;
     [SerializeField] private Button _mainMenuButton;
 
     private PauseController _pauseController;
 
-    public event Action OnRetryRequested;
-    public event Action OnMainMenuRequested;
+    public event System.Action OnRetryRequested;
+    public event System.Action OnMainMenuRequested;
 
     private void Awake()
     {
@@ -23,7 +22,7 @@ public class UI_PausePanel : MonoBehaviour
 
     private void OnEnable()
     {
-        SelectDefaultButton();
+        StartCoroutine(CoSelectDefaultButton());
     }
 
     private void OnDestroy()
@@ -55,13 +54,19 @@ public class UI_PausePanel : MonoBehaviour
             _mainMenuButton.onClick.RemoveListener(HandleClickMainMenu);
     }
 
-    private void SelectDefaultButton()
+    private IEnumerator CoSelectDefaultButton()
     {
-        if (EventSystem.current == null || _resumeButton == null)
-            return;
+        yield return null;
+
+        if (EventSystem.current == null)
+            yield break;
+
+        Button targetButton = _resumeButton != null ? _resumeButton : _retryButton;
+        if (targetButton == null)
+            yield break;
 
         EventSystem.current.SetSelectedGameObject(null);
-        EventSystem.current.SetSelectedGameObject(_resumeButton.gameObject);
+        EventSystem.current.SetSelectedGameObject(targetButton.gameObject);
     }
 
     private void HandleClickResume()

@@ -46,7 +46,8 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         RegisterManagers(); // Awake에서 매니저 등록
         InitializeManagers();
 
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded; 
+        _sceneManager.OnStageReloadCompleted += HandleStageReloadCompleted;
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
 
         Debug.Log("GameManager Initialized");
 
@@ -65,6 +66,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
     private void OnDestroy()
     {
+        if (_sceneManager != null)
+            _sceneManager.OnStageReloadCompleted -= HandleStageReloadCompleted;
+
         UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
         UnbindPlayerHealth();
     }
@@ -258,5 +262,12 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
         _inputManager.EnablePlayerInput();
         _gameStateManager.ChangeState(GameState.Playing);
+    }
+
+    private void HandleStageReloadCompleted(string stageName)
+    {
+        Debug.Log($"Stage Reload Completed: {stageName}");
+
+        BindPlayerHealth();
     }
 }

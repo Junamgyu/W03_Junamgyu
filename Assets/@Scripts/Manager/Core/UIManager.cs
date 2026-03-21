@@ -8,22 +8,35 @@ public class UIManager : MonoBehaviour, IInitializable
     [SerializeField] private GameObject _pausePanel;
     [SerializeField] private GameObject _gameOverPanel;
 
+    [Header("Panel Scripts")]
+    [SerializeField] private UI_PausePanel _uiPausePanel;
+
     private GameStateManager _gameStateManager;
+    private PauseController _pauseController;
+    private SceneFlowManager _sceneFlowManager;
 
     public void Initialize()
     {
         if (IsInitialized)
             return;
 
-        if (!ManagerRegistry.TryGet<GameStateManager>(out _gameStateManager))
+        if (!ManagerRegistry.TryGet(out _gameStateManager))
         {
             Debug.LogError($"{name}: GameStateManager not found.");
             return;
         }
 
-        HideAll();
+        ManagerRegistry.TryGet(out _pauseController);
+        ManagerRegistry.TryGet(out _sceneFlowManager);
+
         _gameStateManager.OnStateChanged += HandleStateChanged;
 
+        if (_uiPausePanel != null)
+        {
+            _uiPausePanel.OnRetryRequested += HandleRetryRequested;
+        }
+
+        HideAll();
         IsInitialized = true;
     }
 
@@ -45,6 +58,12 @@ public class UIManager : MonoBehaviour, IInitializable
         }
     }
 
+    private void HandleRetryRequested()
+    {
+        _pauseController?.ResumeGame();
+        _sceneFlowManager?.ReloadStage();
+    }
+
     public void ShowPause()
     {
         if (_pausePanel != null)
@@ -54,12 +73,6 @@ public class UIManager : MonoBehaviour, IInitializable
             _gameOverPanel.SetActive(false);
     }
 
-    public void HidePause()
-    {
-        if (_pausePanel != null)
-            _pausePanel.SetActive(false);
-    }
-
     public void ShowGameOver()
     {
         if (_pausePanel != null)
@@ -67,12 +80,6 @@ public class UIManager : MonoBehaviour, IInitializable
 
         if (_gameOverPanel != null)
             _gameOverPanel.SetActive(true);
-    }
-
-    public void HideGameOver()
-    {
-        if (_gameOverPanel != null)
-            _gameOverPanel.SetActive(false);
     }
 
     public void HideAll()
@@ -88,5 +95,8 @@ public class UIManager : MonoBehaviour, IInitializable
     {
         if (_gameStateManager != null)
             _gameStateManager.OnStateChanged -= HandleStateChanged;
+
+        if (_uiPausePanel != null)
+            _uiPausePanel.OnRetryRequested -= HandleRetryRequested;
     }
 }

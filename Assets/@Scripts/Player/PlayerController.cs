@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     private void HandleLook(InputAction.CallbackContext ctx)
     {
         _player.playerAimer.HandleLook(ctx);
+        //_player.deadeyeSkill.HandleLook(ctx);
     }
 
     private void HandleMove(InputAction.CallbackContext ctx)

@@ -24,14 +24,14 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_player.IsRecoiling && !_player.IsGrounded)
+        if (_player.CurrentRecoil == RecoilState.Recoiling && !_player.IsGrounded)
         {
             float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _airRecoilMoveInfluence;
             _rb.linearVelocity = new Vector2(newX, _rb.linearVelocityY);
             return;
         }
 
-        if (_player.IsRecoiling && _player.IsGrounded)
+        if (_player.CurrentRecoil == RecoilState.Recoiling && _player.IsGrounded)
         {
             float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _recoilMoveInfluence;
             _rb.linearVelocity = new Vector2(newX, _rb.linearVelocityY);

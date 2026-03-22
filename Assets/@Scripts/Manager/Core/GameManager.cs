@@ -254,8 +254,9 @@ public class GameManager : PersistentMonoSingleton<GameManager>
             rb.angularVelocity = 0f;
         }
 
-        _player.SetActionState(ActionState.None);
-        _player.SetLocomotionState(LocomotionState.Idle);
+        _player.ResetState();
+        _player.playerAttack.ResetState();
+        _player.deadeyeSkill.ResetState();
         _player.CanJump = true;
 
         playerHealth.ResetHP();

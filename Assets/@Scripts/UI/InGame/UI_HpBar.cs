@@ -1,4 +1,4 @@
-using DG.Tweening;
+ï»¿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,10 +14,10 @@ public class UI_HpBar : MonoBehaviour
     [SerializeField] private Color _emptyColor = new Color(1f, 1f, 1f, 0.3f);
 
     [Header("Animation")]
-    [Tooltip("Ä¿Á³´Ù°¡ ÁÙ¾îµå´Â ÃÖ´ë Å©±â")][SerializeField] private float _punchScale = 1.3f;  
-    [Tooltip("Ä¿Áö´Â ½Ã°£")][SerializeField] private float _punchDuration = 0.1f;   
-    [Tooltip("ÁÙ¾îµå´Â ½Ã°£")][SerializeField] private float _shrinkDuration = 0.15f; 
-    [Tooltip("È¸º¹ ½Ã Ä¿Áö´Â ½Ã°£")][SerializeField] private float _growDuration = 0.2f;
+    [Tooltip("ì»¤ì¡Œë‹¤ê°€ ì¤„ì–´ë“œëŠ” ìµœëŒ€ í¬ê¸°")][SerializeField] private float _punchScale = 1.3f;  
+    [Tooltip("ì»¤ì§€ëŠ” ì‹œê°„")][SerializeField] private float _punchDuration = 0.1f;   
+    [Tooltip("ì¤„ì–´ë“œëŠ” ì‹œê°„")][SerializeField] private float _shrinkDuration = 0.15f; 
+    [Tooltip("íšŒë³µ ì‹œ ì»¤ì§€ëŠ” ì‹œê°„")][SerializeField] private float _growDuration = 0.2f;
 
     private Image[] _slots;
     private int _currentHp;
@@ -59,7 +59,7 @@ public class UI_HpBar : MonoBehaviour
         int prevHp = _currentHp;
         _currentHp = Mathf.Max(0, _currentHp - damage);
 
-        // ÁÙ¾îµç ÇÏÆ®¸¸Å­ ¾Ö´Ï¸ŞÀÌ¼Ç
+        // ì¤„ì–´ë“  í•˜íŠ¸ë§Œí¼ ì• ë‹ˆë©”ì´ì…˜
         for (int i = prevHp - 1; i >= _currentHp; i--)
         {
             int index = i;
@@ -68,7 +68,7 @@ public class UI_HpBar : MonoBehaviour
             rect.DOKill();
             rect.localScale = Vector3.one;
 
-            // Ä¿Á³´Ù°¡ 0À¸·Î ÁÙ¾îµé¸ç ºó ÇÏÆ®·Î
+            // ì»¤ì¡Œë‹¤ê°€ 0ìœ¼ë¡œ ì¤„ì–´ë“¤ë©° ë¹ˆ í•˜íŠ¸ë¡œ
             rect.DOScale(_punchScale, _punchDuration)
                 .OnComplete(() =>
                 {
@@ -87,7 +87,7 @@ public class UI_HpBar : MonoBehaviour
         int prevHp = _currentHp;
         _currentHp = Mathf.Min(_maxHp, _currentHp + amount);
 
-        // ´Ã¾î³­ ÇÏÆ®¸¸Å­ ¾Ö´Ï¸ŞÀÌ¼Ç
+        // ëŠ˜ì–´ë‚œ í•˜íŠ¸ë§Œí¼ ì• ë‹ˆë©”ì´ì…˜
         for (int i = prevHp; i < _currentHp; i++)
         {
             int index = i;
@@ -97,7 +97,7 @@ public class UI_HpBar : MonoBehaviour
             rect.localScale = Vector3.zero;
             _slots[index].color = _filledColor;
 
-            // ½ºÄÉÀÏ 0¿¡¼­ Ä¿Áö¸ç Ã¤¿öÁø ÇÏÆ®·Î
+            // ìŠ¤ì¼€ì¼ 0ì—ì„œ ì»¤ì§€ë©° ì±„ì›Œì§„ í•˜íŠ¸ë¡œ
             rect.DOScale(1f, _growDuration).SetEase(Ease.OutBack);
         }
     }

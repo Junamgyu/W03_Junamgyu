@@ -34,7 +34,7 @@ public class PlayerHealth : EntityBase
         base.TakeDamage(damage);
 
         Debug.Log("currentHp: " + _currentHp + ", damage: " + damage);
-        _hapticManager?.PlayPlayerHit();
+        //_hapticManager?.RumbleAttack();
         OnHit?.Invoke(damage);
 
         if (_currentHp > 0)

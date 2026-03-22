@@ -68,7 +68,10 @@ public class UIManager : MonoBehaviour, IInitializable
         {
             _uiPausePanel.OnRetryRequested += HandleRetryRequested;
             _uiPausePanel.OnMainMenuRequested += HandleMainMenuRequested;
+        }
 
+        if (_uiGameOverPanel != null)
+        {
             _uiGameOverPanel.OnRetryRequested += HandleRetryRequested;
             _uiGameOverPanel.OnMainMenuRequested += HandleMainMenuRequested;
         }
@@ -113,6 +116,7 @@ public class UIManager : MonoBehaviour, IInitializable
 
     private void HandleMainMenuRequested()
     {
+        // TODO: 메인메뉴 씬과 연결
         Debug.Log("MainMenuRequested");
     }
 

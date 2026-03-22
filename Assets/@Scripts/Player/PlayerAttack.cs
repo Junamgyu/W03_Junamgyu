@@ -69,7 +69,7 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_shotgunInstance)) return;
         Fire(_shotgunData);
 
-        _hapticManager?.PlayShotgunShot();
+        //_hapticManager?.PlayShotgunShot();
 
         float angle = Mathf.Atan2(_player.playerAimer.AimDirection.y, _player.playerAimer.AimDirection.x) * Mathf.Rad2Deg + 180f;
         _shotgunPivot.DORotate(new Vector3(0f, 0f, angle), 0f); // 0f = 즉시 회전
@@ -83,7 +83,7 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_currentWeaponInstance)) return;
 
         Fire(currentWeaponData);
-        _hapticManager?.PlayPistolShot();
+        //_hapticManager?.PlayPistolShot();
     }
 
     void Fire(SO_WeaponBase data)
@@ -99,6 +99,8 @@ public class PlayerAttack : MonoBehaviour
         // X만 초기화, Y는 보존 (점프 중 샷건 쏴도 Y속도 안 날아감)
         _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
         _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
+
+        _hapticManager?.PlayOneShot(data.lowFrequency, data.highFrequency, data.duration);
 
         TriggerRecoilRoutines(shootDir);
     }

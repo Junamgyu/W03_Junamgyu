@@ -1,6 +1,7 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
 
 public class InputManager : MonoBehaviour, IInitializable
 {
@@ -21,7 +22,10 @@ public class InputManager : MonoBehaviour, IInitializable
     public event Action<InputAction.CallbackContext> OnCheatOne;
 
     // System Input
+    public event Action<InputAction.CallbackContext> OnNavigate;
     public event Action<InputAction.CallbackContext> OnPause;
+    public event Action<InputAction.CallbackContext> OnSubmit;
+    public event Action<InputAction.CallbackContext> OnCancel;
 
     public void Initialize()
     {
@@ -34,6 +38,15 @@ public class InputManager : MonoBehaviour, IInitializable
         _input.UI.Enable();
 
         IsInitialized = true;
+
+        if (Gamepad.current != null)
+        {
+            _input.bindingMask = new InputBinding { groups = "Gamepad" };
+        }
+        else
+        {
+            _input.bindingMask = new InputBinding { groups = "Keyboard&Mouse" };
+        }
     }
 
     private void BindActions()
@@ -73,6 +86,16 @@ public class InputManager : MonoBehaviour, IInitializable
         // UI Actions
         ui.Pause.started += HandlePause;
 
+        ui.Navigate.started += HandleNavigate;
+        ui.Navigate.performed += HandleNavigate;
+        ui.Navigate.canceled += HandleNavigate;
+
+        ui.Submit.started += HandleSubmit;
+        ui.Submit.performed += HandleSubmit;
+
+        ui.Cancel.started += HandleCancel;
+        ui.Cancel.performed += HandleCancel;
+
         // TODO: Boss Intro
         // 카메라 매니저가 보스 인트로 컷씬 인보크할 때, 플레이어 입력을 잠시 비활성화하는 기능 추가 필요
         // cameraManager.OnBossIntro += DisablePlayerInput();
@@ -90,6 +113,9 @@ public class InputManager : MonoBehaviour, IInitializable
 
     // UI Handlers
     private void HandlePause(InputAction.CallbackContext ctx) => OnPause?.Invoke(ctx);
+    private void HandleNavigate(InputAction.CallbackContext ctx) => OnNavigate?.Invoke(ctx);
+    private void HandleSubmit(InputAction.CallbackContext ctx) => OnSubmit?.Invoke(ctx);
+    private void HandleCancel(InputAction.CallbackContext ctx) => OnCancel?.Invoke(ctx);
 
     private void OnDestroy()
     {
@@ -103,7 +129,7 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Look.canceled -= HandleLook;
 
         player.Move.started -= HandleMove;
-        player.Move.performed -= HandleMove;
+        //player.Move.performed -= HandleMove;
         player.Move.canceled -= HandleMove;
 
         player.Jump.started -= HandleJump;
@@ -128,11 +154,21 @@ public class InputManager : MonoBehaviour, IInitializable
 
         player.CheatOne.started -= HandleCheatOne;
 
-        ui.Pause.started -= HandlePause;
-
         // TODO: 보스 인트로 컷씬이 끝나면 플레이어 입력을 다시 활성화하는 기능 추가
         // cameraManager.OnBossIntro -= DisablePlayerInput();
         // cameraManager.OnBossOutro -= EnablePlayerInput();
+
+        ui.Pause.started -= HandlePause;
+
+        ui.Navigate.started -= HandleNavigate;
+        ui.Navigate.performed -= HandleNavigate;
+        ui.Navigate.canceled -= HandleNavigate;
+
+        ui.Submit.started -= HandleSubmit;
+        ui.Submit.performed -= HandleSubmit;
+
+        ui.Cancel.started -= HandleCancel;
+        ui.Cancel.performed -= HandleCancel;
 
         _input.Player.Disable();
         _input.UI.Disable();

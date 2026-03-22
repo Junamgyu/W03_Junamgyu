@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   moveSpeed: 10
-  gravityOffDuration: 0.2
+  gravityOffDuration: 0.3
   dampingDuration: 0.35
   dampingValue: 17
   landDuration: 0.1
@@ -402,7 +402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92abb298b8a095d449fc6177613929b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  _maxHp: 5
+  _maxHp: 7
   _attackDamage: 1
   _invincibleDuration: 1.5
   _spriteRenderer: {fileID: 634643051373191999}

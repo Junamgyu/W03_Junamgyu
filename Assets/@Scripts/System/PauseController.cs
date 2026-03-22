@@ -45,7 +45,7 @@ public class PauseController : MonoBehaviour, IInitializable
         }
     }
 
-    private void PauseGame()
+    public void PauseGame()
     {
         Time.timeScale = 0f;
         _inputManager.DisablePlayerInput();
@@ -54,7 +54,7 @@ public class PauseController : MonoBehaviour, IInitializable
         Debug.Log("Game Paused");
     }
 
-    private void ResumeGame()
+    public void ResumeGame()
     {
         Time.timeScale = 1f;
         _inputManager.EnablePlayerInput();

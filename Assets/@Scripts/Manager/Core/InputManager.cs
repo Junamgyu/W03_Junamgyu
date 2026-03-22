@@ -18,7 +18,6 @@ public class InputManager : MonoBehaviour, IInitializable
     public event Action<InputAction.CallbackContext> OnSecondaryAttack;
     public event Action<InputAction.CallbackContext> OnSlowMotionSkill;
     public event Action<InputAction.CallbackContext> OnDeadeyeSkill;
-    public event Action<InputAction.CallbackContext> OnMarkTarget;
     public event Action<InputAction.CallbackContext> OnCheatOne;
 
     // System Input
@@ -69,14 +68,15 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.performed += HandleDeadeyeSkill;
         player.DeadeyeSkill.canceled += HandleDeadeyeSkill;
 
-        player.MarkTarget.started += HandleMarkTarget;
-        player.MarkTarget.performed += HandleMarkTarget;
-        player.MarkTarget.canceled += HandleMarkTarget;
-
         player.CheatOne.started += HandleCheatOne;
 
         // UI Actions
         ui.Pause.started += HandlePause;
+
+        // TODO: Boss Intro
+        // 카메라 매니저가 보스 인트로 컷씬 인보크할 때, 플레이어 입력을 잠시 비활성화하는 기능 추가 필요
+        // cameraManager.OnBossIntro += DisablePlayerInput();
+        // cameraManager.OnBossOutro += EnablePlayerInput();
     }
 
     private void HandleLook(InputAction.CallbackContext ctx) => OnLook?.Invoke(ctx);
@@ -86,7 +86,6 @@ public class InputManager : MonoBehaviour, IInitializable
     private void HandleSecondaryAttack(InputAction.CallbackContext ctx) => OnSecondaryAttack?.Invoke(ctx);
     private void HandleSlowMotionSkill(InputAction.CallbackContext ctx) => OnSlowMotionSkill?.Invoke(ctx);
     private void HandleDeadeyeSkill(InputAction.CallbackContext ctx) => OnDeadeyeSkill?.Invoke(ctx);
-    private void HandleMarkTarget(InputAction.CallbackContext ctx) => OnMarkTarget?.Invoke(ctx);
     private void HandleCheatOne(InputAction.CallbackContext ctx) => OnCheatOne?.Invoke(ctx);
 
     // UI Handlers
@@ -127,13 +126,13 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.performed -= HandleDeadeyeSkill;
         player.DeadeyeSkill.canceled -= HandleDeadeyeSkill;
 
-        player.MarkTarget.started -= HandleMarkTarget;
-        player.MarkTarget.performed -= HandleMarkTarget;
-        player.MarkTarget.canceled -= HandleMarkTarget;
-
         player.CheatOne.started -= HandleCheatOne;
 
         ui.Pause.started -= HandlePause;
+
+        // TODO: 보스 인트로 컷씬이 끝나면 플레이어 입력을 다시 활성화하는 기능 추가
+        // cameraManager.OnBossIntro -= DisablePlayerInput();
+        // cameraManager.OnBossOutro -= EnablePlayerInput();
 
         _input.Player.Disable();
         _input.UI.Disable();

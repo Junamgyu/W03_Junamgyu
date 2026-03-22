@@ -20,18 +20,31 @@ public class PlayerMove : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _player = GetComponent<Player>();
+        _player.OnRecoilStateChanged += HandleRecoilStateChanged;
+    }
+
+    void OnDestroy()
+    {
+        _player.OnRecoilStateChanged -= HandleRecoilStateChanged;
+    }
+
+    void HandleRecoilStateChanged(RecoilState state)
+    {
+        // 반동이 끝났는데 여전히 땅이면 재장전
+        if (state == RecoilState.None && _player.IsGrounded)
+            _player.playerAttack.ReloadAll();
     }
 
     void FixedUpdate()
     {
-        if (_player.IsRecoiling && !_player.IsGrounded)
+        if (_player.CurrentRecoil == RecoilState.Recoiling && !_player.IsGrounded)
         {
             float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _airRecoilMoveInfluence;
             _rb.linearVelocity = new Vector2(newX, _rb.linearVelocityY);
             return;
         }
 
-        if (_player.IsRecoiling && _player.IsGrounded)
+        if (_player.CurrentRecoil == RecoilState.Recoiling && _player.IsGrounded)
         {
             float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _recoilMoveInfluence;
             _rb.linearVelocity = new Vector2(newX, _rb.linearVelocityY);

@@ -1,8 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오리고 있는 상태를 의미, Run 추가 예정.
-public enum ActionState { None, Recoiling, Deadeye, Slow }
+public enum LocomotionState { Idle, Jumping, Falling, Land } // 여기서의 Jumping은 오르고 있는 상태를 의미, Run 추가 예정.
+public enum RecoilState { None, Recoiling }
+public enum SkillState { None, Slow, Deadeye }
+
+// 원래는 해당 상태가 되면 해당 함수 실행 (HandleStateChanged) 이런 식으로 해야 하는데 현재는 그냥 이렇게 둠.
+
 
 public class Player : MonoBehaviour
 {
@@ -21,7 +25,8 @@ public class Player : MonoBehaviour
     public float landDuration = 0.1f;
 
     public LocomotionState CurrentLocomotion { get; private set; } = LocomotionState.Idle;
-    public ActionState CurrentAction { get; private set; } = ActionState.None;
+    public RecoilState CurrentRecoil { get; private set; } = RecoilState.None;
+    public SkillState CurrentSkill { get; private set; } = SkillState.None;
 
     public void SetLocomotionState(LocomotionState state)
     {
@@ -34,15 +39,23 @@ public class Player : MonoBehaviour
         OnLocomotionChanged?.Invoke(state);
     }
 
-    public void SetActionState(ActionState state)
+    public void SetRecoilState(RecoilState state)
     {
-        if (CurrentAction == state) return; // 같은 상태면 무시
-        CurrentAction = state;
+        if (CurrentRecoil == state) return;
+        CurrentRecoil = state;
+        OnRecoilStateChanged?.Invoke(state);
+    }
+
+    public void SetSkillState(SkillState state)
+    {
+        if (CurrentSkill == state) return;
+        CurrentSkill = state;
+        OnSkillStateChanged?.Invoke(state);
     }
 
     // 편의 프로퍼티
     public bool IsGrounded => CurrentLocomotion == LocomotionState.Idle || CurrentLocomotion == LocomotionState.Land;
-    public bool IsRecoiling => CurrentAction == ActionState.Recoiling;
+    public bool IsRecoiling => CurrentRecoil == RecoilState.Recoiling;
 
     public PlayerAttack playerAttack{ get; private set; }
     public PlayerMove playerMove{ get; private set; }
@@ -53,7 +66,10 @@ public class Player : MonoBehaviour
 
     Rigidbody2D _rb;
 
+    // 이벤트
     public event Action<LocomotionState> OnLocomotionChanged;
+    public event Action<RecoilState> OnRecoilStateChanged;
+    public event Action<SkillState> OnSkillStateChanged;
 
     void Awake()
     {
@@ -67,4 +83,11 @@ public class Player : MonoBehaviour
         OriginalGravity = _rb.gravityScale;
     }
 
+    public void ResetState()
+    {
+        SetLocomotionState(LocomotionState.Idle);
+        SetRecoilState(RecoilState.None);
+        SetSkillState(SkillState.None);
+        CanJump = true;
+    }
 }

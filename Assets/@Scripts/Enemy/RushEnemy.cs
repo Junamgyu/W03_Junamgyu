@@ -17,12 +17,42 @@ public class RushEnemy : NormalEnemyBase
     {
         base.Start();
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        _originalColor = _spriteRenderer.color;
+        if (_spriteRenderer != null)
+            _originalColor = _spriteRenderer.color;
+    }
+
+    // Jaein 추가
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        if (_spriteRenderer == null)
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (_spriteRenderer != null)
+        {
+            _originalColor = _spriteRenderer.color;
+            _spriteRenderer.color = _originalColor;
+        }
+
+        _isRushing = false;
+        _rushCoroutine = null;
+
+        if (_rushParticle != null)
+            _rushParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     protected override void Update()
     {
         if (_isDead) return;
+
+        // Jaein 추가
+        if (!TryFindPlayer())
+        {
+            _rb.linearVelocity = Vector2.zero;
+            Patrol();
+            return;
+        }
 
         bool detecting = DetectPlayer();
 
@@ -30,11 +60,9 @@ public class RushEnemy : NormalEnemyBase
         {
             _wasDetecting = true;
 
-            // 돌진 중이 아닐 때는 항상 플레이어 추격
             if (!_isRushing)
                 MoveToward(_player.position);
 
-            // 공격 사거리 안이고 쿨타임 끝났으면 돌진
             if (IsInAttackRange() && _canAttack)
                 StartCoroutine(AttackRoutine());
         }
@@ -51,7 +79,6 @@ public class RushEnemy : NormalEnemyBase
         }
     }
 
-    // 돌진 끝날 때까지 canAttack 막음
     protected override IEnumerator AttackRoutine()
     {
         _canAttack = false;
@@ -60,7 +87,7 @@ public class RushEnemy : NormalEnemyBase
         _canAttack = true;
     }
 
-    protected override void DoAttack() { } // AttackRoutine에서 직접 처리
+    protected override void DoAttack() { }
 
     IEnumerator RushRoutine()
     {
@@ -71,7 +98,15 @@ public class RushEnemy : NormalEnemyBase
 
         yield return StartCoroutine(WindupEffectRoutine());
 
-        _spriteRenderer.color = _originalColor;
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor;
+
+        // Jaein 추가
+        if (!TryFindPlayer())
+        {
+            _isRushing = false;
+            yield break;
+        }
 
         _isRushing = true;
         Vector2 rushDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
@@ -90,11 +125,15 @@ public class RushEnemy : NormalEnemyBase
 
     IEnumerator WindupEffectRoutine()
     {
+        if (_spriteRenderer == null)
+            yield break;
+
         float t = 0f;
         while (t < _rushWindupTime)
         {
             t += Time.deltaTime;
-            _spriteRenderer.color = Color.Lerp(_originalColor, Color.black, t / _rushWindupTime);
+            float ratio = t / _rushWindupTime;
+            _spriteRenderer.color = Color.Lerp(_originalColor, Color.black, ratio);
             yield return null;
         }
     }
@@ -102,11 +141,17 @@ public class RushEnemy : NormalEnemyBase
     void OnCollisionEnter2D(Collision2D col)
     {
         if (!col.gameObject.CompareTag("Player")) return;
-        if (!_isRushing) return;
 
-        _isRushing = false;
-        _rb.linearVelocity = Vector2.zero;
-        _spriteRenderer.color = _originalColor;
+        if (_isRushing)
+        {
+            _isRushing = false;
+            _rb.linearVelocity = Vector2.zero;
+
+            if (_spriteRenderer != null)
+                _spriteRenderer.color = _originalColor;
+
+            StopCoroutine(nameof(RushRoutine));
+        }
     }
 
     protected override IEnumerator OnDieRoutine()
@@ -118,7 +163,4 @@ public class RushEnemy : NormalEnemyBase
     {
         base.OnDrawGizmosSelected();
     }
-
-
 }
-

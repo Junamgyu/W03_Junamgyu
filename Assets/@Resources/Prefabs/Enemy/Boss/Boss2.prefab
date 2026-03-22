@@ -375,7 +375,6 @@ GameObject:
   - component: {fileID: 2207518358233213309}
   - component: {fileID: 690045918576239301}
   - component: {fileID: 6064826723975521084}
-  - component: {fileID: 6851646484440565440}
   - component: {fileID: 1132211441250941959}
   - component: {fileID: 7962684644318047272}
   - component: {fileID: 5755664213445092068}
@@ -419,7 +418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Boss2Controller
   skills:
   - {fileID: 6064826723975521084}
-  - {fileID: 6851646484440565440}
+  - {fileID: 0}
   - {fileID: 1132211441250941959}
   - {fileID: 7962684644318047272}
   idleDuration: 2
@@ -437,26 +436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss2Skill1
   chargeBeam: {fileID: 4767158332388223813}
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  moveSpeed: 15
---- !u!114 &6851646484440565440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2522702654791048866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60a9da3a51fca4a46837c7ab816c9c52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Boss2Skill1
-  chargeBeam: {fileID: 4767158332388223813}
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  waypointPairs: []
   moveSpeed: 15
 --- !u!114 &1132211441250941959
 MonoBehaviour:
@@ -625,9 +605,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss2Skill1
   chargeBeam: {fileID: 4767158332388223813}
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  waypointPairs: []
   moveSpeed: 15
 --- !u!114 &2516271768991023564
 MonoBehaviour:
@@ -642,9 +620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss2Skill1
   chargeBeam: {fileID: 4767158332388223813}
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
+  waypointPairs: []
   moveSpeed: 15
 --- !u!1 &4325190243337678670
 GameObject:

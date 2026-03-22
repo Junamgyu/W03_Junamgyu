@@ -201,27 +201,24 @@ public class DeadeyeSkill : MonoBehaviour
 
     public void OnDeadeye(InputAction.CallbackContext context)
     {
-        if (context.started)
-        {
-            if (_isFiring) return; // 데드아이로 다라라 죽이고 있는 중이라면 리턴
-            if (_player.CurrentSkill == SkillState.Deadeye) return;
-            if (!CanDeadeye) return;
+        if (!context.started) return; // started일 때만 처리, canceled 무시
 
-            _player.SetSkillState(SkillState.Deadeye);
-            ConsumeGauge(_gaugeCostDeadeye);
-            EnterSlow(); // 데드아이 진입 시 슬로우 적용 (SkillState는 Deadeye 유지)
-
-            // 범위 초기화 후 표시
-            _currentRadius = 0f;
-            _rangeTransform.localScale = Vector3.zero;
-            _rangeRenderer.enabled = true;
-        }
-        else if (context.canceled)
+        if (_isFiring) return;
+        if (_player.CurrentSkill == SkillState.Deadeye)
         {
-            if (_player.CurrentSkill != SkillState.Deadeye) return;
-            if (_isFiring) return; // 이미 발사 중이면 무시
-            FireDeadeye();
+            FireDeadeye(); // 이미 활성 중이면 발사
+            return;
         }
+
+        if (!CanDeadeye) return;
+
+        _player.SetSkillState(SkillState.Deadeye);
+        ConsumeGauge(_gaugeCostDeadeye);
+        EnterSlow();
+
+        _currentRadius = 0f;
+        _rangeTransform.localScale = Vector3.zero;
+        _rangeRenderer.enabled = true;
     }
 
     // 영역 전개

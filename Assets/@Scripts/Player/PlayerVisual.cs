@@ -3,46 +3,97 @@ using UnityEngine;
 
 public class PlayerVisual : MonoBehaviour
 {
-    [SerializeField] private Transform _visual; // Visual 오브젝트
+    [SerializeField] private Transform _visual;
 
-    [Header("Squash & Stretch")]
-    [SerializeField] private float _jumpStretchX = 0.7f;
-    [SerializeField] private float _jumpStretchY = 1.3f;
-    [SerializeField] private float _jumpDuration = 0.1f;
+    [Header("Jump Settings")]
+    [SerializeField] private float _jumpStretchX = 0.75f;
+    [SerializeField] private float _jumpStretchY = 1.25f;
+    [SerializeField] private float _jumpActionDuration = 0.05f; // 점프는 즉각적이어야 함
+    [SerializeField] private float _jumpReturnDuration = 0.3f;
+    [SerializeField] private Ease _jumpEase = Ease.OutQuad;
 
-    [SerializeField] private float _landSquashX = 1.3f;
-    [SerializeField] private float _landSquashY = 0.7f;
-    [SerializeField] private float _landDuration = 0.15f;
+    [Header("Landing Settings")]
+    [SerializeField] private float _landSquashX = 1.4f;
+    [SerializeField] private float _landSquashY = 0.6f;
+    [SerializeField] private float _landActionDuration = 0.08f; // 랜딩은 약간의 무게감이 필요
+    [SerializeField] private float _landReturnDuration = 0.5f;  // 더 쫀득하게 돌아옴
+    [SerializeField] private Ease _landEase = Ease.OutQuint;
 
-    [SerializeField] private float _recoilSquashX = 1.2f;
-    [SerializeField] private float _recoilSquashY = 0.8f;
-    [SerializeField] private float _recoilDuration = 0.1f;
-
-    [Header("Tilt")]
-    [SerializeField] private float _maxTilt = 15f;
-    [SerializeField] private float _tiltSpeed = 10f;
-
-    [Header("Return")]
-    [SerializeField] private float _returnDuration = 0.2f;
+    [Header("Dynamic Tilt")]
+    [SerializeField] private float _maxTiltAngle = 12f;
+    [SerializeField] private float _tiltSpeed = 15f;
+    [SerializeField] private float _tiltReferenceSpeed = 10f;
 
     private Vector3 _originalScale;
+    private Vector3 _originalPos;
     private Player _player;
     private Rigidbody2D _rb;
+    private float _height;
 
     void Start()
     {
         _player = GetComponentInParent<Player>();
         _rb = GetComponentInParent<Rigidbody2D>();
+
         _originalScale = _visual.localScale;
+        _originalPos = _visual.localPosition;
+
+        var renderer = _visual.GetComponentInChildren<SpriteRenderer>();
+        _height = renderer != null ? renderer.bounds.size.y : 1f;
 
         _player.OnLocomotionChanged += HandleLocomotionChanged;
         _player.OnRecoilStateChanged += HandleRecoilStateChanged;
     }
 
-    void OnDestroy()
+    private void HandleLocomotionChanged(LocomotionState state)
     {
-        _player.OnLocomotionChanged -= HandleLocomotionChanged;
-        _player.OnRecoilStateChanged -= HandleRecoilStateChanged;
+        _visual.DOKill(true);
+        ResetVisual();
+
+        if (state == LocomotionState.Jumping)
+        {
+            ExecuteJumpVisual();
+        }
+        else if (state == LocomotionState.Land)
+        {
+            ExecuteLandVisual();
+        }
+    }
+
+    private void ExecuteJumpVisual()
+    {
+        // 점프: 위로 길쭉하게
+        _visual.DOScale(new Vector3(_jumpStretchX, _jumpStretchY, 1f), _jumpActionDuration).SetEase(_jumpEase)
+            .OnComplete(() => _visual.DOScale(_originalScale, _jumpReturnDuration).SetEase(Ease.OutElastic));
+
+        // 피봇 보정
+        float yOffset = (_height * (_jumpStretchY - _originalScale.y)) / 2f;
+        _visual.DOLocalMoveY(_originalPos.y + yOffset, _jumpActionDuration).SetEase(_jumpEase)
+            .OnComplete(() => _visual.DOLocalMoveY(_originalPos.y, _jumpReturnDuration).SetEase(Ease.OutElastic));
+    }
+
+    private void ExecuteLandVisual()
+    {
+        // 랜딩: 바닥에 납작하게
+        _visual.DOScale(new Vector3(_landSquashX, _landSquashY, 1f), _landActionDuration).SetEase(_landEase)
+            .OnComplete(() => _visual.DOScale(_originalScale, _landReturnDuration).SetEase(Ease.OutElastic));
+
+        // 피봇 보정
+        float yOffset = (_height * (_landSquashY - _originalScale.y)) / 2f;
+        _visual.DOLocalMoveY(_originalPos.y + yOffset, _landActionDuration).SetEase(_landEase)
+            .OnComplete(() => _visual.DOLocalMoveY(_originalPos.y, _landReturnDuration).SetEase(Ease.OutElastic));
+    }
+
+    private void HandleRecoilStateChanged(RecoilState state)
+    {
+        if (state != RecoilState.Recoiling) return;
+
+        _visual.DOKill(true);
+        Vector2 aimDir = _player.playerAimer.AimDirection;
+
+        _visual.DOPunchScale(new Vector3(Mathf.Abs(aimDir.x) * 0.2f, Mathf.Abs(aimDir.y) * 0.2f, 0), 0.12f, 8, 1f);
+        float rotAmount = aimDir.x > 0 ? 12f : -12f;
+        _visual.DOPunchRotation(new Vector3(0, 0, -rotAmount), 0.12f, 8, 1f);
     }
 
     void Update()
@@ -50,72 +101,37 @@ public class PlayerVisual : MonoBehaviour
         HandleTilt();
     }
 
-    private void HandleLocomotionChanged(LocomotionState state)
-    {
-        switch (state)
-        {
-            case LocomotionState.Jumping:
-                // 길쭉하게
-                _visual.DOKill();
-                _visual.DOScaleX(_jumpStretchX, _jumpDuration)
-                    .OnComplete(() => _visual.DOScaleX(_originalScale.x, _returnDuration));
-                _visual.DOScaleY(_jumpStretchY, _jumpDuration)
-                    .OnComplete(() => _visual.DOScaleY(_originalScale.y, _returnDuration));
-                break;
-
-            case LocomotionState.Land:
-                // 납작하게
-                _visual.DOKill();
-                _visual.DOScaleX(_landSquashX, _landDuration)
-                    .OnComplete(() => _visual.DOScaleX(_originalScale.x, _returnDuration));
-                _visual.DOScaleY(_landSquashY, _landDuration)
-                    .OnComplete(() => _visual.DOScaleY(_originalScale.y, _returnDuration));
-                break;
-        }
-    }
-
-    private void HandleRecoilStateChanged(RecoilState state)
-    {
-        if (state != RecoilState.Recoiling) return;
-
-        // 반동 방향 반대로 찌그러짐
-        Vector2 recoilDir = _player.playerAimer.AimDirection;
-
-        // 반동이 수평에 가까우면 X 찌그러짐, 수직에 가까우면 Y 찌그러짐
-        float absX = Mathf.Abs(recoilDir.x);
-        float absY = Mathf.Abs(recoilDir.y);
-
-        _visual.DOKill();
-        if (absX > absY)
-        {
-            // 수평 반동
-            _visual.DOScaleX(_recoilSquashX, _recoilDuration)
-                .OnComplete(() => _visual.DOScaleX(_originalScale.x, _returnDuration));
-            _visual.DOScaleY(_recoilSquashY, _recoilDuration)
-                .OnComplete(() => _visual.DOScaleY(_originalScale.y, _returnDuration));
-        }
-        else
-        {
-            // 수직 반동
-            _visual.DOScaleX(_recoilSquashY, _recoilDuration)
-                .OnComplete(() => _visual.DOScaleX(_originalScale.x, _returnDuration));
-            _visual.DOScaleY(_recoilSquashX, _recoilDuration)
-                .OnComplete(() => _visual.DOScaleY(_originalScale.y, _returnDuration));
-        }
-    }
-
     private void HandleTilt()
     {
-        if (_player.CurrentRecoil == RecoilState.Recoiling) return;
+        float targetZ = 0f;
+        float velX = _rb.linearVelocity.x;
 
-        float targetTilt = 0f;
-        if (_rb.linearVelocity.x != 0)
-            targetTilt = Mathf.Sign(_rb.linearVelocity.x) * _maxTilt;
+        if (Mathf.Abs(velX) > 0.1f)
+        {
+            targetZ = -(velX / _tiltReferenceSpeed) * _maxTiltAngle;
+        }
 
         float currentZ = _visual.localEulerAngles.z;
-        if (currentZ > 180f) currentZ -= 360f; // 각도 정규화
+        if (currentZ > 180f) currentZ -= 360f;
 
-        float newZ = Mathf.Lerp(currentZ, -targetTilt, _tiltSpeed * Time.deltaTime);
-        _visual.localEulerAngles = new Vector3(0f, 0f, newZ);
+        float newZ = Mathf.Lerp(currentZ, targetZ, Time.deltaTime * _tiltSpeed);
+        newZ = Mathf.Clamp(newZ, -_maxTiltAngle, _maxTiltAngle);
+
+        _visual.localEulerAngles = new Vector3(0, 0, newZ);
+    }
+
+    private void ResetVisual()
+    {
+        _visual.localScale = _originalScale;
+        _visual.localPosition = _originalPos;
+    }
+
+    void OnDestroy()
+    {
+        if (_player != null)
+        {
+            _player.OnLocomotionChanged -= HandleLocomotionChanged;
+            _player.OnRecoilStateChanged -= HandleRecoilStateChanged;
+        }
     }
 }

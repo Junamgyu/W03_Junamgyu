@@ -37,8 +37,6 @@ public class PlayerAttack : MonoBehaviour
     bool _gravityDone = false;
     bool _dampingDone = false;
 
-    // Temp: 상태 관리를 스킬이랑 반동이랑 묶어놔서 생긴 문제를 해결하기 위한 변수.
-    ActionState _previousAction;
 
     private void Awake()
     {
@@ -57,12 +55,12 @@ public class PlayerAttack : MonoBehaviour
         if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
             _hapticManager = null;
 
-        _player.OnLocomotionChanged += OnLocomotionChanged;
+        _player.OnLocomotionChanged += HandleLocomotionChanged;
     }
 
     void OnDestroy()
     {
-        _player.OnLocomotionChanged -= OnLocomotionChanged;
+        _player.OnLocomotionChanged -= HandleLocomotionChanged;
     }
 
 
@@ -85,7 +83,6 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_currentWeaponInstance)) return;
 
         Fire(currentWeaponData);
-
         _hapticManager?.PlayPistolShot();
     }
 
@@ -99,10 +96,6 @@ public class PlayerAttack : MonoBehaviour
         // 반동
         Vector2 shootDir = SnapTo8Direction(aimDir); // 반동만 8방향 스냅
 
-        // 디버그용 저장
-        _debugAimDir = aimDir;
-        _debugShootDir = shootDir;
-
         // X만 초기화, Y는 보존 (점프 중 샷건 쏴도 Y속도 안 날아감)
         _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
         _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
@@ -112,9 +105,6 @@ public class PlayerAttack : MonoBehaviour
 
     bool TryFireWeapon(WeaponInstance instance)
     {
-        if (_player.IsGrounded && instance.NeedsReload)
-            ReloadAll();
-
         return instance.TryConsume();
     }
 
@@ -158,11 +148,8 @@ public class PlayerAttack : MonoBehaviour
 
     void TriggerRecoilRoutines(Vector2 shootDir)
     {
-        // Recoiling 중에 다시 쏘면 이전 상태를 유지
-        if (_player.CurrentAction != ActionState.Recoiling)
-            _previousAction = _player.CurrentAction;
+        _player.SetRecoilState(RecoilState.Recoiling);
 
-        _player.SetActionState(ActionState.Recoiling);
         _gravityDone = false;
         _dampingDone = false;
 
@@ -190,8 +177,6 @@ public class PlayerAttack : MonoBehaviour
             yield return null; // 매 프레임 체크
         }
         _rb.gravityScale = _player.OriginalGravity;
-        //_player.SetActionState(ActionState.None);
-
         _gravityDone = true;
         TryExitRecoiling();
 
@@ -211,8 +196,7 @@ public class PlayerAttack : MonoBehaviour
     {
         if (!_gravityDone || !_dampingDone) return; // 둘 다 끝나야 해제
 
-        ActionState previousAction = _previousAction;
-        _player.SetActionState(previousAction);
+        _player.SetRecoilState(RecoilState.None);
 
         if (!_player.IsGrounded)
             _player.CanJump = false;
@@ -233,7 +217,7 @@ public class PlayerAttack : MonoBehaviour
 
 
     // 지워야 할 코드
-    void OnLocomotionChanged(LocomotionState state)
+    void HandleLocomotionChanged(LocomotionState state)
     {
         if (state == LocomotionState.Land)
         {
@@ -242,18 +226,14 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    // 디버그용 필드
-    Vector2 _debugAimDir;
-    Vector2 _debugShootDir;
-
-    void OnDrawGizmos()
+    // 상태 다 종료
+    public void ResetState()
     {
-        // 노란색 = 실제 마우스 방향 (총알 방향)
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawRay(transform.position, _debugAimDir * 2f);
-
-        // 빨간색 = 스냅된 반동 방향
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position, -_debugShootDir * 2f);
+        StopCoroutine(nameof(GravityRoutine));
+        StopCoroutine(nameof(DampingRoutine));
+        _rb.gravityScale = _player.OriginalGravity;
+        _rb.linearDamping = 0f;
+        _gravityDone = false;
+        _dampingDone = false;
     }
 }

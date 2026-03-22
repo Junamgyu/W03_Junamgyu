@@ -31,12 +31,15 @@ public class DeadeyeSkill : MonoBehaviour
             _poolManager = null;
         }
 
+        _rangeTransform.localScale = Vector3.zero;
+        _rangeRenderer.enabled = false;
+
     }
 
     void Update()
     {
         UpdateSlowGauge();
-        UpdateMarking();
+        UpdateDeadeyeRange();
     }
 
     void OnDestroy()
@@ -46,10 +49,7 @@ public class DeadeyeSkill : MonoBehaviour
 
     void OnPlayerDie()
     {
-        _isSlowActive = false;
-        ExitSlow();
-        ExitDeadeye();
-        StopAllCoroutines();
+        ResetState();
     }
 
     // =====================
@@ -89,17 +89,15 @@ public class DeadeyeSkill : MonoBehaviour
 
     [SerializeField] private float _slowTimeScale = 0.2f;
     [Tooltip("초당 게이지 소모량")][SerializeField] private float _gaugeConsumeRate = 10f;
-    private float _originalFixedDeltaTime;
-    
-    private bool _isSlowActive = false; // 상태 관리 잘못해서 생긴.
-
-    // 천천히 풀리도록
-    private Coroutine _slowExitRoutine;
     [SerializeField] private float _slowExitDuration = 0.5f;
+    private float _originalFixedDeltaTime;
+
+    // 천천히 풀리도록 하기 위한 코루틴 관리
+    private Coroutine _slowExitRoutine;
     
     public void OnSlowMotion(InputAction.CallbackContext context)
     {
-        if (_player.CurrentAction == ActionState.Deadeye) return; // 데드아이 중엔 슬로우 입력 무시
+        if (_player.CurrentSkill == SkillState.Deadeye) return; // 데드아이 중엔 슬로우 입력 무시
 
         if (context.started)
         {
@@ -119,24 +117,20 @@ public class DeadeyeSkill : MonoBehaviour
             StopCoroutine(_slowExitRoutine);
             _slowExitRoutine = null;
         }
-        _isSlowActive = true;
 
-        if (_player.CurrentAction == ActionState.Deadeye)
-            _isDeadeyeActive = true; // 데드아이로 인한 슬로우
-        else
-            _player.SetActionState(ActionState.Slow);
-        
+        // 데드아이 중엔 SkillState 덮어씌우지 않음
+        if (_player.CurrentSkill != SkillState.Deadeye)
+            _player.SetSkillState(SkillState.Slow);
+
         Time.timeScale = _slowTimeScale;
         Time.fixedDeltaTime = _originalFixedDeltaTime * _slowTimeScale;
     }
 
     private void ExitSlow()
     {
-        _isSlowActive = false;
-
-        // Deadeye 중엔 Slow만 단독으로 해제하지 않음
-        if (_player.CurrentAction != ActionState.Deadeye)
-            _player.SetActionState(ActionState.None);
+        // 먼저 상태 해제 (Deadeye는 ExitDeadeye쪽에서 해제 해줄꺼임)
+        if (_player.CurrentSkill != SkillState.Deadeye)
+            _player.SetSkillState(SkillState.None);
 
         if (_slowExitRoutine != null)
             StopCoroutine(_slowExitRoutine);
@@ -151,6 +145,11 @@ public class DeadeyeSkill : MonoBehaviour
 
         while (elapsed < _slowExitDuration)
         {
+            // 슬로우가 다시 켜지면 중단 TODO:?????
+            if (_player.CurrentSkill == SkillState.Slow ||
+                _player.CurrentSkill == SkillState.Deadeye)
+                yield break;
+
             elapsed += Time.unscaledDeltaTime;
             float t = elapsed / _slowExitDuration;
             Time.timeScale = Mathf.Lerp(startTimeScale, 1f, t);
@@ -165,11 +164,12 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void UpdateSlowGauge()
     {
-        if (!_isSlowActive) return; // ActionState 대신 bool로 체크
-        if (_isDeadeyeActive) return; // 데드아이 슬로우면 게이지 소모 안 함
+        // Slow 상태일 때만 게이지 소모 (Deadeye일 땐 소모 안 함)
+        if (_player.CurrentSkill != SkillState.Slow) return;
 
         ConsumeGauge(_gaugeConsumeRate * Time.unscaledDeltaTime);
 
+        // 슬로우 게이지가 없으면 나감.
         if (!CanSlowMotion)
             ExitSlow();
     }
@@ -183,144 +183,158 @@ public class DeadeyeSkill : MonoBehaviour
     #region Deadeye
     [SerializeField] private int _damagePerShot = 120;
     [SerializeField] private float _timeBetweenShots = 0.1f;
-    [SerializeField] private int _maxTargets = 3;
+    [SerializeField] private int _maxTargets = 6;
     [SerializeField] private float _gaugeCostDeadeye = 50f;
-    [SerializeField] private float _markingDuration = 3f;
 
-    private bool _isAiming = false;
+    [Header("Deadeye Range")]
+    [SerializeField] private Transform _rangeTransform;    // DeadeyeRange 오브젝트
+    [SerializeField] private SpriteRenderer _rangeRenderer;
+    [SerializeField] private float _maxRadius = 5f;        // 최대 반지름
+    [SerializeField] private float _expandDuration = 1f;   // 최대까지 커지는 시간
+    [SerializeField] private LayerMask _enemyLayer;
+
     private bool _isFiring = false;
+    private float _currentRadius = 0f;
     private List<EnemyBase> _targets = new List<EnemyBase>();
-    private bool _isDeadeyeActive = false; // 상태 관리 실수
-    public bool IsDeadeyeActive => _isDeadeyeActive;
 
+    public bool IsDeadeyeActive => _player.CurrentSkill == SkillState.Deadeye;
 
-    private Coroutine _markingTimer;
-
-    // 토글 방식 동작 (Q) : 마우스(홀드) 드래그로 적 마킹하고 떼면 다다다 
     public void OnDeadeye(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (!context.started) return; // started일 때만 처리, canceled 무시
+
+        if (_isFiring) return;
+        if (_player.CurrentSkill == SkillState.Deadeye)
         {
-            if (_isFiring) return; // 데드아이로 다라라 죽이고 있는 중이라면 리턴
+            FireDeadeye(); // 이미 활성 중이면 발사
+            return;
+        }
 
-            if (IsDeadeyeActive)
+        if (!CanDeadeye) return;
+
+        _player.SetSkillState(SkillState.Deadeye);
+        ConsumeGauge(_gaugeCostDeadeye);
+        EnterSlow();
+
+        _currentRadius = 0f;
+        _rangeTransform.localScale = Vector3.zero;
+        _rangeRenderer.enabled = true;
+    }
+
+    // 영역 전개
+    private void UpdateDeadeyeRange()
+    {
+        if (_player.CurrentSkill != SkillState.Deadeye || _isFiring) return;
+
+        // 원 키우기
+        _currentRadius = Mathf.MoveTowards(_currentRadius, _maxRadius, (_maxRadius / _expandDuration) * Time.unscaledDeltaTime);
+
+        // 스프라이트 scale 업데이트 (지름 = 반지름 * 2)
+        float diameter = _currentRadius * 2f;
+        _rangeTransform.localScale = new Vector3(diameter, diameter, 1f);
+
+        // 범위 안 적 타겟팅
+        UpdateTargets();
+
+        // 최대 크기 도달 시 자동 발사
+        if (Mathf.Approximately(_currentRadius, _maxRadius))
+            FireDeadeye();
+    }
+
+    private void UpdateTargets()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _currentRadius, _enemyLayer);
+
+        foreach (Collider2D hit in hits)
+        {
+            if (_targets.Count >= _maxTargets) break;
+
+            EnemyBase enemy = hit.GetComponent<EnemyBase>();
+            if (enemy != null && !_targets.Contains(enemy) && enemy.CurrentHp > 0)
             {
-                ExitDeadeye(); // 이미 활성 중이면 취소 (이미 느려지는 것을 쓴거니 게이지 회복 같은 것은 없음)
-                return;
+                _targets.Add(enemy);
+                enemy.ShowMark(true);
             }
-
-            if (!CanDeadeye) return;
-            _player.SetActionState(ActionState.Deadeye);
-            ConsumeGauge(_gaugeCostDeadeye);
-            EnterSlow();
-            _markingTimer = StartCoroutine(MarkingTimerRoutine());
         }
     }
-    private IEnumerator MarkingTimerRoutine()
+
+
+    private void FireDeadeye()
     {
-        yield return new WaitForSecondsRealtime(_markingDuration); // 슬로우 영향 안 받게
-        if (_targets.Count > 0)
-            StartCoroutine(FireAtTargets());
-        else
+        if (_targets.Count == 0)
+        {
             ExitDeadeye();
+            return;
+        }
+        StartCoroutine(FireAtTargets());
     }
 
-    public void OnMarkTarget(InputAction.CallbackContext context)
-    {
-        if (_player.CurrentAction != ActionState.Deadeye) return;
 
-        if (context.started)
-        {
-            _isAiming = true;
-        }
-        else if (context.canceled)
-        {
-            _isAiming = false;
-            if (_markingTimer != null)
-            {
-                StopCoroutine(_markingTimer);
-                _markingTimer = null;
-            }
-
-            // 타겟 있으면 쏘기
-            if (_targets.Count > 0)
-                StartCoroutine(FireAtTargets());
-            else
-                ExitDeadeye(); // 타겟 없으면 그냥 취소
-        }
-    }
-
-    private void UpdateMarking()
-    {
-        if (_player.CurrentAction != ActionState.Deadeye || !_isAiming) return;
-        if (_targets.Count >= _maxTargets) return;
-
-        Vector2 mouseWorld = _cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        Collider2D hit = Physics2D.OverlapPoint(mouseWorld);
-        if (hit == null) return;
-
-        EnemyBase enemy = hit.GetComponent<EnemyBase>();
-        if (enemy != null && !_targets.Contains(enemy) && enemy.CurrentHp > 0)
-        {
-            _targets.Add(enemy);
-            enemy.ShowMark(true);
-        }
-    }
-
-    // TODO: 꼼수
     IEnumerator FireAtTargets()
     {
-        // 순서대로 처치
         _isFiring = true;
-
-        // 리스트 복사본으로 순회
         List<EnemyBase> targets = new List<EnemyBase>(_targets);
 
-        // 연출용 총알
         foreach (EnemyBase enemy in targets)
         {
             if (enemy != null && enemy.CurrentHp > 0)
             {
                 enemy.ShowMark(false);
-
                 Vector2 dir = ((Vector2)enemy.transform.position - (Vector2)transform.position).normalized;
 
+                // 연출용 총알
                 GameObject go = _poolManager != null
                     ? _poolManager.Get(_deadeyeBulletPrefab, transform.position, Quaternion.identity)
                     : Instantiate(_deadeyeBulletPrefab, transform.position, Quaternion.identity);
-
                 if (go.TryGetComponent<Rigidbody2D>(out var rb))
                     rb.linearVelocity = dir * _deadeyeBulletSpeed;
 
+                // 실제 공격 동시에
+                enemy.TakeDamage(_damagePerShot, false);
             }
             yield return new WaitForSecondsRealtime(_timeBetweenShots);
         }
 
-        // 실제 공격
-        foreach (EnemyBase enemy in targets)
-        {
-            if (enemy != null && enemy.CurrentHp > 0)
-                enemy.TakeDamage(_damagePerShot, false);
-
-            yield return new WaitForSeconds(_timeBetweenShots);
-        }
-
-
         _isFiring = false;
-        ExitDeadeye(); // 시간 복구
+        ExitDeadeye();
     }
 
     private void ExitDeadeye()
     {
-        _isDeadeyeActive = false; // 데드아이 종료 시 리셋
-        _player.SetActionState(ActionState.None);
-        _isAiming = false;
+        _player.SetSkillState(SkillState.None);
+        _isFiring = false;
+
+        // 범위 숨기기
+        _rangeRenderer.enabled = false;
+        _rangeTransform.localScale = Vector3.zero;
+        _currentRadius = 0f;
+
+        // 타겟 마크 해제
+        foreach (EnemyBase enemy in _targets)
+            if (enemy != null) enemy.ShowMark(false);
+        _targets.Clear();
+
         ExitSlow(); // 슬로우 자동 해제
+    }
+    #endregion
+
+    public void ResetState()
+    {
+        _isFiring = false;
+        StopAllCoroutines();
+
+        _player.SetSkillState(SkillState.None);
+
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = _originalFixedDeltaTime;
+
+        _rangeRenderer.enabled = false;
+        _rangeTransform.localScale = Vector3.zero;
+        _currentRadius = 0f;
+
         foreach (EnemyBase enemy in _targets)
             if (enemy != null) enemy.ShowMark(false);
         _targets.Clear();
     }
-
-    #endregion
 
 }

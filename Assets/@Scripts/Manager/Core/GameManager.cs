@@ -39,6 +39,8 @@ public class GameManager : PersistentMonoSingleton<GameManager>
     private Player _player;
     private PlayerHealth _playerHealth;    // 게임 매니저는 플레이어의 체력을 감시
 
+    public bool IsPaused => _gameStateManager.CurrentState == GameState.Paused;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();

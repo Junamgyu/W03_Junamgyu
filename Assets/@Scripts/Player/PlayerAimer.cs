@@ -22,6 +22,10 @@ public class PlayerAimer : MonoBehaviour
 
     public void HandleLook(InputAction.CallbackContext ctx)
     {
+
+        if (GameManager.Instance.IsPaused) return;
+
+
         Vector2 input = ctx.ReadValue<Vector2>();
         bool isGamepad = ctx.control.device is Gamepad;
 
@@ -36,6 +40,7 @@ public class PlayerAimer : MonoBehaviour
         else if (isGamepad)
         {
             if (input.sqrMagnitude > 0.001f)
+                Debug.Log("A");
                 AimDirection = input.normalized;
         }
 

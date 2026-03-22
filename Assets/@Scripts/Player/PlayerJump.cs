@@ -36,6 +36,8 @@ public class PlayerJump : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.IsPaused) return;
+
         if (context.started)
         {
             // 지상이거나 코요테 타임 안이면 점프 가능
@@ -51,6 +53,8 @@ public class PlayerJump : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameManager.Instance.IsPaused) return;
+
         if (_player.CurrentRecoil == RecoilState.Recoiling) return; // 반동 중이면 막음.
 
         // 코요테 타임 카운터

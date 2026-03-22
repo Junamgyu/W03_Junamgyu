@@ -78,6 +78,8 @@ public class PlayerAttack : MonoBehaviour
 
     public void FireCurrentWeapon()
     {
+        if (GameManager.Instance.IsPaused) return;
+
         if (_player.deadeyeSkill.IsDeadeyeActive) return;
         if (currentWeaponData == null) return;
         if (!TryFireWeapon(_currentWeaponInstance)) return;

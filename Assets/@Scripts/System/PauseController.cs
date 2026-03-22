@@ -49,14 +49,16 @@ public class PauseController : MonoBehaviour, IInitializable
     {
         Time.timeScale = 0f;
         _inputManager.DisablePlayerInput();
-        _gameStateManager.ChangeState(GameState.Paused);
+        _inputManager.EnableUIInput();
 
+        _gameStateManager.ChangeState(GameState.Paused);
         Debug.Log("Game Paused");
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1f;
+        //_inputManager.DisableUIInput();
         _inputManager.EnablePlayerInput();
         _gameStateManager.ChangeState(GameState.Playing);
 

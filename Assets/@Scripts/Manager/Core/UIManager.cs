@@ -92,6 +92,7 @@ public class UIManager : MonoBehaviour, IInitializable
         {
             case GameState.Paused:
                 ShowPause();
+                Debug.Log(state);
                 break;
 
             case GameState.GameOver:

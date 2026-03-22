@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
+//using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -37,6 +37,8 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameManager.Instance.IsPaused) return;
+
         if (_player.CurrentRecoil == RecoilState.Recoiling && !_player.IsGrounded)
         {
             float newX = _rb.linearVelocity.x + _player.moveSpeed * _dir.x * _airRecoilMoveInfluence;
@@ -57,6 +59,8 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance.IsPaused) return;
+
         bool isGrounded = Physics2D.OverlapCircle(_groundCheck.position, _groundCheckRadius, _groundLayer);
 
         // 공중 → 착지 순간 감지

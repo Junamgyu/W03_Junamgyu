@@ -33,6 +33,15 @@ public class InputManager : MonoBehaviour, IInitializable
         _input.Player.Enable();
         _input.UI.Enable();
 
+        if (Gamepad.current != null)
+        {
+            _input.bindingMask = InputBinding.MaskByGroup("Gamepad");
+        }
+        else
+        {
+            _input.bindingMask = InputBinding.MaskByGroup("Keyboard&Mouse");
+        }
+
         IsInitialized = true;
     }
 
@@ -53,11 +62,11 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Jump.canceled += HandleJump;
 
         player.Attack.started += HandlePrimaryAttack;
-        player.Attack.performed += HandlePrimaryAttack;
+        //player.Attack.performed += HandlePrimaryAttack;
         player.Attack.canceled += HandlePrimaryAttack;
 
         player.Shotgun.started += HandleSecondaryAttack;
-        player.Shotgun.performed += HandleSecondaryAttack;
+        //player.Shotgun.performed += HandleSecondaryAttack;
         player.Shotgun.canceled += HandleSecondaryAttack;
 
         player.SlowMotionSkill.started += HandleSlowMotionSkill;

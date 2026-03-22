@@ -1,9 +1,14 @@
+using System;
 using Unity.Cinemachine;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+    public static event Action OnBossIntro;
+    public static event Action OnBossOutro;
     public static CameraManager Instance { get; private set; }
+
+    [SerializeField] private BossIntro bossIntro;
 
     public enum CameraMode
     {
@@ -27,6 +32,11 @@ public class CameraManager : MonoBehaviour
     public CameraZone CurrentZone { get; private set; }
     public CameraMode CurrentMode = CameraMode.Follow;
 
+    private void OnEnable()
+    {
+        BossIntro.OnEndIntro += BossOutro;
+    }
+
     private void Awake()
     {
         if(Instance == null)
@@ -35,6 +45,13 @@ public class CameraManager : MonoBehaviour
         }else
         {
             Destroy(gameObject);
+        }
+    }
+    private void Start()
+    {
+        if(bossIntro != null)
+        {
+            StartBossIntro();
         }
     }
 
@@ -80,5 +97,15 @@ public class CameraManager : MonoBehaviour
     public void BossIntroCutScene(CameraCutScene cutScene)
     {
         _dollyController.PlayerBossIntro(_cineCam, _cutSceneCam, cutScene);
+    }
+
+    public void StartBossIntro()
+    {
+        OnBossIntro?.Invoke();
+    }
+
+    public void BossOutro()
+    {
+        OnBossOutro?.Invoke();
     }
 }

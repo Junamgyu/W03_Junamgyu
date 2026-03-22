@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_WeaponBase
   weaponName: Shotgun
   recoilForce: 120
-  bulletPrefab: {fileID: 3806268705299755859, guid: 35d167a07f7cc884097d8394463c0588, type: 3}
+  bulletPrefab: {fileID: 2428623537106414745, guid: bace8953f40798940bc3bcfe85d036f3, type: 3}
   bulletSpeed: 70
   pelletCount: 8
   spreadAngle: 15

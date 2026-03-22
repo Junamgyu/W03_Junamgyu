@@ -26,9 +26,7 @@ public class PlayerJump : MonoBehaviour
     // 코요테
     float _coyoteTimeCounter;
 
-    // TODO: 점프 버퍼 변수 자리
-    // float _jumpBuffer = 0.15f;
-    // float _jumpBufferCounter;
+    // 점프 버퍼는 뺌.
 
     void Start()
     {
@@ -53,7 +51,7 @@ public class PlayerJump : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (_player.CurrentAction == ActionState.Recoiling) return; // 반동 중이면 막음.
+        if (_player.CurrentRecoil == RecoilState.Recoiling) return; // 반동 중이면 막음.
 
         // 코요테 타임 카운터
         // (참고) Land 중엔 코요테 타임 카운터 증가 안 함

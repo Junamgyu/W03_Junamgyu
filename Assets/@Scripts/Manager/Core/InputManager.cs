@@ -18,7 +18,6 @@ public class InputManager : MonoBehaviour, IInitializable
     public event Action<InputAction.CallbackContext> OnSecondaryAttack;
     public event Action<InputAction.CallbackContext> OnSlowMotionSkill;
     public event Action<InputAction.CallbackContext> OnDeadeyeSkill;
-    public event Action<InputAction.CallbackContext> OnMarkTarget;
     public event Action<InputAction.CallbackContext> OnCheatOne;
 
     // System Input
@@ -69,10 +68,6 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.performed += HandleDeadeyeSkill;
         player.DeadeyeSkill.canceled += HandleDeadeyeSkill;
 
-        player.MarkTarget.started += HandleMarkTarget;
-        player.MarkTarget.performed += HandleMarkTarget;
-        player.MarkTarget.canceled += HandleMarkTarget;
-
         player.CheatOne.started += HandleCheatOne;
 
         // UI Actions
@@ -86,7 +81,6 @@ public class InputManager : MonoBehaviour, IInitializable
     private void HandleSecondaryAttack(InputAction.CallbackContext ctx) => OnSecondaryAttack?.Invoke(ctx);
     private void HandleSlowMotionSkill(InputAction.CallbackContext ctx) => OnSlowMotionSkill?.Invoke(ctx);
     private void HandleDeadeyeSkill(InputAction.CallbackContext ctx) => OnDeadeyeSkill?.Invoke(ctx);
-    private void HandleMarkTarget(InputAction.CallbackContext ctx) => OnMarkTarget?.Invoke(ctx);
     private void HandleCheatOne(InputAction.CallbackContext ctx) => OnCheatOne?.Invoke(ctx);
 
     // UI Handlers
@@ -126,10 +120,6 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.started -= HandleDeadeyeSkill;
         player.DeadeyeSkill.performed -= HandleDeadeyeSkill;
         player.DeadeyeSkill.canceled -= HandleDeadeyeSkill;
-
-        player.MarkTarget.started -= HandleMarkTarget;
-        player.MarkTarget.performed -= HandleMarkTarget;
-        player.MarkTarget.canceled -= HandleMarkTarget;
 
         player.CheatOne.started -= HandleCheatOne;
 

@@ -17,6 +17,9 @@ public abstract class NormalEnemyBase : EnemyBase
     // =====================
     [SerializeField] protected float _patrolRadius = 3f;
     [SerializeField] protected LayerMask _wallLayer;
+    [SerializeField] protected LayerMask _groundLayer;
+    [SerializeField] protected float _edgeCheckDistance = 0.5f;
+    [SerializeField] protected float _edgeCheckDepth = 1f;
 
     protected Vector2 _originalPos;
     protected Vector2 _patrolTarget;
@@ -33,15 +36,14 @@ public abstract class NormalEnemyBase : EnemyBase
     protected override void Start()
     {
         base.Start();
+        Initialize();
 
-        // Jaein 추가
         TryFindPlayer();
 
         _originalPos = transform.position;
         _patrolTarget = GetRandomPatrolTarget();
     }
 
-    // Jaein 추가
     protected virtual void OnEnable()
     {
         if (_rb == null)
@@ -69,7 +71,6 @@ public abstract class NormalEnemyBase : EnemyBase
         ShowMark(false);
     }
 
-    // Jaein 추가
     protected virtual void OnDisable()
     {
         _player = null;
@@ -79,15 +80,12 @@ public abstract class NormalEnemyBase : EnemyBase
             _rb.linearVelocity = Vector2.zero;
     }
 
-    // Jaein 추가
     protected bool TryFindPlayer()
     {
-        if (_player != null)
-            return true;
+        if (_player != null) return true;
 
         GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj == null)
-            return false;
+        if (playerObj == null) return false;
 
         _player = playerObj.transform;
         return _player != null;
@@ -97,7 +95,6 @@ public abstract class NormalEnemyBase : EnemyBase
     {
         if (_isDead) return;
 
-        // Jaein 추가
         if (!TryFindPlayer())
         {
             _rb.linearVelocity = Vector2.zero;
@@ -147,7 +144,11 @@ public abstract class NormalEnemyBase : EnemyBase
     {
         MoveToward(_patrolTarget);
 
-        if (Vector2.Distance(transform.position, _patrolTarget) < 0.2f)
+        float dist = _isFlying
+            ? Vector2.Distance(transform.position, _patrolTarget)
+            : Mathf.Abs(transform.position.x - _patrolTarget.x);
+
+        if (dist < 0.2f)
             _patrolTarget = GetRandomPatrolTarget();
     }
 
@@ -158,11 +159,40 @@ public abstract class NormalEnemyBase : EnemyBase
     }
 
     // =====================
+    // 낭떠러지 감지
+    // =====================
+    protected bool IsEdgeAhead(Vector2 moveDir)
+    {
+        if (_isFlying) return false;
+        if (_groundLayer == 0) return false;
+
+        // 스케일 반영한 체크 거리/깊이
+        float scaledDistance = _edgeCheckDistance * Mathf.Abs(transform.localScale.x);
+        float scaledDepth = _edgeCheckDepth * Mathf.Abs(transform.localScale.y);
+
+        Vector2 ahead = (Vector2)transform.position + new Vector2(moveDir.x * scaledDistance, 0f);
+        RaycastHit2D hit = Physics2D.Raycast(ahead, Vector2.down, scaledDepth, _groundLayer);
+
+        return hit.collider == null;
+    }
+
+    // =====================
     // 이동
     // =====================
     protected virtual void MoveToward(Vector2 target)
     {
         Vector2 dir = (target - (Vector2)transform.position).normalized;
+
+        if (!_isFlying && IsEdgeAhead(dir))
+        {
+            // x속도 완전히 0으로 즉시 제동
+            _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
+            _rb.AddForce(new Vector2(-dir.x * _rb.mass * 10f, 0f), ForceMode2D.Impulse); // 반대방향 제동력
+
+            float oppositeX = _originalPos.x + (-dir.x * _patrolRadius);
+            _patrolTarget = new Vector2(oppositeX, _originalPos.y);
+            return;
+        }
 
         if (_isFlying)
             _rb.linearVelocity = dir * _moveSpeed;
@@ -175,24 +205,22 @@ public abstract class NormalEnemyBase : EnemyBase
     // =====================
     protected virtual bool DetectPlayer()
     {
-        // Jaein 추가
-        if (!TryFindPlayer())
-            return false;
+        if (!TryFindPlayer()) return false;
 
         float dist = Vector2.Distance(transform.position, _player.position);
         if (dist > _detectionRange) return false;
 
+        if (_wallLayer == 0) return true;
+
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, dist, _wallLayer);
+        Vector2 origin = (Vector2)transform.position + Vector2.up * 0.2f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, dist, _wallLayer);
         return hit.collider == null;
     }
 
     protected bool IsInAttackRange()
     {
-        // Jaein 추가
-        if (!TryFindPlayer())
-            return false;
-
+        if (!TryFindPlayer()) return false;
         return Vector2.Distance(transform.position, _player.position) <= _attackRange;
     }
 
@@ -245,5 +273,18 @@ public abstract class NormalEnemyBase : EnemyBase
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(transform.position, (Vector2)transform.position + dir * _detectionRange);
         }
+
+        Gizmos.color = Color.cyan;
+        Vector2 aheadR = (Vector2)transform.position + new Vector2(_edgeCheckDistance, 0f);
+        Vector2 aheadL = (Vector2)transform.position + new Vector2(-_edgeCheckDistance, 0f);
+        Gizmos.DrawLine(aheadR, aheadR + Vector2.down * _edgeCheckDepth);
+        Gizmos.DrawLine(aheadL, aheadL + Vector2.down * _edgeCheckDepth);
+    }
+
+    public override void TakeDamage(int damage, bool isAddGauge = false)
+    {
+        base.TakeDamage(damage);
+        _player.GetComponent<DeadeyeSkill>().AddGauge();
+
     }
 }

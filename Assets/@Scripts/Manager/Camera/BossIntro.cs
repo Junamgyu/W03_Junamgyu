@@ -10,6 +10,7 @@ public class BossIntro : MonoBehaviour
     [SerializeField] private float _endTime = 4f;
     [SerializeField] private CinemachineCamera _main;
     [SerializeField] private CinemachineCamera _intro;
+    [SerializeField] private GameObject speedEffect;
 
     
 
@@ -36,6 +37,8 @@ public class BossIntro : MonoBehaviour
     IEnumerator EndIntro()
     {
         yield return new WaitForSeconds(_endTime);
+        if(speedEffect != null )
+            speedEffect.SetActive(false);
         _main.Priority = 10;
         _intro.Priority = 5;
         yield return new WaitForSeconds(2);

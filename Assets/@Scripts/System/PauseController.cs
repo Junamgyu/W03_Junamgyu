@@ -28,10 +28,10 @@ public class PauseController : MonoBehaviour, IInitializable
 
     private void HandlePauseInput(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
     {
-        if (!ctx.started)
-            return;
-
         GameState currentState = _gameStateManager.CurrentState;
+
+        if (!ctx.started || currentState == GameState.GameOver)
+            return;
 
         if (currentState == GameState.Playing)
         {

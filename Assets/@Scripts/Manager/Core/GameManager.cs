@@ -111,10 +111,13 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         }
 
         _inputManager.DisablePlayerInput();
+        _inputManager.EnableUIInput();
         Debug.Log("Input Disabled");
 
         _gameStateManager.ChangeState(GameState.GameOver);
         Debug.Log("GameState -> GameOver");
+
+        Time.timeScale = 0f; // 게임 일시정지
 
         // TODO: Show Game Over UI, Restart Button, etc.
     }

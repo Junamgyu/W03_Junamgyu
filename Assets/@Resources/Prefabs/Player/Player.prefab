@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 8107594692235736828}
   - component: {fileID: 6331054487131336594}
   - component: {fileID: 4474358315243513985}
+  - component: {fileID: 4487828896594457828}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -409,6 +410,31 @@ MonoBehaviour:
   _hitColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashDuration: 0.1
   _blinkInterval: 0.1
+--- !u!114 &4487828896594457828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222992740227915879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 042a509bab6d90c42bb3934a7b8bcd65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisual
+  _visual: {fileID: 1587425958504968173}
+  _jumpStretchX: 0.7
+  _jumpStretchY: 1.3
+  _jumpDuration: 0.05
+  _landSquashX: 1.3
+  _landSquashY: 0.7
+  _landDuration: 0.05
+  _recoilSquashX: 1.2
+  _recoilSquashY: 0.8
+  _recoilDuration: 0.08
+  _maxTilt: 15
+  _tiltSpeed: 12
+  _returnDuration: 0.15
 --- !u!1 &977712098372752119
 GameObject:
   m_ObjectHideFlags: 0

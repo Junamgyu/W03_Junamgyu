@@ -38,6 +38,7 @@ public class BossIntro : MonoBehaviour
         yield return new WaitForSeconds(_endTime);
         _main.Priority = 10;
         _intro.Priority = 5;
+        yield return new WaitForSeconds(2);
         OnEndIntro?.Invoke();
 
     }

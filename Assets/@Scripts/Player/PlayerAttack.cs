@@ -105,9 +105,6 @@ public class PlayerAttack : MonoBehaviour
 
     bool TryFireWeapon(WeaponInstance instance)
     {
-        if (_player.IsGrounded && instance.NeedsReload)
-            ReloadAll();
-
         return instance.TryConsume();
     }
 

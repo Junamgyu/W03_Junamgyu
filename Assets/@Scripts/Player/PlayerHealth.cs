@@ -17,10 +17,13 @@ public class PlayerHealth : EntityBase
     public event Action<int> OnHeal;
     public event Action OnDie;
 
+    private Color _originalColor;
+
     private void Awake()
     {
         if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
             _hapticManager = null;
+        _originalColor = _spriteRenderer.color; // 원래 색깔 저장
     }
 
     public override void TakeDamage(int damage)
@@ -96,7 +99,7 @@ public class PlayerHealth : EntityBase
         {
             StopCoroutine(_visualRoutine);
             _spriteRenderer.DOKill();
-            _spriteRenderer.color = Color.white;
+            _spriteRenderer.color = _originalColor;
             _spriteRenderer.enabled = true;
         }
         _visualRoutine = StartCoroutine(RunVisual());
@@ -107,7 +110,7 @@ public class PlayerHealth : EntityBase
     {
         // 빨간 번쩍 후 흰색으로 복귀
         _spriteRenderer.DOColor(_hitColor, 0f);
-        _spriteRenderer.DOColor(Color.white, _hitFlashDuration);
+        _spriteRenderer.DOColor(_originalColor, _hitFlashDuration);
 
         yield return new WaitForSeconds(_hitFlashDuration);
 
@@ -122,7 +125,7 @@ public class PlayerHealth : EntityBase
 
         // 원래 상태로 복귀
         _spriteRenderer.DOFade(1f, 0f);
-        _spriteRenderer.DOColor(Color.white, 0f);
+        _spriteRenderer.DOColor(_originalColor, 0f);
         _visualRoutine = null;
     }
 
@@ -134,7 +137,7 @@ public class PlayerHealth : EntityBase
             _visualRoutine = null;
         }
         _spriteRenderer.DOKill();
-        _spriteRenderer.color = Color.white;
+        _spriteRenderer.color = _originalColor;
         _spriteRenderer.enabled = true;
     }
     #endregion

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_WeaponBase
   weaponName: Pistol
   recoilForce: 2
-  bulletPrefab: {fileID: 3806268705299755859, guid: 35d167a07f7cc884097d8394463c0588, type: 3}
+  bulletPrefab: {fileID: 7776776970624798173, guid: fefd565e1c45d24408a50f9fa1456940, type: 3}
   bulletSpeed: 70
   pelletCount: 1
   spreadAngle: 0

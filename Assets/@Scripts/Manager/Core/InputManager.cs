@@ -72,6 +72,11 @@ public class InputManager : MonoBehaviour, IInitializable
 
         // UI Actions
         ui.Pause.started += HandlePause;
+
+        // TODO: Boss Intro
+        // 카메라 매니저가 보스 인트로 컷씬 인보크할 때, 플레이어 입력을 잠시 비활성화하는 기능 추가 필요
+        // cameraManager.OnBossIntro += DisablePlayerInput();
+        // cameraManager.OnBossOutro += EnablePlayerInput();
     }
 
     private void HandleLook(InputAction.CallbackContext ctx) => OnLook?.Invoke(ctx);
@@ -124,6 +129,10 @@ public class InputManager : MonoBehaviour, IInitializable
         player.CheatOne.started -= HandleCheatOne;
 
         ui.Pause.started -= HandlePause;
+
+        // TODO: 보스 인트로 컷씬이 끝나면 플레이어 입력을 다시 활성화하는 기능 추가
+        // cameraManager.OnBossIntro -= DisablePlayerInput();
+        // cameraManager.OnBossOutro -= EnablePlayerInput();
 
         _input.Player.Disable();
         _input.UI.Disable();

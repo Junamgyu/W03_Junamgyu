@@ -2,26 +2,35 @@ using UnityEngine;
 
 public class WaveTrigger : MonoBehaviour
 {
-    public EnemySpawner _enemySpawner;
-    public GameObject[] _moveBlocks;
+    [SerializeField] private EnemySpawner _enemySpawner;
+    [SerializeField] private GameObject[] _moveBlocks;
+
+    private bool _triggered;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (_triggered)
+            return;
+
         Player player = collision.GetComponent<Player>();
-        if(player != null)
+        if (player == null)
+            return;
+
+        _triggered = true;
+
+        if (_enemySpawner != null)
         {
             _enemySpawner.StartFirstWave();
-            Destroy(gameObject);
         }
-    }
-
-    public void OnDestroy()
-    {
 
         for (int i = 0; i < _moveBlocks.Length; i++)
         {
-           
-            _moveBlocks[i].SetActive(true);
+            if (_moveBlocks[i] != null)
+            {
+                _moveBlocks[i].SetActive(true);
+            }
         }
+
+        Destroy(gameObject);
     }
 }

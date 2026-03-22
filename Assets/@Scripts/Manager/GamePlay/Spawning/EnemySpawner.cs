@@ -15,7 +15,7 @@ public class EnemySpawner : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] private bool _autoStart = false;
-    [SerializeField] private bool _stopWhenSpawnPointIsShort = true; // 스폰할 적 수가 스폰 위치 수보다 많을 때 멈출지 여부
+    [SerializeField] private bool _stopWhenSpawnPointIsShort = true;
     [SerializeField, Range(0f, 1f)] private float _changeWaveThreshold = 0.8f;
 
     private int _currentWaveKilledCount = 0;
@@ -25,6 +25,9 @@ public class EnemySpawner : MonoBehaviour
     private int _currentWaveIndex = -1;
     private Coroutine _spawnRoutine;
     private PoolManager _pool;
+
+    private bool _isShuttingDown = false;
+    private readonly List<EnemyBase> _spawnedEnemies = new();
 
     private void Awake()
     {
@@ -41,8 +44,18 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        _isShuttingDown = true;
+        ClearWaveRoutine();
+        UnsubscribeAllEnemies();
+    }
+
     public void StartFirstWave()
     {
+        if (_isShuttingDown || !this)
+            return;
+
         if (_waveDatas == null || _waveDatas.Count == 0)
         {
             Debug.LogWarning($"{name}: WaveData가 없습니다.");
@@ -54,6 +67,9 @@ public class EnemySpawner : MonoBehaviour
 
     public void StartWave(int waveIndex)
     {
+        if (_isShuttingDown || !this || !gameObject.activeInHierarchy)
+            return;
+
         if (waveIndex < 0 || waveIndex >= _waveDatas.Count)
         {
             Debug.LogWarning($"{name}: 잘못된 waveIndex = {waveIndex}");
@@ -66,6 +82,8 @@ public class EnemySpawner : MonoBehaviour
             _spawnRoutine = null;
         }
 
+        UnsubscribeAllEnemies();
+
         _currentWaveIndex = waveIndex;
         _currentWaveKilledCount = 0;
         _isWaveSpawnCompleted = false;
@@ -74,8 +92,11 @@ public class EnemySpawner : MonoBehaviour
         _spawnRoutine = StartCoroutine(CoSpawnWave(_waveDatas[_currentWaveIndex]));
     }
 
-    private bool ShouldNextWave() // 다음 웨이브로 넘어갈 조건
+    private bool ShouldNextWave()
     {
+        if (_isShuttingDown)
+            return false;
+
         if (!_isWaveSpawnCompleted)
             return false;
 
@@ -96,25 +117,37 @@ public class EnemySpawner : MonoBehaviour
 
     public void StartNextWave()
     {
+        if (_isShuttingDown || !this || !gameObject.activeInHierarchy)
+            return;
+
         int nextIndex = _currentWaveIndex + 1;
 
         if (nextIndex >= _waveDatas.Count)
         {
             Debug.Log($"{name}: 모든 웨이브 완료");
+
             for (int i = 0; i < _blocks.Length; i++)
             {
-                _blocks[i].SetActive(false);
+                if (_blocks[i] != null)
+                {
+                    _blocks[i].SetActive(false);
+                }
             }
-            // 보상이나 다음 스포너 호출?은 여기에 추가하면 될듯
+
             return;
         }
 
         StartWave(nextIndex);
     }
 
-    // 스폰 코루틴: 적을 순차적으로 또는 동시에 스폰
     private IEnumerator CoSpawnWave(SO_WaveData waveData)
     {
+        if (_isShuttingDown)
+        {
+            _spawnRoutine = null;
+            yield break;
+        }
+
         if (waveData == null)
         {
             _spawnRoutine = null;
@@ -155,6 +188,12 @@ public class EnemySpawner : MonoBehaviour
         {
             for (int i = 0; i < enemyCount; i++)
             {
+                if (_isShuttingDown)
+                {
+                    _spawnRoutine = null;
+                    yield break;
+                }
+
                 SpawnEnemy(waveData.enemyPrefabs[i], selectedPoints[i]);
 
                 if (i < enemyCount - 1)
@@ -167,6 +206,12 @@ public class EnemySpawner : MonoBehaviour
         {
             for (int i = 0; i < enemyCount; i++)
             {
+                if (_isShuttingDown)
+                {
+                    _spawnRoutine = null;
+                    yield break;
+                }
+
                 SpawnEnemy(waveData.enemyPrefabs[i], selectedPoints[i]);
             }
         }
@@ -177,6 +222,9 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy(GameObject enemyPrefab, Transform spawnPoint)
     {
+        if (_isShuttingDown)
+            return;
+
         if (enemyPrefab == null || spawnPoint == null)
         {
             return;
@@ -202,10 +250,13 @@ public class EnemySpawner : MonoBehaviour
         EnemyBase enemyBase = enemyObject.GetComponent<EnemyBase>();
         if (enemyBase != null)
         {
-            // 중복 구독 방어
-            // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독
             enemyBase.OnDeathFinished -= HandleEnemyDeathFinished;
             enemyBase.OnDeathFinished += HandleEnemyDeathFinished;
+
+            if (!_spawnedEnemies.Contains(enemyBase))
+            {
+                _spawnedEnemies.Add(enemyBase);
+            }
         }
     }
 
@@ -236,10 +287,13 @@ public class EnemySpawner : MonoBehaviour
 
     private void HandleEnemyDeathFinished(EnemyBase enemy)
     {
+        if (_isShuttingDown || !this || !gameObject.activeInHierarchy)
+            return;
+
         if (enemy != null)
         {
-            // TODO: EnemyBase에 OnDeathFinished 이벤트 추가 후 구독 해제
             enemy.OnDeathFinished -= HandleEnemyDeathFinished;
+            _spawnedEnemies.Remove(enemy);
         }
 
         if (_isChangingWave)
@@ -252,6 +306,19 @@ public class EnemySpawner : MonoBehaviour
             _isChangingWave = true;
             StartNextWave();
         }
+    }
+
+    private void UnsubscribeAllEnemies()
+    {
+        for (int i = 0; i < _spawnedEnemies.Count; i++)
+        {
+            if (_spawnedEnemies[i] != null)
+            {
+                _spawnedEnemies[i].OnDeathFinished -= HandleEnemyDeathFinished;
+            }
+        }
+
+        _spawnedEnemies.Clear();
     }
 
     public void ClearWaveRoutine()
@@ -269,9 +336,6 @@ public class EnemySpawner : MonoBehaviour
         if (_spawnPoints == null || _spawnPoints.Count == 0)
             return;
 
-        Vector3 from = transform.position;
-
-        // Draw only circles at spawn points (no connecting lines)
         Gizmos.color = Color.cyan;
         foreach (var pt in _spawnPoints)
         {

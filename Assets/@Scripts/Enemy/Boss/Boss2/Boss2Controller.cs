@@ -16,11 +16,24 @@ public class Boss2Controller : EnemyBase
     public float blinkInterval = 0.1f;
     public int blinkCount = 3;
 
+    [Header("다음 스테이지 트리거")]
+    [SerializeField] private GameObject _nextStageDoor;
+
     private bool _isActive = false;
     private List<ISkill> _skills = new List<ISkill>();
     private Vector3 _originalPos;
     private SpriteRenderer _spriteRenderer;
     private bool _isBlinking = false;
+
+    private void OnEnable()
+    {
+        CameraManager.OnBossOutro += StartBoss2;
+    }
+
+    private void OnDisable()
+    {
+        CameraManager.OnBossOutro -= StartBoss2;
+    }
 
     protected override void Initialize()
     {
@@ -40,9 +53,9 @@ public class Boss2Controller : EnemyBase
             else
                 Debug.LogWarning($"{skill.name}은 ISkill을 구현하지 않았습니다.");
         }
-
-        StartBoss2();
     }
+
+
 
     public override void Die() => Boss2Die();
 
@@ -83,6 +96,8 @@ public class Boss2Controller : EnemyBase
         if (!_isActive) return;
         _isActive = false;
         StopAllCoroutines();
+        _nextStageDoor.SetActive(true);
+
         Debug.Log("보스2 사망");
         gameObject.SetActive(false);
     }

@@ -21,6 +21,7 @@ public abstract class EnemyBase : EntityBase
 
     public void ShowMark(bool show)
     {
+        _markIndicator = GetComponentInChildren<CircleDrawer>();
         if (_markIndicator == null) return;
         _isMarked = show;
         _markIndicator.gameObject.SetActive(show);

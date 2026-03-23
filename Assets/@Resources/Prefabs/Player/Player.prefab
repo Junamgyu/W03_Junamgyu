@@ -155,8 +155,8 @@ MonoBehaviour:
   _jumpHeight: 4.5
   _timeToJumpApex: 0.4
   _upwardMultiplier: 1
-  _downwardMultiplier: 5
-  _jumpCutOff: 4
+  _downwardMultiplier: 4
+  _jumpCutOff: 3
   _speedLimit: 20
   _coyoteTime: 0.13
 --- !u!114 &540872386422813845
@@ -211,8 +211,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   _groundCheckRadius: 0.4
-  _recoilMoveInfluence: 0.3
-  _airRecoilMoveInfluence: 0.2
+  _recoilMoveInfluence: 15
+  _airRecoilMoveInfluence: 10
 --- !u!114 &8107594692235736828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,7 +247,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeadeyeSkill
   _deadeyeBulletPrefab: {fileID: 1866698543977563895, guid: 5e68a840c3ff9e74a87ce1b805e77b4f, type: 3}
   _deadeyeBulletSpeed: 70
-  _gaugePerKill: 15
   _slowTimeScale: 0.2
   _gaugeConsumeRate: 10
   _slowExitDuration: 0.2
@@ -274,7 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92abb298b8a095d449fc6177613929b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  _maxHp: 15
+  _maxHp: 10
   _attackDamage: 1
   _invincibleDuration: 1.5
   _spriteRenderer: {fileID: 634643051373191999}
@@ -895,6 +894,7 @@ MonoBehaviour:
   _blockLayer:
     serializedVersion: 2
     m_Bits: 33792
+  _laserRange: 200
 --- !u!4 &3694745091177622675 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7726687867218751877, guid: 841262d3c9cbab744be80bc57e7f4334, type: 3}

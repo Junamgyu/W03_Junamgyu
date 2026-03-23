@@ -43157,7 +43157,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2759237900819417989, guid: 44e69c1f38110394fa9bdba32be58b9d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 37
       objectReference: {fileID: 0}
     - target: {fileID: 2935607721594874957, guid: 44e69c1f38110394fa9bdba32be58b9d, type: 3}
       propertyPath: _player

@@ -265,6 +265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc4db43cba9245439f7c68e459e8bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneManager
+  _currentStageSceneName: 
+  _mainMenuSceneName: Lobby
 --- !u!1 &7088068079096290632
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,6 +311,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3856c98d168307346b935093ed81ecec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  _pausePanel: {fileID: 0}
+  _gameOverPanel: {fileID: 0}
+  _uiPausePanel: {fileID: 0}
+  _uiGameOverPanel: {fileID: 0}
 --- !u!1 &8157820277705932781
 GameObject:
   m_ObjectHideFlags: 0
@@ -353,9 +359,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 665acb66fd3bedb4f88a8560411ddfd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckpointManager
-  _checkpoints: []
+  _checkpoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   _currentRespawnPoint: {fileID: 0}
   _startRespawnPoint: {fileID: 0}
+  _currentRespawnPosition: {x: 0, y: 0, z: 0}
+  _startRespawnPosition: {x: 0, y: 0, z: 0}
+  _hasReachedCheckpoint: 0
 --- !u!1 &8188686934479407690
 GameObject:
   m_ObjectHideFlags: 0

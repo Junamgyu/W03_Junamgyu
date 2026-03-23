@@ -39,7 +39,6 @@ public class MoveObject : MonoBehaviour
         _boxCol = GetComponent<BoxCollider2D>();
         if (wayPoints == null || wayPoints.Length < 2)
         {
-            Debug.LogWarning($"[MoveObject] {name}: wayPoints를 2개 이상 설정해야함");
             enabled = false;
             return;
         } 
@@ -75,8 +74,6 @@ public class MoveObject : MonoBehaviour
         if (_player.transform.position.y < transform.position.y) _boxCol.enabled = false;
         else
             _boxCol.enabled = true;
-        //Debug.Log(_player.transform.position.y);
-        //Debug.Log(transform.position.y);
     }
 
     void LateUpdate()
@@ -89,9 +86,7 @@ public class MoveObject : MonoBehaviour
         if(_passengerRb != null && delta != Vector2.zero)
         {
             _passengerRb.transform.position = (Vector2)_passengerRb.transform.position + delta;
-            Debug.Log($"[MoveObject] delta: {delta}, passengerRb 위치: {_passengerRb.position}");
             _passengerRb.MovePosition(_passengerRb.position + delta);
-            Debug.Log($"[MoveObject] MovePosition 호출 완료");
         }
 
         _previousPosition = transform.position;
@@ -149,7 +144,6 @@ public class MoveObject : MonoBehaviour
         if(!collision.gameObject.CompareTag("Player")) return;
 
         float normalY = collision.contacts[0].normal.y;
-        Debug.Log($"[MoveObject] 충돌 법선 Y값: {normalY}");
 
         //플랫폼 윗면에서 충돌했을 때만 (옆면, 아랫면 제외)
         if(normalY < -0.5f)

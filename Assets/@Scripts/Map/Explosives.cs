@@ -14,13 +14,9 @@ public class Explosives : MonoBehaviour
         Bullet bullet = collision.GetComponent<Bullet>();
         if (bullet != null)
         {
+            Explosion();
             Destroy(gameObject);
         }
-    }
-
-    public void OnDestroy()
-    {
-        Explosion();
     }
 
     public void Explosion()

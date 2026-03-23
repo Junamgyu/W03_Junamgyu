@@ -3,8 +3,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class TestSceneLoad : MonoBehaviour
 {
-    public void GameStart(string _sceneName)
+    public void OnClickExit()
     {
-        SceneManager.LoadScene(_sceneName);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
+
 }

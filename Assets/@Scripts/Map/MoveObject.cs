@@ -75,8 +75,8 @@ public class MoveObject : MonoBehaviour
         if (_player.transform.position.y < transform.position.y) _boxCol.enabled = false;
         else
             _boxCol.enabled = true;
-        Debug.Log(_player.transform.position.y);
-        Debug.Log(transform.position.y);
+        //Debug.Log(_player.transform.position.y);
+        //Debug.Log(transform.position.y);
     }
 
     void LateUpdate()

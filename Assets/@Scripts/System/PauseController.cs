@@ -28,14 +28,6 @@ public class PauseController : MonoBehaviour, IInitializable
 
     private void HandlePauseInput(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
     {
-        Debug.Log(
-            $"[PauseController] " +
-            $"state={_gameStateManager.CurrentState}, " +
-            $"actionMap={ctx.action.actionMap.name}, " +
-            $"action={ctx.action.name}, " +
-            $"started={ctx.started}, performed={ctx.performed}, canceled={ctx.canceled}, " +
-            $"phase={ctx.phase}"
-        );
 
         GameState currentState = _gameStateManager.CurrentState;
 

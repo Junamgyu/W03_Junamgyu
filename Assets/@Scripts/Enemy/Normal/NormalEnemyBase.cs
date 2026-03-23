@@ -40,8 +40,8 @@ public abstract class NormalEnemyBase : EnemyBase
     [SerializeField] private float _hitFlashInterval = 0.08f;
     [SerializeField] private Color _hitFlashColor = Color.black;
 
-    private SpriteRenderer _spriteRenderer;
-    private Color _originalColor;
+    protected SpriteRenderer _spriteRenderer;
+    protected Color _originalColor;
     private Coroutine _flashCoroutine;
 
     // =====================

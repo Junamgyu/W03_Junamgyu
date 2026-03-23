@@ -22,26 +22,27 @@ public class CheckpointManager : MonoBehaviour, IInitializable
         if (IsInitialized)
             return;
 
-        CacheStartRespawnPoint();
+        BindRespawnPoint();
         BindCheckpoints();
         IsInitialized = true;
     }
 
-    private void CacheStartRespawnPoint()
+    private void BindRespawnPoint()
     {
-        Player player = FindAnyObjectByType<Player>();
-        if (player == null)
+        GameObject startPointObject = GameObject.Find("StartPoint");
+        if (startPointObject == null)
+        {
+            Debug.LogWarning($"{name}: StartPoint 오브젝트를 찾지 못했습니다.");
             return;
+        }
 
-        _startRespawnPosition = player.transform.position;
-
-        if (_startRespawnPoint != null)
-            _startRespawnPoint.position = _startRespawnPosition;
+        _startRespawnPoint = startPointObject.transform;
+        _startRespawnPosition = _startRespawnPoint.position;
 
         if (!HasCheckpoint)
         {
-            _currentRespawnPosition = _startRespawnPosition;
             _currentRespawnPoint = _startRespawnPoint;
+            _currentRespawnPosition = _startRespawnPosition;
         }
     }
 
@@ -90,6 +91,8 @@ public class CheckpointManager : MonoBehaviour, IInitializable
     {
         UnbindCheckpoints();
 
+        BindRespawnPoint();
+
         _checkpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
         BindCheckpoints();
         RebindCurrentCheckpointByPosition();
@@ -98,12 +101,14 @@ public class CheckpointManager : MonoBehaviour, IInitializable
 
     private void RebindCurrentCheckpointByPosition()
     {
-        CurrentCheckpoint = null;
-        _currentRespawnPoint = _startRespawnPoint;
-
-        if (_checkpoints == null || _checkpoints.Length == 0)
+        if (!HasCheckpoint)
+        {
+            _currentRespawnPoint = _startRespawnPoint;
+            _currentRespawnPosition = _startRespawnPosition;
             return;
+        }
 
+        Checkpoint matchedCheckpoint = null;
         const float tolerance = 0.05f;
 
         for (int i = 0; i < _checkpoints.Length; i++)
@@ -115,10 +120,22 @@ public class CheckpointManager : MonoBehaviour, IInitializable
             float distance = Vector3.Distance(checkpoint.RespawnPosition, _currentRespawnPosition);
             if (distance <= tolerance)
             {
-                CurrentCheckpoint = checkpoint;
-                _currentRespawnPoint = checkpoint.RespawnPoint;
-                return;
+                matchedCheckpoint = checkpoint;
+                break;
             }
+        }
+
+        if (matchedCheckpoint != null)
+        {
+            CurrentCheckpoint = matchedCheckpoint;
+            _currentRespawnPoint = matchedCheckpoint.RespawnPoint;
+            _currentRespawnPosition = matchedCheckpoint.RespawnPosition;
+        }
+        else
+        {
+            CurrentCheckpoint = null;
+            _currentRespawnPoint = _startRespawnPoint;
+            _currentRespawnPosition = _startRespawnPosition;
         }
     }
 

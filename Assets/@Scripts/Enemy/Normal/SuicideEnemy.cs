@@ -9,13 +9,11 @@ public class SuicideEnemy : NormalEnemyBase
     [SerializeField] private float _explosionMoveSpeed = 10f;
     [SerializeField] private ParticleSystem _explosionParticle;
 
-    private SpriteRenderer _spriteRenderer;
     private bool _isExploding = false;
 
     protected override void Start()
     {
         base.Start();
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     // Jaein 추가

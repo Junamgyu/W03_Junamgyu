@@ -9,6 +9,7 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
     [SerializeField] private string _currentStageSceneName;
 
     private UIManager _uiManager;
+    private CheckpointManager _checkpointManager;
 
     public string CurrentStageSceneName => _currentStageSceneName;
 
@@ -30,7 +31,8 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         }
 
         ManagerRegistry.TryGet(out _uiManager);
-        
+        ManagerRegistry.TryGet(out _checkpointManager);
+
         SceneManager.sceneLoaded += HandleSceneLoaded;
         IsInitialized = true;
     }
@@ -43,7 +45,7 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         _currentStageSceneName = stageSceneName;
     }
 
-    public void ReloadStage()
+    public void LoadStage()
     {
         if (IsLoading)
             return;
@@ -83,6 +85,8 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
             return;
 
         IsLoading = false;
+
+        _checkpointManager.RebindCheckpoints();
         _uiManager.RebindUI();
         OnStageReloadCompleted?.Invoke(scene.name);
     }

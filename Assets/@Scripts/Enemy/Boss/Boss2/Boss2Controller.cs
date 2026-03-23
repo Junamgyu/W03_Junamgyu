@@ -19,14 +19,22 @@ public class Boss2Controller : EnemyBase
     [Header("다음 스테이지 트리거")]
     [SerializeField] private GameObject _nextStageDoor;
 
+    [Header("소환 설정")]
+    [SerializeField] private GameObject[] _minionPrefabs;
+    [SerializeField] private Vector3 _spawnOffset = new Vector3(0f, 0.6f, 0f);
+    [SerializeField] private int _spawnCountPerCycle = 2; // 스킬 사이마다 소환할 수
+    private PoolManager _pool;
+
     private bool _isActive = false;
     private List<ISkill> _skills = new List<ISkill>();
     private Vector3 _originalPos;
     private SpriteRenderer _spriteRenderer;
-    private bool _isBlinking = false;
+    private Color _originalColor;
+    private Coroutine _blinkCoroutine;
 
     private void OnEnable()
     {
+        CameraManager.OnBossOutro -= StartBoss2;
         CameraManager.OnBossOutro += StartBoss2;
     }
 
@@ -45,6 +53,10 @@ public class Boss2Controller : EnemyBase
         Initialize();
         _originalPos = transform.position;
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (_spriteRenderer != null)
+            _originalColor = _spriteRenderer.color;
+
+        ManagerRegistry.TryGet(out _pool);
 
         foreach (var skill in skills)
         {
@@ -55,18 +67,17 @@ public class Boss2Controller : EnemyBase
         }
     }
 
-
-
     public override void Die() => Boss2Die();
 
     public override void TakeDamage(int damage)
     {
-        Debug.Log(_currentHp + " " + damage);
         if (!_isActive) return;
+        if (!gameObject.activeInHierarchy) return;
         _currentHp -= damage;
 
-        if (!_isBlinking)
-            StartCoroutine(HitBlinkRoutine());
+        if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+        _blinkCoroutine = StartCoroutine(HitBlinkRoutine());
+        GameObject.FindGameObjectWithTag("Player").GetComponent<DeadeyeSkill>().AddGauge(1);
 
         if (_currentHp <= 0)
         {
@@ -77,12 +88,13 @@ public class Boss2Controller : EnemyBase
 
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
-        Debug.Log(_currentHp + " " + damage);
         if (!_isActive) return;
+        if (!gameObject.activeInHierarchy) return;
         _currentHp -= damage;
 
-        if (!_isBlinking)
-            StartCoroutine(HitBlinkRoutine());
+        if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+        _blinkCoroutine = StartCoroutine(HitBlinkRoutine());
+        GameObject.FindGameObjectWithTag("Player").GetComponent<DeadeyeSkill>().AddGauge(1);
 
         if (_currentHp <= 0)
         {
@@ -96,8 +108,11 @@ public class Boss2Controller : EnemyBase
         if (!_isActive) return;
         _isActive = false;
         StopAllCoroutines();
-        _nextStageDoor.SetActive(true);
 
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor;
+
+        _nextStageDoor.SetActive(true);
         Debug.Log("보스2 사망");
         gameObject.SetActive(false);
     }
@@ -107,18 +122,13 @@ public class Boss2Controller : EnemyBase
     // =====================
     IEnumerator HitBlinkRoutine()
     {
-        _isBlinking = true;
-        Color original = _spriteRenderer.color;
-
         for (int i = 0; i < blinkCount; i++)
         {
-            _spriteRenderer.color = Color.white;
+            _spriteRenderer.color = Color.black;
             yield return new WaitForSeconds(blinkInterval);
-            _spriteRenderer.color = original;
+            _spriteRenderer.color = _originalColor;
             yield return new WaitForSeconds(blinkInterval);
         }
-
-        _isBlinking = false;
     }
 
     // =====================
@@ -153,8 +163,30 @@ public class Boss2Controller : EnemyBase
             if (skill != null)
                 yield return StartCoroutine(skill.SkillRoutine());
 
+            // 스킬 끝날때마다 소환
+            SpawnMinions();
+
             yield return StartCoroutine(ReturnToOrigin());
             yield return new WaitForSeconds(idleDuration);
+        }
+    }
+
+    // =====================
+    // 소환
+    // =====================
+    void SpawnMinions()
+    {
+        if (_minionPrefabs == null || _minionPrefabs.Length == 0) return;
+
+        for (int i = 0; i < _spawnCountPerCycle; i++)
+        {
+            GameObject prefab = _minionPrefabs[Random.Range(0, _minionPrefabs.Length)];
+            Vector3 spawnPos = transform.TransformPoint(_spawnOffset);
+
+            if (_pool != null)
+                _pool.Get(prefab, spawnPos, Quaternion.identity);
+            else
+                Instantiate(prefab, spawnPos, Quaternion.identity);
         }
     }
 

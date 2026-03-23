@@ -60,6 +60,10 @@ public class SoundManager : MonoBehaviour
 
     private void PlayBGM(int number, bool fade = true)
     {
+        if (number == 1)
+            _bgmVolume = .34f;
+        else
+            _bgmVolume = .2f;
         AudioClip clip = _bgmEntry[number]._clip;
         _bgmPlayer.Play(clip, fade, _bgmVolume);
     }

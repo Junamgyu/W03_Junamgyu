@@ -81,9 +81,9 @@ public class PlayerAttack : MonoBehaviour
         if (_player.deadeyeSkill.IsDeadeyeActive) return;
         if (currentWeaponData == null) return;
         if (!TryFireWeapon(_currentWeaponInstance)) return;
+        SoundManager.instance.HandlePistolSFX();
 
         Fire(currentWeaponData);
-        SoundManager.instance.HandlePistolSFX();
         //_hapticManager?.PlayPistolShot();
     }
 

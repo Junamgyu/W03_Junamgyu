@@ -18,6 +18,9 @@ public class MoveObject : MonoBehaviour
     [Header("래버")]
     public bool isWarking = false;
 
+    [Header("플레이어")]
+    public GameObject _player;
+
     // -- 내부 변수
     private Vector2 [] _worldPoints;
     private int _targetIndex = 1;
@@ -27,12 +30,14 @@ public class MoveObject : MonoBehaviour
 
     private Vector2 _previousPosition;          //이전 프레임 위치
     private Rigidbody2D  _passengerRb;          // 현재 탑승 중인 플레이어
+    private BoxCollider2D _boxCol;
     
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(wayPoints == null || wayPoints.Length < 2)
+        _boxCol = GetComponent<BoxCollider2D>();
+        if (wayPoints == null || wayPoints.Length < 2)
         {
             Debug.LogWarning($"[MoveObject] {name}: wayPoints를 2개 이상 설정해야함");
             enabled = false;
@@ -63,6 +68,15 @@ public class MoveObject : MonoBehaviour
             MoveToTarget();
         }
         
+    }
+
+    private void FixedUpdate()
+    {
+        if (_player.transform.position.y < transform.position.y) _boxCol.enabled = false;
+        else
+            _boxCol.enabled = true;
+        Debug.Log(_player.transform.position.y);
+        Debug.Log(transform.position.y);
     }
 
     void LateUpdate()

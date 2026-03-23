@@ -64,10 +64,11 @@ public class Bullet : MonoBehaviour
             if (_isPiercing) return; // 관통이면 무시
             SpawnHitParticle();
             ReturnToPool();
+            Debug.Log("맞음");
             return;
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.CompareTag("Enemy")) //보스 에임 보정 관련때문에 CompareTag 추가
         {
             if (other.TryGetComponent<EnemyBase>(out var damageable))
                 damageable.TakeDamage(_damage, _giveGauge);

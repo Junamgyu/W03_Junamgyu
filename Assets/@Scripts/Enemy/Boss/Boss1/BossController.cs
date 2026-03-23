@@ -23,6 +23,9 @@ public class BossController : MonoBehaviour
     public float returnSpeed = 5f;
     public float dashCooldown = 1f;
 
+    [Header("보스 인트로")]
+    [SerializeField] float _bossIntro = 5;
+
     public float TotalHp => CalculateTotalHp();
 
     private float _currentRotationSpeed;
@@ -31,6 +34,17 @@ public class BossController : MonoBehaviour
     private Transform _player;
     private Vector3 _originPos;
 
+
+    private void OnEnable()
+    {
+        CameraManager.OnBossOutro += StartBoss;
+    }
+
+    private void OnDisable()
+    {
+        CameraManager.OnBossOutro -= StartBoss;
+    }
+
     void Start()
     {
         _originPos = transform.position;
@@ -38,9 +52,6 @@ public class BossController : MonoBehaviour
 
         GameObject playerObj = GameObject.FindWithTag("Player");
         if (playerObj != null) _player = playerObj.transform;
-
-        StartCoroutine(PatternCycleRoutine());
-        StartCoroutine(DeathCheckRoutine());
     }
 
     void Update()
@@ -63,6 +74,7 @@ public class BossController : MonoBehaviour
     // =====================
     IEnumerator PatternCycleRoutine()
     {
+
         while (!_isDead)
         {
             int pattern = Random.Range(0, 2);
@@ -202,5 +214,11 @@ public class BossController : MonoBehaviour
         // 2페이즈 시작 후 1페이즈 제거
         gameObject.GetComponent<BossPhase2>().SetPhase2();
         Destroy(this);
+    }
+    
+    void StartBoss()
+    {
+        StartCoroutine(PatternCycleRoutine());
+        StartCoroutine(DeathCheckRoutine());
     }
 }

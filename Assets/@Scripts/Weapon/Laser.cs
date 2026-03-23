@@ -1,9 +1,10 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
-    [SerializeField] private Transform _muzzle;     // ÃÑ±¸ À§Ä¡
-    [SerializeField] private LayerMask _blockLayer; // ·¹ÀÌÀú ¸·À» ·¹ÀÌ¾î (Ground, Enemy µî)
+    [SerializeField] private Transform _muzzle;     // ì´êµ¬ ìœ„ì¹˜
+    [SerializeField] private LayerMask _blockLayer; // ë ˆì´ì € ë§‰ì„ ë ˆì´ì–´ (Ground, Enemy ë“±)
+    [SerializeField] private float _laserRange = 20f;
 
     LineRenderer _laser;
     Player _player;
@@ -21,10 +22,10 @@ public class Laser : MonoBehaviour
 
         _laser.SetPosition(0, _muzzle.position);
 
-        RaycastHit2D hit = Physics2D.Raycast(_muzzle.position, aimDir, 20f, _blockLayer);
+        RaycastHit2D hit = Physics2D.Raycast(_muzzle.position, aimDir, _laserRange, _blockLayer);
         if (hit.collider != null)
             _laser.SetPosition(1, hit.point);
         else
-            _laser.SetPosition(1, (Vector2)_muzzle.position + aimDir * 20f);
+            _laser.SetPosition(1, (Vector2)_muzzle.position + aimDir * _laserRange);
     }
 }

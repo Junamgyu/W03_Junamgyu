@@ -9,13 +9,15 @@ public class CheckpointManager : MonoBehaviour, IInitializable
     [SerializeField] private Vector3 _currentRespawnPosition;
     [SerializeField] private Vector3 _startRespawnPosition;
 
+    [SerializeField] private bool _hasReachedCheckpoint;
+
     public Transform CurrentRespawnPoint => _currentRespawnPoint;
     public Vector3 CurrentRespawnPosition => _currentRespawnPosition;
 
     public bool IsInitialized { get; private set; }
     public Checkpoint CurrentCheckpoint { get; private set; }
 
-    public bool HasCheckpoint => CurrentCheckpoint != null;
+    public bool HasCheckpoint => _hasReachedCheckpoint;
 
     public void Initialize()
     {
@@ -23,6 +25,13 @@ public class CheckpointManager : MonoBehaviour, IInitializable
             return;
 
         BindRespawnPoint();
+
+        if (!_hasReachedCheckpoint)
+        {
+            _currentRespawnPoint = _startRespawnPoint;
+            _currentRespawnPosition = _startRespawnPosition;
+        }
+
         BindCheckpoints();
         IsInitialized = true;
     }
@@ -38,12 +47,6 @@ public class CheckpointManager : MonoBehaviour, IInitializable
 
         _startRespawnPoint = startPointObject.transform;
         _startRespawnPosition = _startRespawnPoint.position;
-
-        if (!HasCheckpoint)
-        {
-            _currentRespawnPoint = _startRespawnPoint;
-            _currentRespawnPosition = _startRespawnPosition;
-        }
     }
 
     private void BindCheckpoints()
@@ -80,6 +83,7 @@ public class CheckpointManager : MonoBehaviour, IInitializable
         if (checkpoint == null)
             return;
 
+        _hasReachedCheckpoint = true;
         CurrentCheckpoint = checkpoint;
         _currentRespawnPoint = checkpoint.RespawnPoint;
         _currentRespawnPosition = checkpoint.RespawnPosition;
@@ -95,13 +99,16 @@ public class CheckpointManager : MonoBehaviour, IInitializable
 
         _checkpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
         BindCheckpoints();
+
         RebindCurrentCheckpointByPosition();
         RefreshCheckpointActivation();
     }
 
     private void RebindCurrentCheckpointByPosition()
     {
-        if (!HasCheckpoint)
+        CurrentCheckpoint = null;
+
+        if (!_hasReachedCheckpoint)
         {
             _currentRespawnPoint = _startRespawnPoint;
             _currentRespawnPosition = _startRespawnPosition;
@@ -133,9 +140,7 @@ public class CheckpointManager : MonoBehaviour, IInitializable
         }
         else
         {
-            CurrentCheckpoint = null;
-            _currentRespawnPoint = _startRespawnPoint;
-            _currentRespawnPosition = _startRespawnPosition;
+            _currentRespawnPoint = null;
         }
     }
 
@@ -178,6 +183,7 @@ public class CheckpointManager : MonoBehaviour, IInitializable
 
     public void ClearCheckpoint()
     {
+        _hasReachedCheckpoint = false;
         CurrentCheckpoint = null;
         _currentRespawnPoint = _startRespawnPoint;
         _currentRespawnPosition = _startRespawnPosition;

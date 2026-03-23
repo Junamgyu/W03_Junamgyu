@@ -23,10 +23,12 @@ public class Boss2Controller : EnemyBase
     private List<ISkill> _skills = new List<ISkill>();
     private Vector3 _originalPos;
     private SpriteRenderer _spriteRenderer;
-    private bool _isBlinking = false;
+    private Color _originalColor; // 추가
+    private Coroutine _blinkCoroutine;
 
     private void OnEnable()
     {
+        CameraManager.OnBossOutro -= StartBoss2; // 중복 방지
         CameraManager.OnBossOutro += StartBoss2;
     }
 
@@ -45,6 +47,8 @@ public class Boss2Controller : EnemyBase
         Initialize();
         _originalPos = transform.position;
         _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (_spriteRenderer != null)
+            _originalColor = _spriteRenderer.color; // 원본 색 저장
 
         foreach (var skill in skills)
         {
@@ -55,18 +59,16 @@ public class Boss2Controller : EnemyBase
         }
     }
 
-
-
     public override void Die() => Boss2Die();
 
     public override void TakeDamage(int damage)
     {
-        Debug.Log(_currentHp + " " + damage);
         if (!_isActive) return;
+        if (!gameObject.activeInHierarchy) return;
         _currentHp -= damage;
 
-        if (!_isBlinking)
-            StartCoroutine(HitBlinkRoutine());
+        if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+        _blinkCoroutine = StartCoroutine(HitBlinkRoutine());
 
         if (_currentHp <= 0)
         {
@@ -77,12 +79,12 @@ public class Boss2Controller : EnemyBase
 
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
-        Debug.Log(_currentHp + " " + damage);
         if (!_isActive) return;
+        if (!gameObject.activeInHierarchy) return;
         _currentHp -= damage;
 
-        if (!_isBlinking)
-            StartCoroutine(HitBlinkRoutine());
+        if (_blinkCoroutine != null) StopCoroutine(_blinkCoroutine);
+        _blinkCoroutine = StartCoroutine(HitBlinkRoutine());
 
         if (_currentHp <= 0)
         {
@@ -96,8 +98,11 @@ public class Boss2Controller : EnemyBase
         if (!_isActive) return;
         _isActive = false;
         StopAllCoroutines();
-        _nextStageDoor.SetActive(true);
 
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor; // 색상 원복
+
+        _nextStageDoor.SetActive(true);
         Debug.Log("보스2 사망");
         gameObject.SetActive(false);
     }
@@ -107,18 +112,13 @@ public class Boss2Controller : EnemyBase
     // =====================
     IEnumerator HitBlinkRoutine()
     {
-        _isBlinking = true;
-        Color original = _spriteRenderer.color;
-
         for (int i = 0; i < blinkCount; i++)
         {
-            _spriteRenderer.color = Color.white;
+            _spriteRenderer.color = Color.black;
             yield return new WaitForSeconds(blinkInterval);
-            _spriteRenderer.color = original;
+            _spriteRenderer.color = _originalColor; // 원본 색으로
             yield return new WaitForSeconds(blinkInterval);
         }
-
-        _isBlinking = false;
     }
 
     // =====================

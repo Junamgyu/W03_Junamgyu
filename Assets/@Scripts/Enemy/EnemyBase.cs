@@ -34,7 +34,6 @@ public abstract class EnemyBase : EntityBase
     protected override void Initialize()
     {
         base.Initialize();
-        _deadeyeSkill = GameObject.FindWithTag("Player").GetComponent<DeadeyeSkill>();
 
     }
 
@@ -43,7 +42,7 @@ public abstract class EnemyBase : EntityBase
     // =====================
     public virtual void TakeDamage(int damage, bool isAddGauge = false)
     {
-        _deadeyeSkill.AddGauge(1);
+        GameObject.FindWithTag("Player").GetComponent<DeadeyeSkill>().AddGauge(1);
         base.TakeDamage(damage);
     }
 

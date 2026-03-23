@@ -41788,7 +41788,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1589666306722734714, guid: 0768cfac4c56fb4418c48fc86d39b650, type: 3}
       propertyPath: _maxHp
-      value: 15000
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 1589666306722734714, guid: 0768cfac4c56fb4418c48fc86d39b650, type: 3}
       propertyPath: mapMax.x

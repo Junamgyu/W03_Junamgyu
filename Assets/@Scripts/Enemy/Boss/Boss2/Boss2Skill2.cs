@@ -17,6 +17,7 @@ public class Boss2Skill2 : MonoBehaviour, ISkill
     public float skillDuration = 5f;
 
     private PoolManager _pool;
+    private bool _isMoving = false; // 이동 제어 플래그
 
     void Awake()
     {
@@ -25,9 +26,11 @@ public class Boss2Skill2 : MonoBehaviour, ISkill
 
     public IEnumerator SkillRoutine()
     {
+        _isMoving = true;
         Coroutine moveCoroutine = StartCoroutine(MoveRoutine());
         yield return StartCoroutine(FireRoutine());
-        StopCoroutine(moveCoroutine);
+        _isMoving = false; // 플래그로 MoveRoutine 종료
+        yield return null; // 한 프레임 대기해서 MoveRoutine 정리
     }
 
     // =====================
@@ -36,22 +39,23 @@ public class Boss2Skill2 : MonoBehaviour, ISkill
     IEnumerator MoveRoutine()
     {
         Transform current = pointA;
-
-        while (true)
+        while (_isMoving) // while(true) 대신 플래그로 제어
         {
             yield return StartCoroutine(MoveToPosition(current.position));
+            if (!_isMoving) break;
             current = current == pointA ? pointB : pointA;
         }
     }
 
     IEnumerator MoveToPosition(Vector3 target)
     {
-        while (Vector3.Distance(transform.position, target) > 0.05f)
+        while (_isMoving && Vector3.Distance(transform.position, target) > 0.05f)
         {
             transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
             yield return null;
         }
-        transform.position = target;
+        if (_isMoving)
+            transform.position = target;
     }
 
     // =====================
@@ -79,14 +83,10 @@ public class Boss2Skill2 : MonoBehaviour, ISkill
 
     void FireFromTurret(Transform turret)
     {
-        // EnemyProjectile은 right 방향으로 이동
-        // 포탑 up이 발사 방향이면 -90도 보정
         Quaternion rotation = turret.rotation * Quaternion.Euler(0f, 0f, -90f);
-
         GameObject bullet = _pool != null
             ? _pool.Get(bulletPrefab, turret.position, rotation)
             : Instantiate(bulletPrefab, turret.position, rotation);
-
         bullet.GetComponent<EnemyProjectile>()?.Initialize(bulletSpeed, bulletDamage);
     }
 }

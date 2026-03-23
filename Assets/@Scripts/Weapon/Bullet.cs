@@ -64,7 +64,6 @@ public class Bullet : MonoBehaviour
             if (_isPiercing) return; // 관통이면 무시
             SpawnHitParticle();
             ReturnToPool();
-            Debug.Log("맞음");
             return;
         }
 

@@ -10,6 +10,7 @@ public class InputManager : MonoBehaviour, IInitializable
     private CameraManager _cameraManager;
 
     public event Action<InputAction.CallbackContext> OnLook;
+    public event Action<InputAction.CallbackContext> OnLookMouse;
     public event Action<InputAction.CallbackContext> OnMove;
     public event Action<InputAction.CallbackContext> OnJump;
     public event Action<InputAction.CallbackContext> OnPrimaryAttack;
@@ -47,6 +48,9 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Look.performed += HandleLook;
         player.Look.canceled += HandleLook;
 
+        player.LookMouse.performed += HandleLookMouse;
+        player.LookMouse.canceled += HandleLookMouse;
+
         player.Move.started += HandleMove;
         player.Move.performed += HandleMove;
         player.Move.canceled += HandleMove;
@@ -80,22 +84,28 @@ public class InputManager : MonoBehaviour, IInitializable
         ui.Pause.started += HandlePause;
     }
 
+    private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
+    {
+        if (ctx.control == null || ctx.control.device == null)
+            return;
+
+        IsUsingGamepad = ctx.control.device is Gamepad;
+    }
+
     private void HandleLook(InputAction.CallbackContext ctx)
     {
         if (ctx.control == null || ctx.control.device == null)
             return;
 
-        var device = ctx.control.device;
-
-        bool isGamepadLook = device is Gamepad;
-        bool isMouseLook = device is Mouse;
-
-        if (!isGamepadLook && !isMouseLook)
+        if (!(ctx.control.device is Gamepad))
             return;
 
-        IsUsingGamepadForLook = isGamepadLook;
-
         OnLook?.Invoke(ctx);
+    }
+
+    private void HandleLookMouse(InputAction.CallbackContext ctx)
+    {
+        OnLookMouse?.Invoke(ctx);
     }
 
     public void SetGameplayLookDeviceToGamepad()
@@ -201,6 +211,9 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Look.performed -= HandleLook;
         player.Look.canceled -= HandleLook;
 
+        player.LookMouse.performed -= HandleLookMouse;
+        player.LookMouse.canceled -= HandleLookMouse;
+
         player.Move.started -= HandleMove;
         player.Move.performed -= HandleMove;
         player.Move.canceled -= HandleMove;
@@ -244,5 +257,6 @@ public class InputManager : MonoBehaviour, IInitializable
 
         _input.Player.Disable();
         _input.UI.Disable();
+        _input.Dispose();
     }
 }

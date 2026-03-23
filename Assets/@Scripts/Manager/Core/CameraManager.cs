@@ -53,6 +53,8 @@ public class CameraManager : MonoBehaviour
         {
             StartBossIntro();
         }
+        CurrentMode = CameraMode.Follow;
+        SetZone(null);
     }
 
     public void SetZone(CameraZone zone)

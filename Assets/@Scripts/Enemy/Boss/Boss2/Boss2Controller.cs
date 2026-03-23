@@ -16,6 +16,9 @@ public class Boss2Controller : EnemyBase
     public float blinkInterval = 0.1f;
     public int blinkCount = 3;
 
+    [Header("다음 스테이지 트리거")]
+    [SerializeField] private GameObject _nextStageDoor;
+
     private bool _isActive = false;
     private List<ISkill> _skills = new List<ISkill>();
     private Vector3 _originalPos;
@@ -93,6 +96,8 @@ public class Boss2Controller : EnemyBase
         if (!_isActive) return;
         _isActive = false;
         StopAllCoroutines();
+        _nextStageDoor.SetActive(true);
+
         Debug.Log("보스2 사망");
         gameObject.SetActive(false);
     }

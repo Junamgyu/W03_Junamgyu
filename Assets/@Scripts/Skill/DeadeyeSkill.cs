@@ -57,10 +57,12 @@ public class DeadeyeSkill : MonoBehaviour
     // =====================
     #region Gauge
     private float _maxGauge = 100f;
-    private float _currentGauge = 0f;
+    private float _currentGauge = 30f;
 
     private bool CanSlowMotion => _currentGauge >= 1f;
     private bool CanDeadeye => _currentGauge >= 50f;
+
+    public float CurrentGauge => _currentGauge;
 
     public event Action<float> OnGaugeChanged; // UI 연동용
 

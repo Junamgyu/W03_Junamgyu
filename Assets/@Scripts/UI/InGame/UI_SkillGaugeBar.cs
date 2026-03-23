@@ -31,7 +31,12 @@ public class SkillGaugeProgressbar : MonoBehaviour
     private void Start()
     {
         if (_player != null)
+        {
             _player.deadeyeSkill.OnGaugeChanged += HandleGaugeChanged;
+            HandleGaugeChanged(_player.deadeyeSkill.CurrentGauge);
+        }
+
+
     }
 
     private void OnDestroy()

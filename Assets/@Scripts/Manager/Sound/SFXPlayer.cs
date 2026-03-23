@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.VisualScripting.Member;
 
 public class SFXPlayer : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class SFXPlayer : MonoBehaviour
     [SerializeField] private AudioSource sourcePrefab;
 
     private List<AudioSource> _soundPool = new List<AudioSource>();
+    private float _currentPitch = 1f;
 
     private void Awake()
     {
@@ -21,7 +23,7 @@ public class SFXPlayer : MonoBehaviour
     {
         AudioSource source = GetAvailableSource();
         source.volume = volume;
-        source.pitch = 1f;
+        source.pitch = _currentPitch;
         source.PlayOneShot(clip);
     }
 
@@ -34,5 +36,15 @@ public class SFXPlayer : MonoBehaviour
         }
 
         return _soundPool[0];
+    }
+    public void SetPitch(float pitch)
+    {
+        _currentPitch = pitch;
+
+        foreach (var source in _soundPool)
+        {
+            if (source != null)
+                source.pitch = pitch;
+        }
     }
 }

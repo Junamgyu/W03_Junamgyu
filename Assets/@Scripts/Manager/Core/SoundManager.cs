@@ -8,13 +8,15 @@ public class SoundManager : MonoBehaviour
 
     [SerializeField] private BGMPlayer _bgmPlayer;
     [SerializeField] private SFXPlayer _sfxPlayer;
-    [Tooltip("SO���� ����� �����⿡ �迭 ������ ��\n���Ѵٸ� DataBase������� �ٲ㵵 ���X\nSO�� ����� ���ֱ�� �ѵ� clip�� �ְ� ���� key�� ������")]
     [SerializeField] private BGM[] _bgmEntry;
     [SerializeField] private SFX[] _sfxEntry;
-
-    [Tooltip("���� ���� ���� �� ����ϱ� ������ �Ҹ��� ���� �ʿ�")]
     [SerializeField] private float _bgmVolume = 1f;
     [SerializeField] private float _sfxVolume = 1f;
+    [SerializeField] private float _minPitch = 0.5f;
+    [SerializeField] private float _pitchLerpSpeed = 10f;
+
+    private float _targetPitch = 1f;
+    private float _currentPitch = 1f;
 
     void OnEnable()
     {
@@ -25,8 +27,6 @@ public class SoundManager : MonoBehaviour
     void OnDisable()
     {
         CameraManager.OnBossOutro -= HandleBossStart;
-
-
     }
 
     void Awake()
@@ -41,11 +41,23 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
     private void Start()
     {
         PlayBGM(0);
     }
+    private void Update()
+    {
+        if (Mathf.Approximately(_currentPitch, _targetPitch))
+            return;
+
+        _currentPitch = Mathf.Lerp(_currentPitch, _targetPitch, Time.unscaledDeltaTime * _pitchLerpSpeed);
+
+        if (Mathf.Abs(_currentPitch - _targetPitch) < 0.01f)
+            _currentPitch = _targetPitch;
+
+        ApplyGlobalPitch(_currentPitch);
+    }
+
     private void PlayBGM(int number, bool fade = true)
     {
         AudioClip clip = _bgmEntry[number]._clip;
@@ -62,39 +74,46 @@ public class SoundManager : MonoBehaviour
         _sfxPlayer.Play(clip, _sfxVolume);
     }
 
-    //�������� ���۽� �̺�Ʈ �ɾ��ּ���
     public void HandleMainStart()
     {
         PlayBGM(0);
     }
-    //���� ����� �̺�Ʈ �ɾ��ּ���
     public void HandleBossStart()
     {
         PlayBGM(1);
     }
-
-    private void HandlePlayerHitSFX()
+    public void HandlePistolSFX()
     {
         PlaySFX(0);
     }
-    private void HandleEnemyHitSFX()
+    public void HandleShotGunSFX()
     {
         PlaySFX(1);
     }
-    private void HandleDeadEyeSFX()
+
+    public void SetSlowAudio(float timeScale)
     {
-        PlaySFX(2);
+        _targetPitch = Mathf.Clamp(timeScale, _minPitch, 1f);
     }
-    private void HandlePistolSFX()
+
+    public void ResetSlowAudio()
     {
-        PlaySFX(3);
+        _targetPitch = 1f;
     }
-    private void HandleShotGunSFX()
+
+    private void ApplyGlobalPitch(float pitch)
     {
-        PlaySFX(4);
+        if (_bgmPlayer != null)
+            _bgmPlayer.SetPitch(pitch);
+
+        if (_sfxPlayer != null)
+            _sfxPlayer.SetPitch(pitch);
     }
-    private void HandleTNTSFX()
+
+    private void ApplyGlobalPitchImmediate(float pitch)
     {
-        PlaySFX(5);
+        _currentPitch = pitch;
+        _targetPitch = pitch;
+        ApplyGlobalPitch(pitch);
     }
 }

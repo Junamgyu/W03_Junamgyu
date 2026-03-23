@@ -210,15 +210,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CheatOne"",
-                    ""type"": ""Button"",
-                    ""id"": ""ab482208-ad32-4409-a0bb-0e67ac55c696"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Pause"",
                     ""type"": ""Button"",
                     ""id"": ""e30d9448-b6aa-48e0-a289-ef0bb478dbee"",
@@ -708,28 +699,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""DeadeyeSkill"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2ff68f9a-7e9c-491c-8770-354e17fe63ac"",
-                    ""path"": ""<Keyboard>/1"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""CheatOne"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""76723bc0-8f94-43b7-ab8b-9310c015cf4c"",
-                    ""path"": ""<DualSenseGamepadHID>/systemButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""CheatOne"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1350,7 +1319,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_SlowMotionSkill = m_Player.FindAction("SlowMotionSkill", throwIfNotFound: true);
         m_Player_DeadeyeSkill = m_Player.FindAction("DeadeyeSkill", throwIfNotFound: true);
         m_Player_MarkTarget = m_Player.FindAction("MarkTarget", throwIfNotFound: true);
-        m_Player_CheatOne = m_Player.FindAction("CheatOne", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_LookMouse = m_Player.FindAction("LookMouse", throwIfNotFound: true);
         // UI
@@ -1460,7 +1428,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SlowMotionSkill;
     private readonly InputAction m_Player_DeadeyeSkill;
     private readonly InputAction m_Player_MarkTarget;
-    private readonly InputAction m_Player_CheatOne;
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_LookMouse;
     /// <summary>
@@ -1526,10 +1493,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/MarkTarget".
         /// </summary>
         public InputAction @MarkTarget => m_Wrapper.m_Player_MarkTarget;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/CheatOne".
-        /// </summary>
-        public InputAction @CheatOne => m_Wrapper.m_Player_CheatOne;
         /// <summary>
         /// Provides access to the underlying input action "Player/Pause".
         /// </summary>
@@ -1603,9 +1566,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @MarkTarget.started += instance.OnMarkTarget;
             @MarkTarget.performed += instance.OnMarkTarget;
             @MarkTarget.canceled += instance.OnMarkTarget;
-            @CheatOne.started += instance.OnCheatOne;
-            @CheatOne.performed += instance.OnCheatOne;
-            @CheatOne.canceled += instance.OnCheatOne;
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
@@ -1662,9 +1622,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @MarkTarget.started -= instance.OnMarkTarget;
             @MarkTarget.performed -= instance.OnMarkTarget;
             @MarkTarget.canceled -= instance.OnMarkTarget;
-            @CheatOne.started -= instance.OnCheatOne;
-            @CheatOne.performed -= instance.OnCheatOne;
-            @CheatOne.canceled -= instance.OnCheatOne;
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
@@ -2073,13 +2030,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMarkTarget(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "CheatOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnCheatOne(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

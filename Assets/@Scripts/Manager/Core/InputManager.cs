@@ -76,7 +76,7 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.performed += HandleDeadeyeSkill;
         player.DeadeyeSkill.canceled += HandleDeadeyeSkill;
 
-        player.CheatOne.started += HandleCheatOne;
+        //player.CheatOne.started += HandleCheatOne;
         player.Pause.started += HandlePause;
 
         BossIntro.OnPlayerDisable += DisablePlayerInput;
@@ -144,10 +144,10 @@ public class InputManager : MonoBehaviour, IInitializable
         OnDeadeyeSkill?.Invoke(ctx);
     }
 
-    private void HandleCheatOne(InputAction.CallbackContext ctx)
-    {
-        OnCheatOne?.Invoke(ctx);
-    }
+    //private void HandleCheatOne(InputAction.CallbackContext ctx)
+    //{
+    //    OnCheatOne?.Invoke(ctx);
+    //}
 
     private void HandlePause(InputAction.CallbackContext ctx)
     {
@@ -241,7 +241,7 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.performed -= HandleDeadeyeSkill;
         player.DeadeyeSkill.canceled -= HandleDeadeyeSkill;
 
-        player.CheatOne.started -= HandleCheatOne;
+        //player.CheatOne.started -= HandleCheatOne;
         player.Pause.started -= HandlePause;
 
         ui.Pause.started -= HandlePause;

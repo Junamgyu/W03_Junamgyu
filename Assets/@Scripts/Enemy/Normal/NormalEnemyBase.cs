@@ -287,6 +287,7 @@ public abstract class NormalEnemyBase : EnemyBase
 
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
+        _isAddGauge = isAddGauge;
         base.TakeDamage(damage);
 
     }

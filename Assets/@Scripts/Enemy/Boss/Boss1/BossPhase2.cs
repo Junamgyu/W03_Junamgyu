@@ -30,6 +30,9 @@ public class BossPhase2 : EnemyBase
     public float returnSpeed = 6f;
     public float phaseStartDelay = 1.5f;
 
+    [Header("다음 스테이지 트리거")]
+    [SerializeField] private GameObject _nextStageDoor;
+
     private Vector2 _velocity;
     private bool _isActive = false;
     private Transform _player;
@@ -87,6 +90,7 @@ public class BossPhase2 : EnemyBase
         _isActive = false;
         StopAllCoroutines();
         Debug.Log("보스 완전 사망");
+        _nextStageDoor.SetActive(true);
         gameObject.SetActive(false);
     }
 

@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,10 +8,7 @@ public class InputManager : MonoBehaviour, IInitializable
 
     private InputSystem_Actions _input;
 
-    // Mouse - Gamepad Look
     public event Action<InputAction.CallbackContext> OnLook;
-
-    // Player Input
     public event Action<InputAction.CallbackContext> OnMove;
     public event Action<InputAction.CallbackContext> OnJump;
     public event Action<InputAction.CallbackContext> OnPrimaryAttack;
@@ -21,32 +17,23 @@ public class InputManager : MonoBehaviour, IInitializable
     public event Action<InputAction.CallbackContext> OnDeadeyeSkill;
     public event Action<InputAction.CallbackContext> OnCheatOne;
 
-    // System Input
     public event Action<InputAction.CallbackContext> OnNavigate;
     public event Action<InputAction.CallbackContext> OnPause;
     public event Action<InputAction.CallbackContext> OnSubmit;
     public event Action<InputAction.CallbackContext> OnCancel;
 
+    public bool IsUsingGamepad { get; private set; }
+    public bool IsUsingGamepadForLook { get; private set; }
+
     public void Initialize()
     {
-        if (IsInitialized) return;
+        if (IsInitialized)
+            return;
 
         _input = new InputSystem_Actions();
-
         BindActions();
-        _input.Player.Enable();
-        _input.UI.Enable();
 
         IsInitialized = true;
-
-        if (Gamepad.current != null)
-        {
-            _input.bindingMask = new InputBinding { groups = "Gamepad" };
-        }
-        else
-        {
-            _input.bindingMask = new InputBinding { groups = "Keyboard&Mouse" };
-        }
     }
 
     private void BindActions()
@@ -82,96 +69,122 @@ public class InputManager : MonoBehaviour, IInitializable
         player.DeadeyeSkill.canceled += HandleDeadeyeSkill;
 
         player.CheatOne.started += HandleCheatOne;
+        player.Pause.started += HandlePause;
 
-        // UI Actions
         ui.Pause.started += HandlePause;
+        //ui.Navigate.started += HandleNavigate;
+        //ui.Navigate.performed += HandleNavigate;
+        //ui.Navigate.canceled += HandleNavigate;
 
-        ui.Navigate.started += HandleNavigate;
-        ui.Navigate.performed += HandleNavigate;
-        ui.Navigate.canceled += HandleNavigate;
+        //ui.Submit.started += HandleSubmit;
+        //ui.Submit.performed += HandleSubmit;
 
-        ui.Submit.started += HandleSubmit;
-        ui.Submit.performed += HandleSubmit;
-
-        ui.Cancel.started += HandleCancel;
-        ui.Cancel.performed += HandleCancel;
-
-        // TODO: Boss Intro
-        // 카메라 매니저가 보스 인트로 컷씬 인보크할 때, 플레이어 입력을 잠시 비활성화하는 기능 추가 필요
-        // cameraManager.OnBossIntro += DisablePlayerInput();
-        // cameraManager.OnBossOutro += EnablePlayerInput();
+        //ui.Cancel.started += HandleCancel;
+        //ui.Cancel.performed += HandleCancel;
     }
 
-    private void HandleLook(InputAction.CallbackContext ctx) => OnLook?.Invoke(ctx);
-    private void HandleMove(InputAction.CallbackContext ctx) => OnMove?.Invoke(ctx);
-    private void HandleJump(InputAction.CallbackContext ctx) => OnJump?.Invoke(ctx);
-    private void HandlePrimaryAttack(InputAction.CallbackContext ctx) => OnPrimaryAttack?.Invoke(ctx);
-    private void HandleSecondaryAttack(InputAction.CallbackContext ctx) => OnSecondaryAttack?.Invoke(ctx);
-    private void HandleSlowMotionSkill(InputAction.CallbackContext ctx) => OnSlowMotionSkill?.Invoke(ctx);
-    private void HandleDeadeyeSkill(InputAction.CallbackContext ctx) => OnDeadeyeSkill?.Invoke(ctx);
-    private void HandleCheatOne(InputAction.CallbackContext ctx) => OnCheatOne?.Invoke(ctx);
-
-    // UI Handlers
-    private void HandlePause(InputAction.CallbackContext ctx) => OnPause?.Invoke(ctx);
-    private void HandleNavigate(InputAction.CallbackContext ctx) => OnNavigate?.Invoke(ctx);
-    private void HandleSubmit(InputAction.CallbackContext ctx) => OnSubmit?.Invoke(ctx);
-    private void HandleCancel(InputAction.CallbackContext ctx) => OnCancel?.Invoke(ctx);
-
-    private void OnDestroy()
+    private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
     {
-        if (_input == null)
+        if (ctx.control == null || ctx.control.device == null)
             return;
 
-        var player = _input.Player;
-        var ui = _input.UI;
+        IsUsingGamepad = ctx.control.device is Gamepad;
+    }
 
-        player.Look.performed -= HandleLook;
-        player.Look.canceled -= HandleLook;
+    private void HandleLook(InputAction.CallbackContext ctx)
+    {
+        if (ctx.control == null || ctx.control.device == null)
+            return;
 
-        player.Move.started -= HandleMove;
-        //player.Move.performed -= HandleMove;
-        player.Move.canceled -= HandleMove;
+        var device = ctx.control.device;
 
-        player.Jump.started -= HandleJump;
-        player.Jump.performed -= HandleJump;
-        player.Jump.canceled -= HandleJump;
+        bool isGamepadLook = device is Gamepad;
+        bool isMouseLook = device is Mouse;
 
-        player.Attack.started -= HandlePrimaryAttack;
-        player.Attack.performed -= HandlePrimaryAttack;
-        player.Attack.canceled -= HandlePrimaryAttack;
+        if (!isGamepadLook && !isMouseLook)
+            return;
 
-        player.Shotgun.started -= HandleSecondaryAttack;
-        player.Shotgun.performed -= HandleSecondaryAttack;
-        player.Shotgun.canceled -= HandleSecondaryAttack;
+        IsUsingGamepadForLook = isGamepadLook;
 
-        player.SlowMotionSkill.started -= HandleSlowMotionSkill;
-        player.SlowMotionSkill.performed -= HandleSlowMotionSkill;
-        player.SlowMotionSkill.canceled -= HandleSlowMotionSkill;
+        Debug.Log(
+            $"[HandleLook] map={ctx.action.actionMap.name}, " +
+            $"device={device.GetType().Name}, " +
+            $"isGamepadForLook={IsUsingGamepadForLook}, " +
+            $"value={ctx.ReadValue<Vector2>()}"
+        );
 
-        player.DeadeyeSkill.started -= HandleDeadeyeSkill;
-        player.DeadeyeSkill.performed -= HandleDeadeyeSkill;
-        player.DeadeyeSkill.canceled -= HandleDeadeyeSkill;
+        OnLook?.Invoke(ctx);
+    }
 
-        player.CheatOne.started -= HandleCheatOne;
+    public void SetGameplayLookDeviceToGamepad()
+    {
+        IsUsingGamepadForLook = true;
+    }
 
-        // TODO: 보스 인트로 컷씬이 끝나면 플레이어 입력을 다시 활성화하는 기능 추가
-        // cameraManager.OnBossIntro -= DisablePlayerInput();
-        // cameraManager.OnBossOutro -= EnablePlayerInput();
+    private void HandleMove(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnMove?.Invoke(ctx);
+    }
 
-        ui.Pause.started -= HandlePause;
+    private void HandleJump(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnJump?.Invoke(ctx);
+    }
 
-        ui.Navigate.started -= HandleNavigate;
-        ui.Navigate.performed -= HandleNavigate;
-        ui.Navigate.canceled -= HandleNavigate;
+    private void HandlePrimaryAttack(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnPrimaryAttack?.Invoke(ctx);
+    }
 
-        ui.Submit.started -= HandleSubmit;
-        ui.Submit.performed -= HandleSubmit;
+    private void HandleSecondaryAttack(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnSecondaryAttack?.Invoke(ctx);
+    }
 
-        ui.Cancel.started -= HandleCancel;
-        ui.Cancel.performed -= HandleCancel;
+    private void HandleSlowMotionSkill(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnSlowMotionSkill?.Invoke(ctx);
+    }
 
-        _input.Player.Disable();
-        _input.UI.Disable();
+    private void HandleDeadeyeSkill(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnDeadeyeSkill?.Invoke(ctx);
+    }
+
+    private void HandleCheatOne(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnCheatOne?.Invoke(ctx);
+    }
+
+    private void HandlePause(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnPause?.Invoke(ctx);
+    }
+
+    private void HandleNavigate(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnNavigate?.Invoke(ctx);
+    }
+
+    private void HandleSubmit(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnSubmit?.Invoke(ctx);
+    }
+
+    private void HandleCancel(InputAction.CallbackContext ctx)
+    {
+        //UpdateLastUsedDevice(ctx);
+        OnCancel?.Invoke(ctx);
     }
 
     public void EnablePlayerInput()
@@ -203,6 +216,59 @@ public class InputManager : MonoBehaviour, IInitializable
         if (_input == null)
             return;
 
+        _input.UI.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        if (_input == null)
+            return;
+
+        var player = _input.Player;
+        var ui = _input.UI;
+
+        player.Look.performed -= HandleLook;
+        player.Look.canceled -= HandleLook;
+
+        player.Move.started -= HandleMove;
+        player.Move.performed -= HandleMove;
+        player.Move.canceled -= HandleMove;
+
+        player.Jump.started -= HandleJump;
+        player.Jump.performed -= HandleJump;
+        player.Jump.canceled -= HandleJump;
+
+        player.Attack.started -= HandlePrimaryAttack;
+        player.Attack.performed -= HandlePrimaryAttack;
+        player.Attack.canceled -= HandlePrimaryAttack;
+
+        player.Shotgun.started -= HandleSecondaryAttack;
+        player.Shotgun.performed -= HandleSecondaryAttack;
+        player.Shotgun.canceled -= HandleSecondaryAttack;
+
+        player.SlowMotionSkill.started -= HandleSlowMotionSkill;
+        player.SlowMotionSkill.performed -= HandleSlowMotionSkill;
+        player.SlowMotionSkill.canceled -= HandleSlowMotionSkill;
+
+        player.DeadeyeSkill.started -= HandleDeadeyeSkill;
+        player.DeadeyeSkill.performed -= HandleDeadeyeSkill;
+        player.DeadeyeSkill.canceled -= HandleDeadeyeSkill;
+
+        player.CheatOne.started -= HandleCheatOne;
+        player.Pause.started -= HandlePause;
+
+        ui.Pause.started -= HandlePause;
+        ui.Navigate.started -= HandleNavigate;
+        ui.Navigate.performed -= HandleNavigate;
+        ui.Navigate.canceled -= HandleNavigate;
+
+        ui.Submit.started -= HandleSubmit;
+        ui.Submit.performed -= HandleSubmit;
+
+        ui.Cancel.started -= HandleCancel;
+        ui.Cancel.performed -= HandleCancel;
+
+        _input.Player.Disable();
         _input.UI.Disable();
     }
 }

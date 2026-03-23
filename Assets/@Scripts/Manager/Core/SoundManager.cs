@@ -20,13 +20,13 @@ public class SoundManager : MonoBehaviour
 
     void OnEnable()
     {
-        CameraManager.OnBossOutro += HandleBossStart;
+        //CameraManager.OnBossOutro += HandleBossStart;
 
     }
 
     void OnDisable()
     {
-        CameraManager.OnBossOutro -= HandleBossStart;
+        //CameraManager.OnBossOutro -= HandleBossStart;
     }
 
     void Awake()

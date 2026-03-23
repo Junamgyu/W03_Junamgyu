@@ -109,6 +109,7 @@ public class CameraManager : MonoBehaviour
 
     public void BossOutro()
     {
+        SoundManager.instance.HandleBossStart();
         OnBossOutro?.Invoke();
         OnBossOutro = null;
     }

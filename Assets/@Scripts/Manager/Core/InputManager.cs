@@ -100,27 +100,8 @@ public class InputManager : MonoBehaviour, IInitializable
         if (ctx.control == null || ctx.control.device == null)
             return;
 
-        var device = ctx.control.device;
-        bool isGamepadLook = device is Gamepad;
-        bool isMouseLook = device is Mouse;
-
-        if (!isGamepadLook && !isMouseLook)
+        if (!(ctx.control.device is Gamepad))
             return;
-
-        // 게임패드 입력이 데드존 이상일 때만 게임패드로 전환
-        if (isGamepadLook)
-        {
-            Vector2 val = ctx.ReadValue<Vector2>();
-            if (val.sqrMagnitude >= 0.01f)
-                IsUsingGamepadForLook = true;
-        }
-        // 마우스가 일정 이상 움직이면 마우스로 전환
-        else if (isMouseLook)
-        {
-            Vector2 delta = ctx.ReadValue<Vector2>();
-            if (delta.sqrMagnitude >= 1f)  // position이라 threshold 높게
-                IsUsingGamepadForLook = false;
-        }
 
         OnLook?.Invoke(ctx);
     }
@@ -128,11 +109,6 @@ public class InputManager : MonoBehaviour, IInitializable
     private void HandleLookMouse(InputAction.CallbackContext ctx)
     {
         OnLookMouse?.Invoke(ctx);
-    }
-
-    public void SetGameplayLookDeviceToGamepad()
-    {
-        IsUsingGamepadForLook = true;
     }
 
     private void HandleMove(InputAction.CallbackContext ctx)

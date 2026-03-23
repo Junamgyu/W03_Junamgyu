@@ -12,7 +12,6 @@ public class PlayerAimer : MonoBehaviour
     [SerializeField] private float _aimAssistStrengthGamepad = 0.3f;
     [SerializeField] private LayerMask _enemyLayer;
 
-    private InputManager _inputManager;
 
     public Vector2 AimDirection { get; private set; } = Vector2.right;
 
@@ -22,7 +21,6 @@ public class PlayerAimer : MonoBehaviour
     {
         if (_cam == null)
             _cam = Camera.main;
-        ManagerRegistry.TryGet(out _inputManager);
     }
 
     public void HandleLook(InputAction.CallbackContext ctx)

@@ -13,7 +13,7 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
 
     public string CurrentStageSceneName => _currentStageSceneName;
 
-    [SerializeField] private string _mainMenuSceneName = "MainMenu";
+    [SerializeField] private string _mainMenuSceneName = "Lobby";
 
     public bool IsLoading { get; private set; }
 
@@ -81,10 +81,12 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         if (!IsLoading)
             return;
 
+        IsLoading = false;
+        
         if (scene.name != _currentStageSceneName)
             return;
 
-        IsLoading = false;
+        
 
         _checkpointManager.RebindCheckpoints();
         _uiManager.RebindUI();

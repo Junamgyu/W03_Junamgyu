@@ -78,4 +78,9 @@ public class BGMPlayer : MonoBehaviour
         _currentSource.volume = targetVolume;
         _nextSource.volume = 0f;
     }
+    public void SetPitch(float pitch)
+    {
+        _currentSource.pitch = pitch;
+        _nextSource.pitch = pitch;
+    }
 }

@@ -8,8 +8,8 @@ public class BossController : MonoBehaviour
     public BossEye[] eyes;
 
     [Header("회전 설정")]
-    public float rotationSpeedMin = 30f;  // 기본 속도
-    public float rotationSpeedMax = 60f; // 눈 전부 죽었을 때 속도
+    public float rotationSpeedMin = 30f;
+    public float rotationSpeedMax = 60f;
 
     [Header("레이저 페이즈 설정")]
     public float laserDuration = 5f;
@@ -34,9 +34,9 @@ public class BossController : MonoBehaviour
     private Transform _player;
     private Vector3 _originPos;
 
-
     private void OnEnable()
     {
+        CameraManager.OnBossOutro -= StartBoss; // 중복 방지
         CameraManager.OnBossOutro += StartBoss;
     }
 
@@ -74,7 +74,6 @@ public class BossController : MonoBehaviour
     // =====================
     IEnumerator PatternCycleRoutine()
     {
-
         while (!_isDead)
         {
             int pattern = Random.Range(0, 2);
@@ -185,7 +184,7 @@ public class BossController : MonoBehaviour
             if (deadNow > _prevDeadCount)
             {
                 _prevDeadCount = deadNow;
-                UpdateRotationSpeed(); // Eye 죽을 때마다 속도 갱신
+                UpdateRotationSpeed();
             }
 
             if (deadNow >= eyes.Length)
@@ -204,18 +203,16 @@ public class BossController : MonoBehaviour
         _isDead = true;
         StopAllCoroutines();
 
-        // Eye 오브젝트 전부 제거
         foreach (var eye in eyes)
         {
             if (eye != null)
                 Destroy(eye.gameObject);
         }
 
-        // 2페이즈 시작 후 1페이즈 제거
         gameObject.GetComponent<BossPhase2>().SetPhase2();
         Destroy(this);
     }
-    
+
     void StartBoss()
     {
         StartCoroutine(PatternCycleRoutine());

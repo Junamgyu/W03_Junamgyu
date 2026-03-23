@@ -33,9 +33,39 @@ public class BossPhase2 : EnemyBase
     [Header("다음 스테이지 트리거")]
     [SerializeField] private GameObject _nextStageDoor;
 
+    [Header("피격 연출")]
+    [SerializeField] private int _hitFlashCount = 3;
+    [SerializeField] private float _hitFlashInterval = 0.08f;
+
     private Vector2 _velocity;
     private bool _isActive = false;
     private Transform _player;
+
+    private SpriteRenderer _spriteRenderer;
+    private Color _originalColor;
+    private Coroutine _flashCoroutine;
+
+    // =====================
+    // 생명주기
+    // =====================
+    protected override void Start()
+    {
+        base.Start();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        if (_spriteRenderer != null)
+            _originalColor = _spriteRenderer.color;
+    }
+
+    private void OnEnable()
+    {
+        _isActive = false;
+        _velocity = Vector2.zero;
+        _player = null;
+        rotationSpeed = 30f;
+
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor;
+    }
 
     void Update()
     {
@@ -44,21 +74,31 @@ public class BossPhase2 : EnemyBase
     }
 
     // =====================
-    // TakeDamage
+    // 피격
     // =====================
-    //public override void TakeDamage(int damage)
-    //{
-    //    if (!_isActive) return;
-    //    _currentHp -= damage;
+    public override void TakeDamage(int damage, bool isAddGauge = false)
+    {
+        if (!_isActive) return;
+        if (!gameObject.activeInHierarchy) return;
 
-    //    if (_currentHp <= 0)
-    //    {
-    //        _currentHp = 0;
-    //        Phase2Die();
-    //    }
-    //}
+        if (_flashCoroutine != null) StopCoroutine(_flashCoroutine);
+        if (gameObject.activeInHierarchy)
+            _flashCoroutine = StartCoroutine(HitFlashRoutine());
 
-    //public override void TakeDamage(int damage, bool isAddGauge = false) => TakeDamage(damage);
+        base.TakeDamage(damage, isAddGauge);
+    }
+
+    private IEnumerator HitFlashRoutine()
+    {
+        for (int i = 0; i < _hitFlashCount; i++)
+        {
+            _spriteRenderer.color = Color.black;
+            yield return new WaitForSeconds(_hitFlashInterval);
+            _spriteRenderer.color = _originalColor;
+            yield return new WaitForSeconds(_hitFlashInterval);
+        }
+    }
+
     public override void Die() => Phase2Die();
 
     // =====================
@@ -89,6 +129,10 @@ public class BossPhase2 : EnemyBase
         if (!_isActive) return;
         _isActive = false;
         StopAllCoroutines();
+
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor;
+
         Debug.Log("보스 완전 사망");
         _nextStageDoor.SetActive(true);
         gameObject.SetActive(false);
@@ -129,11 +173,7 @@ public class BossPhase2 : EnemyBase
     // =====================
     IEnumerator BouncePattern()
     {
-        float angle = Random.Range(0f, 360f);
-        _velocity = new Vector2(
-            Mathf.Cos(angle * Mathf.Deg2Rad),
-            Mathf.Sin(angle * Mathf.Deg2Rad)
-        ) * bounceSpeed;
+        _velocity = GetSafeDirectionFromWall() * bounceSpeed;
 
         float elapsed = 0f;
         while (elapsed < bounceDuration)
@@ -165,11 +205,7 @@ public class BossPhase2 : EnemyBase
     {
         bool clockwise = Random.value > 0.5f;
 
-        float angle = Random.Range(0f, 360f);
-        Vector2 dir = new Vector2(
-            Mathf.Cos(angle * Mathf.Deg2Rad),
-            Mathf.Sin(angle * Mathf.Deg2Rad)
-        );
+        Vector2 dir = GetSafeRandomDirection();
         Vector2 wallTarget = GetWallPoint(dir);
         yield return StartCoroutine(MoveToPosition(wallTarget, borderSpeed));
 
@@ -231,6 +267,57 @@ public class BossPhase2 : EnemyBase
         yield return new WaitForSeconds(dashCooldown);
 
         rotationSpeed = savedRotSpeed;
+    }
+
+    // =====================
+    // 방향 유틸 - 플레이어 방향 ±30도 피하기
+    // =====================
+    private Vector2 GetSafeRandomDirection()
+    {
+        if (_player == null)
+        {
+            float r = Random.Range(0f, 360f);
+            return new Vector2(Mathf.Cos(r * Mathf.Deg2Rad), Mathf.Sin(r * Mathf.Deg2Rad));
+        }
+
+        Vector2 toPlayer = (_player.position - transform.position).normalized;
+        float playerAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
+        float excludeAngle = 30f;
+
+        float angle;
+        int maxTry = 100;
+        do
+        {
+            angle = Random.Range(0f, 360f);
+            float diff = Mathf.Abs(Mathf.DeltaAngle(angle, playerAngle));
+            if (diff > excludeAngle) break;
+        } while (--maxTry > 0);
+
+        return new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+    }
+
+    // =====================
+    // 방향 유틸 - 벽 방향 피하기
+    // =====================
+    private Vector2 GetSafeDirectionFromWall()
+    {
+        Vector2 pos = transform.position;
+        Vector2 center = (mapMin + mapMax) * 0.5f;
+        Vector2 toCenter = (center - pos).normalized;
+        float centerAngle = Mathf.Atan2(toCenter.y, toCenter.x) * Mathf.Rad2Deg;
+
+        float marginX = (mapMax.x - mapMin.x) * 0.2f;
+        float marginY = (mapMax.y - mapMin.y) * 0.2f;
+        bool nearWall = pos.x < mapMin.x + marginX || pos.x > mapMax.x - marginX
+                     || pos.y < mapMin.y + marginY || pos.y > mapMax.y - marginY;
+
+        if (nearWall)
+        {
+            float angle = centerAngle + Random.Range(-60f, 60f);
+            return new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+        }
+
+        return GetSafeRandomDirection();
     }
 
     // =====================

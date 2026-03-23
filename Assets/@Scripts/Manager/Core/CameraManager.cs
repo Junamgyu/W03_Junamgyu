@@ -104,10 +104,12 @@ public class CameraManager : MonoBehaviour
     public void StartBossIntro()
     {
         OnBossIntro?.Invoke();
+        OnBossIntro = null;
     }
 
     public void BossOutro()
     {
         OnBossOutro?.Invoke();
+        OnBossOutro = null;
     }
 }

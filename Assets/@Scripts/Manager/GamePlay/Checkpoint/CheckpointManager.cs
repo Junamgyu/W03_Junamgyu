@@ -94,6 +94,7 @@ public class CheckpointManager : MonoBehaviour, IInitializable
         _currentRespawnPosition = checkpoint.RespawnPosition;
 
         // TODO: 체력 풀피로 만들기 리스타트 로직 보면 있을거임
+        _player = FindFirstObjectByType<Player>();
         PlayerHealth playerHealth = _player.playerHealth;
         playerHealth.ResetHP();
 

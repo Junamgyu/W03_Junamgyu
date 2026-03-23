@@ -30,7 +30,7 @@ public class RangedEnemy : NormalEnemyBase
 
     protected override void Update()
     {
-        if (_isDead) return;
+        if (_isDead || !CanAct()) return;
 
         if (!TryFindPlayer())
         {

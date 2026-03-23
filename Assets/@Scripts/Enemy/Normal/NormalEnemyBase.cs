@@ -110,7 +110,7 @@ public abstract class NormalEnemyBase : EnemyBase
             if (IsInAttackRange())
             {
                 _rb.linearVelocity = Vector2.zero;
-                if (_canAttack)
+                if (_canAttack && CanAct()) // EnemyBase의 CanAct() 체크
                     StartCoroutine(AttackRoutine());
             }
             else
@@ -233,6 +233,10 @@ public abstract class NormalEnemyBase : EnemyBase
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
 
+        if (_isAddGauge) 
+        {
+            _player.GetComponent<DeadeyeSkill>().AddGauge(15);
+        }
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
             col.enabled = false;
@@ -283,8 +287,8 @@ public abstract class NormalEnemyBase : EnemyBase
 
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
+        _isAddGauge = isAddGauge;
         base.TakeDamage(damage);
-        _player.GetComponent<DeadeyeSkill>().AddGauge();
 
     }
 }

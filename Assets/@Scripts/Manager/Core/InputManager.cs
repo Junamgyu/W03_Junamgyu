@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +9,7 @@ public class InputManager : MonoBehaviour, IInitializable
     private InputSystem_Actions _input;
 
     public event Action<InputAction.CallbackContext> OnLook;
+    public event Action<InputAction.CallbackContext> OnLookMouse;
     public event Action<InputAction.CallbackContext> OnMove;
     public event Action<InputAction.CallbackContext> OnJump;
     public event Action<InputAction.CallbackContext> OnPrimaryAttack;
@@ -40,6 +41,9 @@ public class InputManager : MonoBehaviour, IInitializable
     {
         var player = _input.Player;
         var ui = _input.UI;
+
+        player.LookMouse.performed += HandleLookMouse;
+        player.LookMouse.canceled += HandleLookMouse;
 
         player.Look.performed += HandleLook;
         player.Look.canceled += HandleLook;
@@ -79,8 +83,8 @@ public class InputManager : MonoBehaviour, IInitializable
         //ui.Submit.started += HandleSubmit;
         //ui.Submit.performed += HandleSubmit;
 
-        //ui.Cancel.started += HandleCancel;
-        //ui.Cancel.performed += HandleCancel;
+        ui.Cancel.started += HandleCancel;
+        ui.Cancel.performed += HandleCancel;
     }
 
     private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
@@ -97,23 +101,33 @@ public class InputManager : MonoBehaviour, IInitializable
             return;
 
         var device = ctx.control.device;
-
         bool isGamepadLook = device is Gamepad;
         bool isMouseLook = device is Mouse;
 
         if (!isGamepadLook && !isMouseLook)
             return;
 
-        IsUsingGamepadForLook = isGamepadLook;
-
-        Debug.Log(
-            $"[HandleLook] map={ctx.action.actionMap.name}, " +
-            $"device={device.GetType().Name}, " +
-            $"isGamepadForLook={IsUsingGamepadForLook}, " +
-            $"value={ctx.ReadValue<Vector2>()}"
-        );
+        // 게임패드 입력이 데드존 이상일 때만 게임패드로 전환
+        if (isGamepadLook)
+        {
+            Vector2 val = ctx.ReadValue<Vector2>();
+            if (val.sqrMagnitude >= 0.01f)
+                IsUsingGamepadForLook = true;
+        }
+        // 마우스가 일정 이상 움직이면 마우스로 전환
+        else if (isMouseLook)
+        {
+            Vector2 delta = ctx.ReadValue<Vector2>();
+            if (delta.sqrMagnitude >= 1f)  // position이라 threshold 높게
+                IsUsingGamepadForLook = false;
+        }
 
         OnLook?.Invoke(ctx);
+    }
+
+    private void HandleLookMouse(InputAction.CallbackContext ctx)
+    {
+        OnLookMouse?.Invoke(ctx);
     }
 
     public void SetGameplayLookDeviceToGamepad()
@@ -230,6 +244,9 @@ public class InputManager : MonoBehaviour, IInitializable
         player.Look.performed -= HandleLook;
         player.Look.canceled -= HandleLook;
 
+        player.LookMouse.performed -= HandleLookMouse;
+        player.LookMouse.canceled -= HandleLookMouse;
+
         player.Move.started -= HandleMove;
         player.Move.performed -= HandleMove;
         player.Move.canceled -= HandleMove;
@@ -270,5 +287,6 @@ public class InputManager : MonoBehaviour, IInitializable
 
         _input.Player.Disable();
         _input.UI.Disable();
+        _input.Dispose();
     }
 }

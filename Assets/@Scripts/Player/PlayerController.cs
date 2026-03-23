@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
         }
 
         _inputManager.OnLook += HandleLook;
+        _inputManager.OnLookMouse += HandleLookMouse;
         _inputManager.OnMove += HandleMove;
         _inputManager.OnJump += HandleJump;
         _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
@@ -33,18 +34,25 @@ public class PlayerController : MonoBehaviour
             return;
 
         _inputManager.OnLook -= HandleLook;
+        _inputManager.OnLookMouse -= HandleLookMouse;
         _inputManager.OnMove -= HandleMove;
         _inputManager.OnJump -= HandleJump;
         _inputManager.OnPrimaryAttack -= HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack -= HandleSecondaryAttack;
         _inputManager.OnDeadeyeSkill -= HandleDeadeyeSkill;
         _inputManager.OnSlowMotionSkill -= HandleSlowMotionSkill;
+        _inputManager.OnCheatOne -= HandleCheatOne;
     }
 
     private void HandleLook(InputAction.CallbackContext ctx)
     {
         _player.playerAimer.HandleLook(ctx);
         //_player.deadeyeSkill.HandleLook(ctx);
+    }
+
+    private void HandleLookMouse(InputAction.CallbackContext ctx)
+    {
+        _player.playerAimer.HandleLookMouse(ctx);
     }
 
     private void HandleMove(InputAction.CallbackContext ctx)

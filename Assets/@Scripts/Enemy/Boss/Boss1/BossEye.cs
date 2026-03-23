@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using VHierarchy.Libs;
 
 public class BossEye : EnemyBase
 {
@@ -194,7 +193,7 @@ public class BossEye : EnemyBase
     {
         if (IsDead) return;
 
-        _aimTarget.Destroy();
+        Destroy(_aimTarget);
 
         EyeCurrentState = EyeState.Dead;
         IsLaserFinished = true;

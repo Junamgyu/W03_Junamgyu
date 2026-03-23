@@ -201,15 +201,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""MarkTarget"",
-                    ""type"": ""Button"",
-                    ""id"": ""3c2b852f-f037-4b82-a34c-898451798ebf"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""CheatOne"",
                     ""type"": ""Button"",
                     ""id"": ""ab482208-ad32-4409-a0bb-0e67ac55c696"",
@@ -226,6 +217,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LookMouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""79db23f7-a629-48e6-9ea7-0cce7704b179"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -379,17 +379,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""e169fd4c-447a-487e-8152-789391bb9e97"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -682,28 +671,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""041bc759-a475-48eb-a64c-ff6fb94f76c2"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""MarkTarget"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""af9ec4ca-dbc2-421d-9740-80d9f91d159e"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""MarkTarget"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c5af07c5-645c-44f2-b32b-0d8a71475e27"",
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
@@ -765,6 +732,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5323b257-7632-41bb-8b1a-a5c619ba3bc7"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LookMouse"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1351,9 +1329,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Shotgun = m_Player.FindAction("Shotgun", throwIfNotFound: true);
         m_Player_SlowMotionSkill = m_Player.FindAction("SlowMotionSkill", throwIfNotFound: true);
         m_Player_DeadeyeSkill = m_Player.FindAction("DeadeyeSkill", throwIfNotFound: true);
-        m_Player_MarkTarget = m_Player.FindAction("MarkTarget", throwIfNotFound: true);
         m_Player_CheatOne = m_Player.FindAction("CheatOne", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_LookMouse = m_Player.FindAction("LookMouse", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1460,9 +1438,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Shotgun;
     private readonly InputAction m_Player_SlowMotionSkill;
     private readonly InputAction m_Player_DeadeyeSkill;
-    private readonly InputAction m_Player_MarkTarget;
     private readonly InputAction m_Player_CheatOne;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_LookMouse;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1523,10 +1501,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @DeadeyeSkill => m_Wrapper.m_Player_DeadeyeSkill;
         /// <summary>
-        /// Provides access to the underlying input action "Player/MarkTarget".
-        /// </summary>
-        public InputAction @MarkTarget => m_Wrapper.m_Player_MarkTarget;
-        /// <summary>
         /// Provides access to the underlying input action "Player/CheatOne".
         /// </summary>
         public InputAction @CheatOne => m_Wrapper.m_Player_CheatOne;
@@ -1534,6 +1508,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Pause".
         /// </summary>
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/LookMouse".
+        /// </summary>
+        public InputAction @LookMouse => m_Wrapper.m_Player_LookMouse;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1596,15 +1574,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DeadeyeSkill.started += instance.OnDeadeyeSkill;
             @DeadeyeSkill.performed += instance.OnDeadeyeSkill;
             @DeadeyeSkill.canceled += instance.OnDeadeyeSkill;
-            @MarkTarget.started += instance.OnMarkTarget;
-            @MarkTarget.performed += instance.OnMarkTarget;
-            @MarkTarget.canceled += instance.OnMarkTarget;
             @CheatOne.started += instance.OnCheatOne;
             @CheatOne.performed += instance.OnCheatOne;
             @CheatOne.canceled += instance.OnCheatOne;
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @LookMouse.started += instance.OnLookMouse;
+            @LookMouse.performed += instance.OnLookMouse;
+            @LookMouse.canceled += instance.OnLookMouse;
         }
 
         /// <summary>
@@ -1652,15 +1630,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @DeadeyeSkill.started -= instance.OnDeadeyeSkill;
             @DeadeyeSkill.performed -= instance.OnDeadeyeSkill;
             @DeadeyeSkill.canceled -= instance.OnDeadeyeSkill;
-            @MarkTarget.started -= instance.OnMarkTarget;
-            @MarkTarget.performed -= instance.OnMarkTarget;
-            @MarkTarget.canceled -= instance.OnMarkTarget;
             @CheatOne.started -= instance.OnCheatOne;
             @CheatOne.performed -= instance.OnCheatOne;
             @CheatOne.canceled -= instance.OnCheatOne;
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @LookMouse.started -= instance.OnLookMouse;
+            @LookMouse.performed -= instance.OnLookMouse;
+            @LookMouse.canceled -= instance.OnLookMouse;
         }
 
         /// <summary>
@@ -2057,13 +2035,6 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDeadeyeSkill(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "MarkTarget" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnMarkTarget(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "CheatOne" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2077,6 +2048,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPause(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LookMouse" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLookMouse(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

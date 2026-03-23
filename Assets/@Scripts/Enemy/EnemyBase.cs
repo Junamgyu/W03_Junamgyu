@@ -27,7 +27,6 @@ public abstract class EnemyBase : EntityBase
         _markIndicator.gameObject.SetActive(show);
     }
 
-    public bool IsMarked() => _isMarked;
 
     // =====================
     // TakeDamage
@@ -44,9 +43,6 @@ public abstract class EnemyBase : EntityBase
 
     public abstract override void Die();
 
-    // =====================
-    // 사망 루틴 (공통)
-    // =====================
     protected IEnumerator DieRoutine()
     {
         yield return StartCoroutine(OnDieRoutine());

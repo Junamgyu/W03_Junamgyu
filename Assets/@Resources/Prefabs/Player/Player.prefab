@@ -227,7 +227,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAimer
   _cam: {fileID: 0}
   _gunPivot: {fileID: 4069578685439827307}
-  _aimAssistRadius: 3.5
+  _aimAssistRadiusMouse: 3
+  _aimAssistRadiusGamepad: 10
+  _aimAssistAngleGamepad: 30
   _aimAssistStrengthMouse: 2
   _aimAssistStrengthGamepad: 4
   _enemyLayer:

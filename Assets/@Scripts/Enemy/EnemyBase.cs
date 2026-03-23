@@ -4,6 +4,10 @@ using UnityEngine;
 
 public abstract class EnemyBase : EntityBase
 {
+
+    // 플레이어
+    private DeadeyeSkill _deadeyeSkill;
+
     // 이벤트
     public event Action<EnemyBase> OnDeathFinished;
 
@@ -27,12 +31,19 @@ public abstract class EnemyBase : EntityBase
         _markIndicator.gameObject.SetActive(show);
     }
 
+    protected override void Initialize()
+    {
+        base.Initialize();
+        _deadeyeSkill = GameObject.FindWithTag("Player").GetComponent<DeadeyeSkill>();
+
+    }
 
     // =====================
     // TakeDamage
     // =====================
     public virtual void TakeDamage(int damage, bool isAddGauge = false)
     {
+        _deadeyeSkill.AddGauge(1);
         base.TakeDamage(damage);
     }
 

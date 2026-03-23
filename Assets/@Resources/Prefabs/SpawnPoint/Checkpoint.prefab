@@ -158,3 +158,4 @@ MonoBehaviour:
   _respawnPoint: {fileID: 2139557562101441950}
   _genPoint: {fileID: 4058259906383471284}
   _checkpointWall: {fileID: 23104218148537933, guid: 95a7689084010a745b0e810266d1719d, type: 3}
+  _checkPointMark: {fileID: 7123950772231474825, guid: 1bae3fe7b37a5f1469ea14bc1c529a9b, type: 3}

@@ -39628,6 +39628,84 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1250619277}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1660637287
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -2644943203563758567, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: _sceneName
+      value: Lobby
+      objectReference: {fileID: 0}
+    - target: {fileID: 316619431082594939, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_Name
+      value: NextStageDoor (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 316619431082594939, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 116
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -118
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1988092348031686121, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+--- !u!1 &1660637288 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 316619431082594939, guid: d379856a3c63a804b806557fdc4a6a67, type: 3}
+  m_PrefabInstance: {fileID: 1660637287}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1782451130
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39884,7 +39962,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -10
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -131412,6 +131490,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 690045918576239301, guid: 63513dbb2f6f6284b805d8b2ba4b03c0, type: 3}
+      propertyPath: _nextStageDoor
+      value: 
+      objectReference: {fileID: 1660637288}
+    - target: {fileID: 690045918576239301, guid: 63513dbb2f6f6284b805d8b2ba4b03c0, type: 3}
       propertyPath: skills.Array.size
       value: 3
       objectReference: {fileID: 0}
@@ -131572,3 +131654,4 @@ SceneRoots:
   - {fileID: 132977436}
   - {fileID: 1806397152}
   - {fileID: 1309748198}
+  - {fileID: 1660637287}

@@ -27,6 +27,7 @@ public abstract class NormalEnemyBase : EnemyBase
     protected bool _canAttack = true;
     protected bool _isAddGauge = false;
     protected bool _wasDetecting = false;
+    protected bool _isBlockedByEdge = false;
 
     protected Transform _player;
 
@@ -60,6 +61,7 @@ public abstract class NormalEnemyBase : EnemyBase
         _canAttack = true;
         _isAddGauge = false;
         _wasDetecting = false;
+        _isBlockedByEdge = false;
         _currentHp = _maxHp;
 
         _player = null;
@@ -110,16 +112,23 @@ public abstract class NormalEnemyBase : EnemyBase
             if (IsInAttackRange())
             {
                 _rb.linearVelocity = Vector2.zero;
-                if (_canAttack && CanAct()) // EnemyBase의 CanAct() 체크
+                if (_canAttack && CanAct())
                     StartCoroutine(AttackRoutine());
             }
             else
             {
+                // 절벽 막힌 상태여도 MoveToward 호출해서 방향 재체크
                 MoveToward(_player.position);
+
+                // 절벽 앞에 막혀있으면 공격도 시도
+                if (_isBlockedByEdge && _canAttack && CanAct())
+                    StartCoroutine(AttackRoutine());
             }
         }
         else
         {
+            _isBlockedByEdge = false;
+
             if (_wasDetecting)
             {
                 _wasDetecting = false;
@@ -166,7 +175,6 @@ public abstract class NormalEnemyBase : EnemyBase
         if (_isFlying) return false;
         if (_groundLayer == 0) return false;
 
-        // 스케일 반영한 체크 거리/깊이
         float scaledDistance = _edgeCheckDistance * Mathf.Abs(transform.localScale.x);
         float scaledDepth = _edgeCheckDepth * Mathf.Abs(transform.localScale.y);
 
@@ -185,14 +193,13 @@ public abstract class NormalEnemyBase : EnemyBase
 
         if (!_isFlying && IsEdgeAhead(dir))
         {
-            // x속도 완전히 0으로 즉시 제동
             _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
-            _rb.AddForce(new Vector2(-dir.x * _rb.mass * 10f, 0f), ForceMode2D.Impulse); // 반대방향 제동력
-
-            float oppositeX = _originalPos.x + (-dir.x * _patrolRadius);
-            _patrolTarget = new Vector2(oppositeX, _originalPos.y);
+            _isBlockedByEdge = true;
             return;
         }
+
+        // 절벽 없으면 플래그 해제 후 정상 이동
+        _isBlockedByEdge = false;
 
         if (_isFlying)
             _rb.linearVelocity = dir * _moveSpeed;
@@ -233,10 +240,11 @@ public abstract class NormalEnemyBase : EnemyBase
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
 
-        if (_isAddGauge) 
+        if (_isAddGauge)
         {
             _player.GetComponent<DeadeyeSkill>().AddGauge(15);
         }
+
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
             col.enabled = false;
@@ -289,6 +297,5 @@ public abstract class NormalEnemyBase : EnemyBase
     {
         _isAddGauge = isAddGauge;
         base.TakeDamage(damage);
-
     }
 }

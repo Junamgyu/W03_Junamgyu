@@ -9,8 +9,11 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
     [SerializeField] private string _currentStageSceneName;
 
     private UIManager _uiManager;
+    private CheckpointManager _checkpointManager;
 
     public string CurrentStageSceneName => _currentStageSceneName;
+
+    [SerializeField] private string _mainMenuSceneName = "MainMenu";
 
     public bool IsLoading { get; private set; }
 
@@ -28,7 +31,8 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         }
 
         ManagerRegistry.TryGet(out _uiManager);
-        
+        ManagerRegistry.TryGet(out _checkpointManager);
+
         SceneManager.sceneLoaded += HandleSceneLoaded;
         IsInitialized = true;
     }
@@ -41,7 +45,7 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         _currentStageSceneName = stageSceneName;
     }
 
-    public void ReloadStage()
+    public void LoadStage()
     {
         if (IsLoading)
             return;
@@ -56,6 +60,22 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         SceneManager.LoadScene(_currentStageSceneName, LoadSceneMode.Single);
     }
 
+    public void LoadMainMenu()
+    {
+        if (IsLoading)
+            return;
+
+        if (string.IsNullOrEmpty(_mainMenuSceneName))
+        {
+            Debug.LogWarning($"{name}: MainMenuSceneName is empty! Check SceneFlowManager.");
+            return;
+        }
+
+        Time.timeScale = 1f;
+        IsLoading = true;
+        SceneManager.LoadScene(_mainMenuSceneName, LoadSceneMode.Single);
+    }
+
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (!IsLoading)
@@ -65,6 +85,8 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
             return;
 
         IsLoading = false;
+
+        _checkpointManager.RebindCheckpoints();
         _uiManager.RebindUI();
         OnStageReloadCompleted?.Invoke(scene.name);
     }

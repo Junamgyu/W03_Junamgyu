@@ -379,9 +379,9 @@ GameObject:
   - component: {fileID: 7962684644318047272}
   - component: {fileID: 5755664213445092068}
   - component: {fileID: 2283294581962453538}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Boss2
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -416,13 +416,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c72893099abc74395c170980fe5f07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss2Controller
+  _maxHp: 5000
+  _attackDamage: 1
+  _markIndicator: {fileID: 0}
   skills:
   - {fileID: 6064826723975521084}
-  - {fileID: 0}
   - {fileID: 1132211441250941959}
   - {fileID: 7962684644318047272}
   idleDuration: 2
   phaseStartDelay: 1.5
+  returnSpeed: 8
+  blinkInterval: 0.1
+  blinkCount: 3
 --- !u!114 &6064826723975521084
 MonoBehaviour:
   m_ObjectHideFlags: 0

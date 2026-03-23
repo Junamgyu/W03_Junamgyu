@@ -243,12 +243,6 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         }
 
         Vector3 respawnPoint = _checkpointManager.CurrentRespawnPosition;
-        if (respawnPoint == null)
-        {
-            Debug.LogWarning("RespawnPoint not found.");
-            return;
-        }
-
         _player.transform.position = respawnPoint;
 
         Rigidbody2D rb = _player.GetComponent<Rigidbody2D>();

@@ -1,4 +1,4 @@
-using Unity.VectorGraphics.Editor;
+//using Unity.VectorGraphics.Editor;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour

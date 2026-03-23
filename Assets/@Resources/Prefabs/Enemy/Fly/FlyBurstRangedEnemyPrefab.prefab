@@ -349,10 +349,10 @@ MonoBehaviour:
   _patrolRadius: 0
   _wallLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   _edgeCheckDistance: 0.5
   _edgeCheckDepth: 1
   _hitParticle: {fileID: 735892299671539064}

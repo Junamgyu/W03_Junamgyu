@@ -22,6 +22,16 @@ public class Boss2Controller : EnemyBase
     private SpriteRenderer _spriteRenderer;
     private bool _isBlinking = false;
 
+    private void OnEnable()
+    {
+        CameraManager.OnBossOutro += StartBoss2;
+    }
+
+    private void OnDisable()
+    {
+        CameraManager.OnBossOutro -= StartBoss2;
+    }
+
     protected override void Initialize()
     {
         _currentHp = _maxHp;
@@ -40,9 +50,9 @@ public class Boss2Controller : EnemyBase
             else
                 Debug.LogWarning($"{skill.name}은 ISkill을 구현하지 않았습니다.");
         }
-
-        StartBoss2();
     }
+
+
 
     public override void Die() => Boss2Die();
 

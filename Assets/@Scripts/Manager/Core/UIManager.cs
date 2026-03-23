@@ -116,14 +116,15 @@ public class UIManager : MonoBehaviour, IInitializable
 
     private void HandleMainMenuRequested()
     {
-        // TODO: 메인메뉴 씬과 연결
-        Debug.Log("MainMenuRequested");
+        _poolManager?.ClearRuntimeObjects();
+        _sceneFlowManager?.LoadMainMenu();
     }
 
     public void ShowPause()
     {
         if (_pausePanel != null)
             _pausePanel.SetActive(true);
+            _uiPausePanel.ApplyFirstSelection();
 
         if (_gameOverPanel != null)
             _gameOverPanel.SetActive(false);

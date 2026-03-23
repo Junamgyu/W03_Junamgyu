@@ -51,12 +51,14 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
         Debug.Log("GameManager Initialized");
 
-#if UNITY_EDITOR
-        if (_autoStartInEditor)
-        {
-            StartGame();
-        }
-#endif
+        StartGame();
+
+//#if UNITY_EDITOR
+//        if (_autoStartInEditor)
+//        {
+//            StartGame();
+//        }
+//#endif
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -111,7 +113,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         }
 
         _inputManager.DisablePlayerInput();
-        _inputManager.EnableUIInput();
+        //_inputManager.EnableUIInput();
         Debug.Log("Input Disabled");
 
         _gameStateManager.ChangeState(GameState.GameOver); // 게임 상태 변경 Invoke
@@ -216,7 +218,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
         Time.timeScale = 1f;
         _inputManager.EnablePlayerInput();
-        _inputManager.EnableUIInput();
+        //_inputManager.EnableUIInput();
 
         _gameStateManager.ChangeState(GameState.Playing);
 

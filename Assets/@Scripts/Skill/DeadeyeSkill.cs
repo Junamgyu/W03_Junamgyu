@@ -240,11 +240,32 @@ public class DeadeyeSkill : MonoBehaviour
 
     private void UpdateTargets()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _currentRadius, _enemyLayer);
+        //Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _currentRadius, _enemyLayer);
+        //foreach (Collider2D hit in hits)
+        //{
+        //    if (_targets.Count >= _maxTargets) break;
+        //    EnemyBase enemy = hit.GetComponent<EnemyBase>();
+        //    if (enemy != null && !_targets.Contains(enemy) && enemy.CurrentHp > 0)
+        //    {
+        //        _targets.Add(enemy);
+        //        enemy.ShowMark(true);
+        //    }
+        //}
+
+
+        // 성능 이슈가 생겨서 별로 안 좋긴 함
+        // LayerMask 없이 전체 감지 (또는 Enemy 레이어 포함한 복합 마스크 사용)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, _currentRadius);
 
         foreach (Collider2D hit in hits)
         {
             if (_targets.Count >= _maxTargets) break;
+
+            // Layer가 Enemy이거나 Tag가 Enemy인 경우
+            bool isEnemyLayer = ((1 << hit.gameObject.layer) & _enemyLayer) != 0;
+            bool isEnemyTag = hit.CompareTag("Enemy");
+
+            if (!isEnemyLayer && !isEnemyTag) continue;
 
             EnemyBase enemy = hit.GetComponent<EnemyBase>();
             if (enemy != null && !_targets.Contains(enemy) && enemy.CurrentHp > 0)

@@ -7,6 +7,9 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
     public bool IsInitialized { get; private set; }
 
     [SerializeField] private string _currentStageSceneName;
+
+    private UIManager _uiManager;
+
     public string CurrentStageSceneName => _currentStageSceneName;
 
     public bool IsLoading { get; private set; }
@@ -24,6 +27,8 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
             _currentStageSceneName = activeScene.name;
         }
 
+        ManagerRegistry.TryGet(out _uiManager);
+        
         SceneManager.sceneLoaded += HandleSceneLoaded;
         IsInitialized = true;
     }
@@ -60,6 +65,7 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
             return;
 
         IsLoading = false;
+        _uiManager.RebindUI();
         OnStageReloadCompleted?.Invoke(scene.name);
     }
 

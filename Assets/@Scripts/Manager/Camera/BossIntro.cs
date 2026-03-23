@@ -6,6 +6,7 @@ using UnityEngine;
 public class BossIntro : MonoBehaviour
 {
     public static event Action OnEndIntro;
+    public static event Action OnPlayerDisable;
 
     [SerializeField] private float _endTime = 4f;
     [SerializeField] private CinemachineCamera _main;
@@ -36,6 +37,7 @@ public class BossIntro : MonoBehaviour
 
     IEnumerator EndIntro()
     {
+        OnPlayerDisable?.Invoke();
         yield return new WaitForSeconds(_endTime);
         if(speedEffect != null )
             speedEffect.SetActive(false);

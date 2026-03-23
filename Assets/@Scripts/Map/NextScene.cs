@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
 public class NextScene : MonoBehaviour
 {
     [SerializeField] private string _sceneName;
+
+    [SerializeField] bool _isBossStage = false;
 
     private SceneFlowManager _sceneFlowManager;
     private CheckpointManager _checkpointManager;
@@ -24,9 +27,17 @@ public class NextScene : MonoBehaviour
         {
             _checkpointManager?.ClearCheckpoint();
         }
+        NextSceneSound();
 
         _sceneFlowManager.SetCurrentStage(_sceneName);
         _sceneFlowManager.LoadStage();
+    }
+
+    private void NextSceneSound()
+    {
+        if (_isBossStage) SoundManager.instance.StopBGM();
+        else SoundManager.instance.HandleMainStart();
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

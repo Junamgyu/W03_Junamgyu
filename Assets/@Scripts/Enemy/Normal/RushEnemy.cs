@@ -139,6 +139,7 @@ public class RushEnemy : NormalEnemyBase
     void OnCollisionEnter2D(Collision2D col)
     {
         if (!col.gameObject.CompareTag("Player")) return;
+        col.gameObject.GetComponent<IDamageable>()?.TakeDamage(1);
 
         if (_isRushing)
         {

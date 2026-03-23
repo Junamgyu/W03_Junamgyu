@@ -110,7 +110,7 @@ public abstract class NormalEnemyBase : EnemyBase
             if (IsInAttackRange())
             {
                 _rb.linearVelocity = Vector2.zero;
-                if (_canAttack)
+                if (_canAttack && CanAct()) // EnemyBase의 CanAct() 체크
                     StartCoroutine(AttackRoutine());
             }
             else

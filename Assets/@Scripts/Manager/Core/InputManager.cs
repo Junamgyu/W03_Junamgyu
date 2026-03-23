@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour, IInitializable
     public bool IsInitialized { get; private set; }
 
     private InputSystem_Actions _input;
+    private CameraManager _cameraManager;
 
     public event Action<InputAction.CallbackContext> OnLook;
     public event Action<InputAction.CallbackContext> OnMove;
@@ -29,6 +30,8 @@ public class InputManager : MonoBehaviour, IInitializable
     {
         if (IsInitialized)
             return;
+
+        _cameraManager = GetComponent<CameraManager>();
 
         _input = new InputSystem_Actions();
         BindActions();
@@ -71,24 +74,10 @@ public class InputManager : MonoBehaviour, IInitializable
         player.CheatOne.started += HandleCheatOne;
         player.Pause.started += HandlePause;
 
+        CameraManager.OnBossIntro += DisablePlayerInput;
+        CameraManager.OnBossOutro += EnablePlayerInput;
+
         ui.Pause.started += HandlePause;
-        //ui.Navigate.started += HandleNavigate;
-        //ui.Navigate.performed += HandleNavigate;
-        //ui.Navigate.canceled += HandleNavigate;
-
-        //ui.Submit.started += HandleSubmit;
-        //ui.Submit.performed += HandleSubmit;
-
-        //ui.Cancel.started += HandleCancel;
-        //ui.Cancel.performed += HandleCancel;
-    }
-
-    private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
-    {
-        if (ctx.control == null || ctx.control.device == null)
-            return;
-
-        IsUsingGamepad = ctx.control.device is Gamepad;
     }
 
     private void HandleLook(InputAction.CallbackContext ctx)
@@ -106,13 +95,6 @@ public class InputManager : MonoBehaviour, IInitializable
 
         IsUsingGamepadForLook = isGamepadLook;
 
-        Debug.Log(
-            $"[HandleLook] map={ctx.action.actionMap.name}, " +
-            $"device={device.GetType().Name}, " +
-            $"isGamepadForLook={IsUsingGamepadForLook}, " +
-            $"value={ctx.ReadValue<Vector2>()}"
-        );
-
         OnLook?.Invoke(ctx);
     }
 
@@ -123,67 +105,56 @@ public class InputManager : MonoBehaviour, IInitializable
 
     private void HandleMove(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnMove?.Invoke(ctx);
     }
 
     private void HandleJump(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnJump?.Invoke(ctx);
     }
 
     private void HandlePrimaryAttack(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnPrimaryAttack?.Invoke(ctx);
     }
 
     private void HandleSecondaryAttack(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnSecondaryAttack?.Invoke(ctx);
     }
 
     private void HandleSlowMotionSkill(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnSlowMotionSkill?.Invoke(ctx);
     }
 
     private void HandleDeadeyeSkill(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnDeadeyeSkill?.Invoke(ctx);
     }
 
     private void HandleCheatOne(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnCheatOne?.Invoke(ctx);
     }
 
     private void HandlePause(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnPause?.Invoke(ctx);
     }
 
     private void HandleNavigate(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnNavigate?.Invoke(ctx);
     }
 
     private void HandleSubmit(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnSubmit?.Invoke(ctx);
     }
 
     private void HandleCancel(InputAction.CallbackContext ctx)
     {
-        //UpdateLastUsedDevice(ctx);
         OnCancel?.Invoke(ctx);
     }
 
@@ -267,6 +238,9 @@ public class InputManager : MonoBehaviour, IInitializable
 
         ui.Cancel.started -= HandleCancel;
         ui.Cancel.performed -= HandleCancel;
+
+        CameraManager.OnBossIntro -= DisablePlayerInput;
+        CameraManager.OnBossOutro -= EnablePlayerInput;
 
         _input.Player.Disable();
         _input.UI.Disable();

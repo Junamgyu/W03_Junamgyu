@@ -57,8 +57,6 @@ public abstract class EnemyBase : EntityBase
 
     protected bool CanAct()
     {
-        Debug.Log($"{nameof(EnemyBase)}: CanAct() called. Current GameState: {_gameStateManager?.CurrentState.ToString() ?? "null"}");
-
         return _gameStateManager != null
             && _gameStateManager.CurrentState == GameState.Playing;
         //return true; // 일단 모든 상태에서 행동 가능하도록 허용. 필요시 GameState 체크 로직 추가.

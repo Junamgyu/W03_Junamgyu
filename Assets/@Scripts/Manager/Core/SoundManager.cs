@@ -27,6 +27,11 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void Start()
+    {
+        PlayBGM(0);
+    }
     private void PlayBGM(int number, bool fade = true)
     {
         AudioClip clip = _bgmEntry[number]._clip;
@@ -50,8 +55,28 @@ public class SoundManager : MonoBehaviour
         PlayBGM(1);
     }
 
-    private void HandleAttack()
+    private void HandlePlayerHitSFX()
     {
-
+        PlaySFX(0);
+    }
+    private void HandleEnemyHitSFX()
+    {
+        PlaySFX(1);
+    }
+    private void HandleDeadEyeSFX()
+    {
+        PlaySFX(2);
+    }
+    private void HandlePistolSFX()
+    {
+        PlaySFX(3);
+    }
+    private void HandleShotGunSFX()
+    {
+        PlaySFX(4);
+    }
+    private void HandleTNTSFX()
+    {
+        PlaySFX(5);
     }
 }

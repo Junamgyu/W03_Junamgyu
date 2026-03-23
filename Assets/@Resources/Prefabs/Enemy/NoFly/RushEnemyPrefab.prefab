@@ -394,7 +394,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 9024136478205690775}
@@ -417,7 +417,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -494,11 +494,16 @@ MonoBehaviour:
   _attackRange: 15
   _detectionRange: 25
   _attackCooldown: 4
-  _isFlying: 1
+  _isFlying: 0
   _patrolRadius: 0
   _wallLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  _edgeCheckDistance: 0.5
+  _edgeCheckDepth: 1
   _rushSpeed: 30
   _rushDuration: 1
   _rushWindupTime: 0.5

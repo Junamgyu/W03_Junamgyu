@@ -68,7 +68,10 @@ public class UIManager : MonoBehaviour, IInitializable
         {
             _uiPausePanel.OnRetryRequested += HandleRetryRequested;
             _uiPausePanel.OnMainMenuRequested += HandleMainMenuRequested;
+        }
 
+        if (_uiGameOverPanel != null)
+        {
             _uiGameOverPanel.OnRetryRequested += HandleRetryRequested;
             _uiGameOverPanel.OnMainMenuRequested += HandleMainMenuRequested;
         }
@@ -114,13 +117,15 @@ public class UIManager : MonoBehaviour, IInitializable
 
     private void HandleMainMenuRequested()
     {
-        Debug.Log("MainMenuRequested");
+        _poolManager?.ClearRuntimeObjects();
+        _sceneFlowManager?.LoadMainMenu();
     }
 
     public void ShowPause()
     {
         if (_pausePanel != null)
             _pausePanel.SetActive(true);
+            _uiPausePanel.ApplyFirstSelection();
 
         if (_gameOverPanel != null)
             _gameOverPanel.SetActive(false);

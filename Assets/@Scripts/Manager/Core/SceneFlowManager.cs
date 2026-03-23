@@ -9,6 +9,8 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
     [SerializeField] private string _currentStageSceneName;
     public string CurrentStageSceneName => _currentStageSceneName;
 
+    [SerializeField] private string _mainMenuSceneName = "MainMenu";
+
     public bool IsLoading { get; private set; }
 
     public event Action<string> OnStageReloadCompleted;
@@ -49,6 +51,22 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
 
         IsLoading = true;
         SceneManager.LoadScene(_currentStageSceneName, LoadSceneMode.Single);
+    }
+
+    public void LoadMainMenu()
+    {
+        if (IsLoading)
+            return;
+
+        if (string.IsNullOrEmpty(_mainMenuSceneName))
+        {
+            Debug.LogWarning($"{name}: MainMenuSceneName is empty! Check SceneFlowManager.");
+            return;
+        }
+
+        Time.timeScale = 1f;
+        IsLoading = true;
+        SceneManager.LoadScene(_mainMenuSceneName, LoadSceneMode.Single);
     }
 
     private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)

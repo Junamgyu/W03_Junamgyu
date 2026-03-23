@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RangedEnemy
   _maxHp: 100
-  _attackDamage: 10
+  _attackDamage: 1
   _markIndicator: {fileID: 0}
   _moveSpeed: 5
   _attackRange: 15
@@ -349,6 +349,11 @@ MonoBehaviour:
   _wallLayer:
     serializedVersion: 2
     m_Bits: 0
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  _edgeCheckDistance: 0.5
+  _edgeCheckDepth: 1
   _projectilePrefab: {fileID: 3618253558596877259, guid: dc4f46b1dc080234aafccf704533149a, type: 3}
   _projectileSpeed: 8
   _retreatRange: 0

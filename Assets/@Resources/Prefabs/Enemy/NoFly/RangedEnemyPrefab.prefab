@@ -348,11 +348,16 @@ MonoBehaviour:
   _patrolRadius: 0
   _wallLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  _edgeCheckDistance: 0.5
+  _edgeCheckDepth: 1
   _projectilePrefab: {fileID: 3618253558596877259, guid: dc4f46b1dc080234aafccf704533149a, type: 3}
   _projectileSpeed: 8
-  _retreatRange: 0
-  _preferredRange: 10
+  _retreatRange: 2
+  _preferredRange: 4
   _gunPivot: {fileID: 8175451469513102941}
   _burstCount: 1
   _burstInterval: 0.15
@@ -368,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ca43af1d43038499e93725044f8683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DespawnController
-  _mode: 2
+  _mode: 1
 --- !u!1001 &2969582280979848909
 PrefabInstance:
   m_ObjectHideFlags: 0

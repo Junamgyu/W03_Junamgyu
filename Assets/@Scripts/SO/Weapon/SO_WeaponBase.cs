@@ -17,5 +17,10 @@ public class SO_WeaponBase : ScriptableObject
 
     [Header("Fire Rate")]
     public float fireRate = 0.5f;
+
+    [Header("Haptic Feedback")]
+    public float lowFrequency = 0.15f;
+    public float highFrequency = 0.35f;
+    public float duration = 0.08f;
 }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -7,6 +8,9 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _lifetime = 1f;
     [SerializeField] private bool _isPiercing = false; // 관통 여부
     [SerializeField] private bool _giveGauge = true;
+
+    // Hit 효과
+    [SerializeField] private GameObject _hitParticlePrefab;
 
     private Coroutine _lifeRoutine;
     private Rigidbody2D _rb;
@@ -21,9 +25,7 @@ public class Bullet : MonoBehaviour
     private void OnEnable()
     {
         if (_lifeRoutine != null)
-        {
             StopCoroutine(_lifeRoutine);
-        }
 
         _lifeRoutine = StartCoroutine(LifeReturnRoutine(_pool));
     }
@@ -49,13 +51,9 @@ public class Bullet : MonoBehaviour
         yield return new WaitForSeconds(_lifetime);
 
         if (pool != null)
-        {
             pool.Return(gameObject);
-        }
         else
-        {
             Destroy(gameObject);
-        }
     }
     #endregion
 
@@ -64,18 +62,43 @@ public class Bullet : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             if (_isPiercing) return; // 관통이면 무시
+            SpawnHitParticle();
             ReturnToPool();
+            Debug.Log("맞음");
             return;
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.CompareTag("Enemy")) //보스 에임 보정 관련때문에 CompareTag 추가
         {
             if (other.TryGetComponent<EnemyBase>(out var damageable))
                 damageable.TakeDamage(_damage, _giveGauge);
-
+            SpawnHitParticle();
             ReturnToPool();
         }
     }
+
+    // Study
+    private void SpawnHitParticle()
+    {
+        if (_hitParticlePrefab == null) return;
+
+        // 날라온 방향의 반대로 날림.
+        //Vector2 dir = _rb.linearVelocity.normalized;
+        //float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg -90f;
+        //Quaternion rotation = Quaternion.Euler(angle, 90f, 0f);
+
+        Vector2 dir = -_rb.linearVelocity.normalized;
+
+        // forward에서 dir 방향으로 회전
+        Quaternion rotation = Quaternion.FromToRotation(Vector3.forward, new Vector3(dir.x, dir.y, 0f));
+
+
+        if (_pool != null)
+            _pool.Get(_hitParticlePrefab, transform.position, rotation);
+        else
+            Instantiate(_hitParticlePrefab, transform.position, rotation);
+    }
+
 
     //Helper
     private void ReturnToPool()

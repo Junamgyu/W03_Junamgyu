@@ -20,3 +20,6 @@ MonoBehaviour:
   spreadAngle: 0
   maxAmmo: 6
   fireRate: 0.12
+  lowFrequency: 0.15
+  highFrequency: 0.35
+  duration: 0.08

@@ -120,10 +120,10 @@ public class PlayerJump : MonoBehaviour
         _gravMultiplier = 1f; // 점프 시작 시점에 중력 배율을 초기화해서 jumpSpeed 계산을 깔끔하게 하기 위함.
         //_player.SetLocomotionState(LocomotionState.Jumping); // Move에서 해줌.
 
-        Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex));
-        _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier;
+        Vector2 newGravity = new Vector2(0, (-2f * _jumpHeight) / (_timeToJumpApex * _timeToJumpApex)); // 원하는 점프 높이와 정점 도달 시간으로부터 필요한 중력을 역산하는 로직
+        _rb.gravityScale = (newGravity.y / Physics2D.gravity.y) * _gravMultiplier; // 유니티는 gravityScale로만 중력 조절이 가능해서 Scale로 변환하는 작업
 
-        float jumpSpeed = Mathf.Sqrt(-2f * Physics2D.gravity.y * _rb.gravityScale * _jumpHeight);
+        float jumpSpeed = Mathf.Sqrt(-2f * Physics2D.gravity.y * _rb.gravityScale * _jumpHeight); // 초기 점프 속도 (gravityScale까지 고려된)
 
         // 코요테 타임 점프면 Y속도 초기화 후 순수 점프 속도만 적용
         if (!_player.IsGrounded)

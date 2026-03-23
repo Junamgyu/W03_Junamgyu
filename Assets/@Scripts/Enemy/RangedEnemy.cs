@@ -14,15 +14,14 @@ public class RangedEnemy : NormalEnemyBase
     [SerializeField] private float _burstInterval = 0.15f;
 
     protected PoolManager _pool;
+    private bool _isBursting = false;
 
-    private void Awake()
+    protected override void Start()
     {
+        base.Start();
         ManagerRegistry.TryGet(out _pool);
     }
 
-    private bool _isBursting = false;
-
-    // Jaein 추가
     protected override void OnEnable()
     {
         base.OnEnable();
@@ -31,9 +30,8 @@ public class RangedEnemy : NormalEnemyBase
 
     protected override void Update()
     {
-        if (_isDead) return;
+        if (_isDead || !CanAct()) return;
 
-        // Jaein 추가
         if (!TryFindPlayer())
         {
             _rb.linearVelocity = Vector2.zero;
@@ -49,6 +47,7 @@ public class RangedEnemy : NormalEnemyBase
 
             float dist = Vector2.Distance(transform.position, _player.position);
 
+            // 총구 방향 (발사 중 고정)
             if (_gunPivot != null && !_isBursting)
             {
                 Vector2 aimDir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
@@ -62,13 +61,17 @@ public class RangedEnemy : NormalEnemyBase
                     Vector2 retreatDir = ((Vector2)transform.position - (Vector2)_player.position).normalized;
                     MoveToward((Vector2)transform.position + retreatDir);
                 }
-                else if (dist > _preferredRange)
+                else if (dist <= _attackRange)
                 {
-                    MoveToward(_player.position);
+                    _rb.linearVelocity = Vector2.zero;
+                }
+                else if (dist <= _preferredRange)
+                {
+                    _rb.linearVelocity = Vector2.zero;
                 }
                 else
                 {
-                    _rb.linearVelocity = Vector2.zero;
+                    MoveToward(_player.position);
                 }
             }
             else
@@ -92,52 +95,38 @@ public class RangedEnemy : NormalEnemyBase
         }
     }
 
-    protected override void DoAttack()
+    protected override IEnumerator AttackRoutine()
     {
-        // Jaein 추가
-        if (!TryFindPlayer())
-            return;
-
-        if (_projectilePrefab == null)
-        {
-            Debug.LogWarning($"{gameObject.name}: 투사체가 없습니다.");
-            return;
-        }
-
-        // Jaein 추가
-        StopCoroutine(nameof(BurstRoutine));
-        StartCoroutine(nameof(BurstRoutine));
+        _canAttack = false;
+        yield return StartCoroutine(BurstRoutine());
+        yield return new WaitForSeconds(_attackCooldown);
+        _canAttack = true;
     }
+
+    protected override void DoAttack() { }
 
     IEnumerator BurstRoutine()
     {
-        _isBursting = true;
-        _rb.linearVelocity = Vector2.zero;
-
-        // Jaein 추가
-        if (!TryFindPlayer())
+        if (!TryFindPlayer()) yield break;
+        if (_projectilePrefab == null)
         {
-            _isBursting = false;
+            Debug.LogWarning($"{gameObject.name}: 투사체가 없습니다.");
             yield break;
         }
+
+        _isBursting = true;
+        _rb.linearVelocity = Vector2.zero;
 
         Vector2 dir = ((Vector2)_player.position - (Vector2)transform.position).normalized;
         Quaternion rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
 
         for (int i = 0; i < _burstCount; i++)
         {
-            GameObject projectile;
+            GameObject projectile = _pool != null
+                ? _pool.Get(_projectilePrefab, transform.position, rotation)
+                : Instantiate(_projectilePrefab, transform.position, rotation);
 
-            if (_pool != null)
-            {
-                projectile = _pool.Get(_projectilePrefab, transform.position, rotation);
-            }
-            else
-            {
-                projectile = Instantiate(_projectilePrefab, transform.position, rotation);
-            }
-
-            projectile.GetComponent<EnemyProjectile>().Initialize(_projectileSpeed, _attackDamage);
+            projectile.GetComponent<EnemyProjectile>()?.Initialize(_projectileSpeed, _attackDamage);
 
             if (i < _burstCount - 1)
                 yield return new WaitForSeconds(_burstInterval);

@@ -53,12 +53,14 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
         Debug.Log("GameManager Initialized");
 
-#if UNITY_EDITOR
-        if (_autoStartInEditor)
-        {
-            StartGame();
-        }
-#endif
+        StartGame();
+
+//#if UNITY_EDITOR
+//        if (_autoStartInEditor)
+//        {
+//            StartGame();
+//        }
+//#endif
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -113,12 +115,14 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         }
 
         _inputManager.DisablePlayerInput();
+        //_inputManager.EnableUIInput();
         Debug.Log("Input Disabled");
 
-        _gameStateManager.ChangeState(GameState.GameOver);
+        _gameStateManager.ChangeState(GameState.GameOver); // 게임 상태 변경 Invoke
         Debug.Log("GameState -> GameOver");
 
-        // TODO: Show Game Over UI, Restart Button, etc.
+        Time.timeScale = 0f; // 게임 일시정지
+        Debug.Log("Time scaled set 0");
     }
 
     // 매니저 등록은 Awake에서 진행
@@ -216,7 +220,7 @@ public class GameManager : PersistentMonoSingleton<GameManager>
 
         Time.timeScale = 1f;
         _inputManager.EnablePlayerInput();
-        _inputManager.EnableUIInput();
+        //_inputManager.EnableUIInput();
 
         _gameStateManager.ChangeState(GameState.Playing);
 

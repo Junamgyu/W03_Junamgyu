@@ -28,10 +28,19 @@ public class PauseController : MonoBehaviour, IInitializable
 
     private void HandlePauseInput(UnityEngine.InputSystem.InputAction.CallbackContext ctx)
     {
-        if (!ctx.started)
-            return;
+        Debug.Log(
+            $"[PauseController] " +
+            $"state={_gameStateManager.CurrentState}, " +
+            $"actionMap={ctx.action.actionMap.name}, " +
+            $"action={ctx.action.name}, " +
+            $"started={ctx.started}, performed={ctx.performed}, canceled={ctx.canceled}, " +
+            $"phase={ctx.phase}"
+        );
 
         GameState currentState = _gameStateManager.CurrentState;
+
+        if (!ctx.started || currentState == GameState.GameOver)
+            return;
 
         if (currentState == GameState.Playing)
         {
@@ -52,14 +61,16 @@ public class PauseController : MonoBehaviour, IInitializable
         _inputManager.EnableUIInput();
 
         _gameStateManager.ChangeState(GameState.Paused);
+
         Debug.Log("Game Paused");
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1f;
-        //_inputManager.DisableUIInput();
         _inputManager.EnablePlayerInput();
+        _inputManager.DisableUIInput();
+
         _gameStateManager.ChangeState(GameState.Playing);
 
         Debug.Log("Game Resumed");

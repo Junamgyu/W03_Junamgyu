@@ -6,6 +6,7 @@ public class BossEye : EnemyBase
 {
 
     [SerializeField] private GameObject _aimTarget;
+    GameObject _player;
     public enum EyeState { Idle, Laser, Dead }
 
     [Header("Eye 설정")]
@@ -57,6 +58,12 @@ public class BossEye : EnemyBase
         _fireLaserOriginalScale = _fireLaser.transform.localScale;
     }
 
+    void Start()
+    {
+        base.Start();
+        _player = GameObject.FindWithTag("Player");
+    }
+
 
     // =====================
     // TakeDamage
@@ -67,6 +74,8 @@ public class BossEye : EnemyBase
         if (EyeCurrentState == EyeState.Laser) return;
         if (_isTransitioning) return;
         if (EyeCurrentState != EyeState.Idle) return;
+
+        _player.GetComponent<DeadeyeSkill>().AddGauge(0.5f);
 
         _currentHp -= damage;
 

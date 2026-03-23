@@ -235,7 +235,7 @@ public abstract class NormalEnemyBase : EnemyBase
 
         if (_isAddGauge) 
         {
-            _player.GetComponent<DeadeyeSkill>().AddGauge();
+            _player.GetComponent<DeadeyeSkill>().AddGauge(15);
         }
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)

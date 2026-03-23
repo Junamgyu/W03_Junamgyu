@@ -114,12 +114,11 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         _inputManager.EnableUIInput();
         Debug.Log("Input Disabled");
 
-        _gameStateManager.ChangeState(GameState.GameOver);
+        _gameStateManager.ChangeState(GameState.GameOver); // 게임 상태 변경 Invoke
         Debug.Log("GameState -> GameOver");
 
         Time.timeScale = 0f; // 게임 일시정지
-
-        // TODO: Show Game Over UI, Restart Button, etc.
+        Debug.Log("Time scaled set 0");
     }
 
     // 매니저 등록은 Awake에서 진행

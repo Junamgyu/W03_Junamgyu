@@ -44,7 +44,7 @@ public class RushEnemy : NormalEnemyBase
 
     protected override void Update()
     {
-        if (_isDead) return;
+        if (_isDead || !CanAct()) return;
 
         // Jaein 추가
         if (!TryFindPlayer())

@@ -21,8 +21,11 @@ public class HapticManager : MonoBehaviour, IInitializable
 
     public void PlayOneShot(float lowFrequency, float highFrequency, float duration, int priority = 0)
     {
-        Debug.Log("Haptic Excuted.");
         Gamepad gamepad = Gamepad.current;
+
+        if (gamepad == null) return;
+
+        Debug.Log("Haptic Excuted.");
 
         float newStrength = Mathf.Max(lowFrequency, highFrequency);
         bool isPlaying = _hapticRoutine != null && Time.unscaledTime < _endTime;

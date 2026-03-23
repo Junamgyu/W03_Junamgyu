@@ -348,10 +348,10 @@ MonoBehaviour:
   _patrolRadius: 0
   _wallLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 0
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 0
   _edgeCheckDistance: 0.5
   _edgeCheckDepth: 1
   _projectilePrefab: {fileID: 3618253558596877259, guid: dc4f46b1dc080234aafccf704533149a, type: 3}
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7ca43af1d43038499e93725044f8683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DespawnController
-  _mode: 1
+  _mode: 2
 --- !u!1001 &1495622491324639307
 PrefabInstance:
   m_ObjectHideFlags: 0

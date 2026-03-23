@@ -12,9 +12,16 @@ public abstract class EnemyBase : EntityBase
     // =====================
     [SerializeField] private CircleDrawer _markIndicator;
     private bool _isMarked = false;
+    private GameStateManager _gameStateManager;
+
+    private void Awake()
+    {
+        ManagerRegistry.TryGet(out _gameStateManager);
+    }
 
     public void ShowMark(bool show)
     {
+        _markIndicator = GetComponentInChildren<CircleDrawer>();
         if (_markIndicator == null) return;
         _isMarked = show;
         _markIndicator.gameObject.SetActive(show);
@@ -49,5 +56,13 @@ public abstract class EnemyBase : EntityBase
     protected virtual IEnumerator OnDieRoutine()
     {
         yield break;
+    }
+
+    protected bool CanAct()
+    {
+        Debug.Log($"{ nameof(EnemyBase) }: CanAct() called. Current GameState: {_gameStateManager?.CurrentState.ToString() ?? "null"}");
+
+        return _gameStateManager != null
+            && _gameStateManager.CurrentState == GameState.Playing;
     }
 }

@@ -67,7 +67,7 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.CompareTag("Enemy")) //보스 에임 보정 관련때문에 CompareTag 추가
         {
             if (other.TryGetComponent<EnemyBase>(out var damageable))
                 damageable.TakeDamage(_damage, _giveGauge);

@@ -371,7 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3026aee6463b07842b1f21fa16002bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EyeController
-  _maxHp: 1000
+  _maxHp: 3000
   _attackDamage: 1
   _markIndicator: {fileID: 0}
   _aimTarget: {fileID: 5112030171822486440}

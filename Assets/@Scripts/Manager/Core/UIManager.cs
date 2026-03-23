@@ -109,6 +109,7 @@ public class UIManager : MonoBehaviour, IInitializable
 
     private void HandleRetryRequested()
     {
+        _gameStateManager.ChangeState(GameState.Respawning);
         _pauseController?.ResumeGame();
         _poolManager?.ClearRuntimeObjects();
         _sceneFlowManager?.LoadStage();

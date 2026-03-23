@@ -14,13 +14,14 @@ public abstract class UI_Base : MonoBehaviour
     protected virtual void OnEnable()
     {
         // 패널 활성화 시 첫 버튼 선택 (패드 지원)
-        ApplyFirstSelection();
+        //ApplyFirstSelection();
     }
 
     public void ApplyFirstSelection()
     {
         if (_firstSelectable != null && EventSystem.current != null)
         {
+            EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(_firstSelectable);
         }
     }

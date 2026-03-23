@@ -57,7 +57,6 @@ public class DeadeyeSkill : MonoBehaviour
     // =====================
     #region Gauge
     private float _maxGauge = 100f;
-    [Tooltip("적을 죽일 때마다 차는 게이지량")][SerializeField] private float _gaugePerKill = 15f;
     private float _currentGauge = 0f;
 
     private bool CanSlowMotion => _currentGauge >= 1f;
@@ -65,17 +64,15 @@ public class DeadeyeSkill : MonoBehaviour
 
     public event Action<float> OnGaugeChanged; // UI 연동용
 
-    public void AddGauge()
+    public void AddGauge(float amount)
     {
-        _currentGauge = Mathf.Min(_maxGauge, _currentGauge + _gaugePerKill);
-        Debug.Log("현재 게이지: " + _currentGauge);
+        _currentGauge = Mathf.Min(_maxGauge, _currentGauge + amount);
         OnGaugeChanged?.Invoke(_currentGauge);
     }
 
     private void ConsumeGauge(float amount)
     {
         _currentGauge = Mathf.Max(0f, _currentGauge - amount);
-        Debug.Log("현재 게이지: " + _currentGauge);
         OnGaugeChanged?.Invoke(_currentGauge);
     }
 

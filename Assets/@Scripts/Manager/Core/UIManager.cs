@@ -111,7 +111,7 @@ public class UIManager : MonoBehaviour, IInitializable
     {
         _pauseController?.ResumeGame();
         _poolManager?.ClearRuntimeObjects();
-        _sceneFlowManager?.ReloadStage();
+        _sceneFlowManager?.LoadStage();
     }
 
     private void HandleMainMenuRequested()

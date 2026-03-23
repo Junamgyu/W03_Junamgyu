@@ -1,32 +1,30 @@
-using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class NextScene : MonoBehaviour
 {
-    [SerializeField] private String _sceneName;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private string _sceneName;
 
-    // Update is called once per frame
-    void Update()
+    private SceneFlowManager _sceneFlowManager;
+
+    private void Awake()
     {
-        
+        ManagerRegistry.TryGet(out _sceneFlowManager);
     }
 
     public void NextStage()
     {
-        SceneManager.LoadScene(_sceneName);
+        if (_sceneFlowManager == null)
+            return;
+
+        _sceneFlowManager.SetCurrentStage(_sceneName);
+        _sceneFlowManager.LoadStage();
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         Player player = collision.GetComponent<Player>();
 
-        if(player != null)
+        if (player != null)
         {
             NextStage();
         }

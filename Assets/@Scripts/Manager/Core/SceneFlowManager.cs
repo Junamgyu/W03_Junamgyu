@@ -43,7 +43,7 @@ public class SceneFlowManager : MonoBehaviour, IInitializable
         _currentStageSceneName = stageSceneName;
     }
 
-    public void ReloadStage()
+    public void LoadStage()
     {
         if (IsLoading)
             return;

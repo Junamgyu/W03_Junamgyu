@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
@@ -6,6 +7,7 @@ public class Checkpoint : MonoBehaviour
     [SerializeField] private Transform _respawnPoint;
     [SerializeField] private Transform _genPoint;
     [SerializeField] private GameObject _checkpointWall;
+    [SerializeField] private GameObject _checkPointMark;
 
     private bool _isActivated;
 
@@ -29,6 +31,8 @@ public class Checkpoint : MonoBehaviour
 
         RefreshCheckpointWall();
         OnCheckpointReached?.Invoke(this);
+        Instantiate(_checkPointMark, RespawnPoint.position, Quaternion.identity);
+
     }
 
     public void SetActivated(bool value)

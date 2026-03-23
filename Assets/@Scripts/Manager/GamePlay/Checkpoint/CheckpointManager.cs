@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class CheckpointManager : MonoBehaviour, IInitializable
 {
@@ -10,6 +11,8 @@ public class CheckpointManager : MonoBehaviour, IInitializable
     [SerializeField] private Vector3 _startRespawnPosition;
 
     [SerializeField] private bool _hasReachedCheckpoint;
+
+    private Player _player;
 
     public Transform CurrentRespawnPoint => _currentRespawnPoint;
     public Vector3 CurrentRespawnPosition => _currentRespawnPosition;
@@ -23,6 +26,8 @@ public class CheckpointManager : MonoBehaviour, IInitializable
     {
         if (IsInitialized)
             return;
+
+        _player = FindFirstObjectByType<Player>();
 
         BindRespawnPoint();
 
@@ -87,6 +92,11 @@ public class CheckpointManager : MonoBehaviour, IInitializable
         CurrentCheckpoint = checkpoint;
         _currentRespawnPoint = checkpoint.RespawnPoint;
         _currentRespawnPosition = checkpoint.RespawnPosition;
+
+        // TODO: 체력 풀피로 만들기 리스타트 로직 보면 있을거임
+        PlayerHealth playerHealth = _player.playerHealth;
+        playerHealth.ResetHP();
+
 
         RefreshCheckpointActivation();
     }

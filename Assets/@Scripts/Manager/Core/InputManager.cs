@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+
 public class InputManager : MonoBehaviour, IInitializable
 {
     public bool IsInitialized { get; private set; }
@@ -78,8 +79,8 @@ public class InputManager : MonoBehaviour, IInitializable
         player.CheatOne.started += HandleCheatOne;
         player.Pause.started += HandlePause;
 
-        CameraManager.OnBossIntro += DisablePlayerInput;
-        CameraManager.OnBossOutro += EnablePlayerInput;
+        BossIntro.OnPlayerDisable += DisablePlayerInput;
+        BossIntro.OnEndIntro += EnablePlayerInput;
 
         ui.Pause.started += HandlePause;
     }
@@ -179,7 +180,9 @@ public class InputManager : MonoBehaviour, IInitializable
     public void DisablePlayerInput()
     {
         if (_input == null)
+        {
             return;
+        }
 
         _input.Player.Disable();
     }
@@ -252,8 +255,8 @@ public class InputManager : MonoBehaviour, IInitializable
         ui.Cancel.started -= HandleCancel;
         ui.Cancel.performed -= HandleCancel;
 
-        CameraManager.OnBossIntro -= DisablePlayerInput;
-        CameraManager.OnBossOutro -= EnablePlayerInput;
+        BossIntro.OnPlayerDisable -= DisablePlayerInput;
+        BossIntro.OnEndIntro -= EnablePlayerInput;
 
         _input.Player.Disable();
         _input.UI.Disable();

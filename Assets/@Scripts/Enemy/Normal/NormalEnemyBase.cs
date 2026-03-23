@@ -32,6 +32,19 @@ public abstract class NormalEnemyBase : EnemyBase
     protected Transform _player;
 
     // =====================
+    // 피격 연출
+    // =====================
+    [Header("Hit Effect")]
+    [SerializeField] private ParticleSystem _hitParticle;
+    [SerializeField] private int _hitFlashCount = 3;
+    [SerializeField] private float _hitFlashInterval = 0.08f;
+    [SerializeField] private Color _hitFlashColor = Color.black;
+
+    private SpriteRenderer _spriteRenderer;
+    private Color _originalColor;
+    private Coroutine _flashCoroutine;
+
+    // =====================
     // 생명주기
     // =====================
     protected override void Start()
@@ -40,6 +53,8 @@ public abstract class NormalEnemyBase : EnemyBase
         Initialize();
 
         TryFindPlayer();
+        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _originalColor = _spriteRenderer.color;
 
         _originalPos = transform.position;
         _patrolTarget = GetRandomPatrolTarget();
@@ -241,9 +256,7 @@ public abstract class NormalEnemyBase : EnemyBase
         _rb.linearVelocity = Vector2.zero;
 
         if (_isAddGauge)
-        {
             _player.GetComponent<DeadeyeSkill>().AddGauge(15);
-        }
 
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
@@ -295,7 +308,23 @@ public abstract class NormalEnemyBase : EnemyBase
 
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
+        if (_hitParticle != null) _hitParticle.Play();
+        if (_flashCoroutine != null) StopCoroutine(_flashCoroutine);
+        _flashCoroutine = StartCoroutine(HitFlashRoutine());
         _isAddGauge = isAddGauge;
         base.TakeDamage(damage);
     }
+
+    private IEnumerator HitFlashRoutine()
+    {
+        for (int i = 0; i < _hitFlashCount; i++)
+        {
+            _spriteRenderer.color = _hitFlashColor;
+            yield return new WaitForSeconds(_hitFlashInterval);
+            _spriteRenderer.color = _originalColor;
+            yield return new WaitForSeconds(_hitFlashInterval);
+        }
+    }
+
+
 }

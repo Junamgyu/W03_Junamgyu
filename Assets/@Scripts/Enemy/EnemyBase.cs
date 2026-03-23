@@ -42,7 +42,7 @@ public abstract class EnemyBase : EntityBase
         base.TakeDamage(damage);
     }
 
-    public override void Die() { }
+    public abstract override void Die();
 
     // =====================
     // 사망 루틴 (공통)
@@ -56,11 +56,12 @@ public abstract class EnemyBase : EntityBase
     protected virtual IEnumerator OnDieRoutine()
     {
         yield break;
+        //OnDeathFinished?.Invoke(this);
     }
 
     protected bool CanAct()
     {
-        Debug.Log($"{ nameof(EnemyBase) }: CanAct() called. Current GameState: {_gameStateManager?.CurrentState.ToString() ?? "null"}");
+        //Debug.Log($"{ nameof(EnemyBase) }: CanAct() called. Current GameState: {_gameStateManager?.CurrentState.ToString() ?? "null"}");
 
         return _gameStateManager != null
             && _gameStateManager.CurrentState == GameState.Playing;

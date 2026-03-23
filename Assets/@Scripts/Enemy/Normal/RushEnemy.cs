@@ -9,8 +9,6 @@ public class RushEnemy : NormalEnemyBase
     [SerializeField] private ParticleSystem _rushParticle;
 
     private bool _isRushing = false;
-    private SpriteRenderer _spriteRenderer;
-    private Color _originalColor;
     private Coroutine _rushCoroutine;
 
     protected override void Start()

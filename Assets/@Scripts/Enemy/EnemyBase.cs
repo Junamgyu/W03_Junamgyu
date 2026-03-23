@@ -4,11 +4,11 @@ using UnityEngine;
 
 public abstract class EnemyBase : EntityBase
 {
-    // ÀÌº¥Æ®
+    // ì´ë²¤íŠ¸
     public event Action<EnemyBase> OnDeathFinished;
 
     // =====================
-    // ¸¶Å·
+    // ë§ˆí‚¹
     // =====================
     [SerializeField] private CircleDrawer _markIndicator;
     private bool _isMarked = false;
@@ -27,7 +27,6 @@ public abstract class EnemyBase : EntityBase
         _markIndicator.gameObject.SetActive(show);
     }
 
-    public bool IsMarked() => _isMarked;
 
     // =====================
     // TakeDamage
@@ -42,11 +41,8 @@ public abstract class EnemyBase : EntityBase
         base.TakeDamage(damage);
     }
 
-    public override void Die() { }
+    public abstract override void Die();
 
-    // =====================
-    // »ç¸Á ·çÆ¾ (°øÅë)
-    // =====================
     protected IEnumerator DieRoutine()
     {
         yield return StartCoroutine(OnDieRoutine());
@@ -56,12 +52,13 @@ public abstract class EnemyBase : EntityBase
     protected virtual IEnumerator OnDieRoutine()
     {
         yield break;
+        //OnDeathFinished?.Invoke(this);
     }
 
     protected bool CanAct()
     {
         return _gameStateManager != null
             && _gameStateManager.CurrentState == GameState.Playing;
-        //return true; // ÀÏ´Ü ¸ğµç »óÅÂ¿¡¼­ Çàµ¿ °¡´ÉÇÏµµ·Ï Çã¿ë. ÇÊ¿ä½Ã GameState Ã¼Å© ·ÎÁ÷ Ãß°¡.
+        //return true; // ì¼ë‹¨ ëª¨ë“  ìƒíƒœì—ì„œ í–‰ë™ ê°€ëŠ¥í•˜ë„ë¡ í—ˆìš©. í•„ìš”ì‹œ GameState ì²´í¬ ë¡œì§ ì¶”ê°€.
     }
 }

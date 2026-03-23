@@ -14,16 +14,16 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/@Scenes/RyeolScene.unity
     guid: 2b2182303d10b3441bf9d9fb2c11148a
-  - enabled: 0
+  - enabled: 1
     path: Assets/@Scenes/Maps/Stage01.unity
     guid: a561a4a22a81f934082112d2d98f9b5e
-  - enabled: 0
+  - enabled: 1
     path: Assets/@Scenes/Maps/Stage02.unity
     guid: 472b604ed168c1442af058590bb970ed
-  - enabled: 0
+  - enabled: 1
     path: Assets/@Scenes/Maps/Stage03.unity
     guid: e3cbca03b2fcd704c962b877429fcc12
-  - enabled: 0
+  - enabled: 1
     path: Assets/@Scenes/Maps/Stage04.unity
     guid: 7c05dbece9e8fa74d955543329edd205
   - enabled: 0

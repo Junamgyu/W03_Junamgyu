@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
         _inputManager.OnSlowMotionSkill += HandleSlowMotionSkill;
         _inputManager.OnDeadeyeSkill += HandleDeadeyeSkill;
-        _inputManager.OnCheatOne += HandleCheatOne;
+        //_inputManager.OnCheatOne += HandleCheatOne;
     }
 
     private void OnDestroy()
@@ -90,9 +90,9 @@ public class PlayerController : MonoBehaviour
             skill.OnDeadeye(ctx);
     }
 
-    private void HandleCheatOne(InputAction.CallbackContext ctx)
-    {
-        if (ctx.started)
-            _player.deadeyeSkill.AddGauge(20);
-    }
+    //private void HandleCheatOne(InputAction.CallbackContext ctx)
+    //{
+    //    if (ctx.started)
+    //        _player.deadeyeSkill.AddGauge(20);
+    //}
 }

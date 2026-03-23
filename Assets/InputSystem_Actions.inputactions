@@ -124,15 +124,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CheatOne",
-                    "type": "Button",
-                    "id": "ab482208-ad32-4409-a0bb-0e67ac55c696",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Pause",
                     "type": "Button",
                     "id": "e30d9448-b6aa-48e0-a289-ef0bb478dbee",
@@ -622,28 +613,6 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "DeadeyeSkill",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2ff68f9a-7e9c-491c-8770-354e17fe63ac",
-                    "path": "<Keyboard>/1",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "CheatOne",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "76723bc0-8f94-43b7-ab8b-9310c015cf4c",
-                    "path": "<DualSenseGamepadHID>/systemButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "CheatOne",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

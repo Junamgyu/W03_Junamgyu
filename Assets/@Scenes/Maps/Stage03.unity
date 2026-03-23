@@ -42110,7 +42110,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2287233597588056687, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: m_Spacing
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2431988077436281026, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: _playerHealth
@@ -42142,7 +42142,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4616222531251293330, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 550
+      value: 450
       objectReference: {fileID: 0}
     - target: {fileID: 4616222531251293330, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: m_SizeDelta.y
@@ -42178,11 +42178,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4616222531251293330, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 112
       objectReference: {fileID: 0}
     - target: {fileID: 4616222531251293330, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -75
       objectReference: {fileID: 0}
     - target: {fileID: 4616222531251293330, guid: 2ebbd13500b54b94b844cc635fcfe3d6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

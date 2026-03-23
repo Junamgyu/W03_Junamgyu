@@ -1,8 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using VHierarchy.Libs;
 
 public class BossEye : EnemyBase
 {
+
+    [SerializeField] private GameObject _aimTarget;
     public enum EyeState { Idle, Laser, Dead }
 
     [Header("Eye 설정")]
@@ -181,6 +184,8 @@ public class BossEye : EnemyBase
     void EyeDie()
     {
         if (IsDead) return;
+
+        _aimTarget.Destroy();
 
         EyeCurrentState = EyeState.Dead;
         IsLaserFinished = true;

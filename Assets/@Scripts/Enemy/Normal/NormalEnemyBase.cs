@@ -233,6 +233,10 @@ public abstract class NormalEnemyBase : EnemyBase
         _isDead = true;
         _rb.linearVelocity = Vector2.zero;
 
+        if (_isAddGauge) 
+        {
+            _player.GetComponent<DeadeyeSkill>().AddGauge();
+        }
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
             col.enabled = false;
@@ -284,7 +288,6 @@ public abstract class NormalEnemyBase : EnemyBase
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
         base.TakeDamage(damage);
-        _player.GetComponent<DeadeyeSkill>().AddGauge();
 
     }
 }

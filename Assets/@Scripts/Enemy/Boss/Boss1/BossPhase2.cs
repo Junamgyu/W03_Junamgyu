@@ -56,6 +56,17 @@ public class BossPhase2 : EnemyBase
             _originalColor = _spriteRenderer.color;
     }
 
+    private void OnEnable()
+    {
+        _isActive = false;
+        _velocity = Vector2.zero;
+        _player = null;
+        rotationSpeed = 30f;
+
+        if (_spriteRenderer != null)
+            _spriteRenderer.color = _originalColor;
+    }
+
     void Update()
     {
         if (!_isActive) return;
@@ -74,7 +85,7 @@ public class BossPhase2 : EnemyBase
         if (gameObject.activeInHierarchy)
             _flashCoroutine = StartCoroutine(HitFlashRoutine());
 
-        base.TakeDamage(damage, isAddGauge); // 맨 마지막
+        base.TakeDamage(damage, isAddGauge);
     }
 
     private IEnumerator HitFlashRoutine()

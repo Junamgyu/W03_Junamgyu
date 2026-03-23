@@ -18,9 +18,4 @@ public class WaveTrigger : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    public void OnDestroy()
-    {
-
-    }
 }

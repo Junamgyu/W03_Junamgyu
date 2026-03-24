@@ -21,8 +21,8 @@ public class Boss2Controller : EnemyBase
 
     [Header("소환 설정")]
     [SerializeField] private GameObject[] _minionPrefabs;
-    [SerializeField] private Vector3 _spawnOffset = new Vector3(0f, 0.6f, 0f);
-    [SerializeField] private int _spawnCountPerCycle = 2; // 스킬 사이마다 소환할 수
+    [SerializeField] private float _spawnY = 0f;
+    [SerializeField] private float _spawnInterval = 3f;
     private PoolManager _pool;
 
     private bool _isActive = false;
@@ -150,6 +150,7 @@ public class Boss2Controller : EnemyBase
     {
         yield return new WaitForSeconds(phaseStartDelay);
         StartCoroutine(PatternCycleRoutine());
+        StartCoroutine(SpawnRoutine());
     }
 
     // =====================
@@ -163,9 +164,6 @@ public class Boss2Controller : EnemyBase
             if (skill != null)
                 yield return StartCoroutine(skill.SkillRoutine());
 
-            // 스킬 끝날때마다 소환
-            SpawnMinions();
-
             yield return StartCoroutine(ReturnToOrigin());
             yield return new WaitForSeconds(idleDuration);
         }
@@ -174,20 +172,26 @@ public class Boss2Controller : EnemyBase
     // =====================
     // 소환
     // =====================
-    void SpawnMinions()
+    IEnumerator SpawnRoutine()
+    {
+        while (_isActive)
+        {
+            yield return new WaitForSeconds(_spawnInterval);
+            SpawnMinion();
+        }
+    }
+
+    void SpawnMinion()
     {
         if (_minionPrefabs == null || _minionPrefabs.Length == 0) return;
 
-        for (int i = 0; i < _spawnCountPerCycle; i++)
-        {
-            GameObject prefab = _minionPrefabs[Random.Range(0, _minionPrefabs.Length)];
-            Vector3 spawnPos = transform.TransformPoint(_spawnOffset);
+        GameObject prefab = _minionPrefabs[Random.Range(0, _minionPrefabs.Length)];
+        Vector3 spawnPos = new Vector3(transform.position.x, _spawnY, 0f);
 
-            if (_pool != null)
-                _pool.Get(prefab, spawnPos, Quaternion.identity);
-            else
-                Instantiate(prefab, spawnPos, Quaternion.identity);
-        }
+        if (_pool != null)
+            _pool.Get(prefab, spawnPos, Quaternion.identity);
+        else
+            Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
     IEnumerator ReturnToOrigin()

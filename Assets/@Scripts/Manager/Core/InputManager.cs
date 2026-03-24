@@ -82,7 +82,7 @@ public class InputManager : MonoBehaviour, IInitializable
         BossIntro.OnPlayerDisable += DisablePlayerInput;
         BossIntro.OnEndIntro += EnablePlayerInput;
 
-        ui.Pause.started += HandlePause;
+        //ui.Pause.started += HandlePause;
     }
 
     private void UpdateLastUsedDevice(InputAction.CallbackContext ctx)
@@ -152,6 +152,7 @@ public class InputManager : MonoBehaviour, IInitializable
     private void HandlePause(InputAction.CallbackContext ctx)
     {
         OnPause?.Invoke(ctx);
+        
     }
 
     private void HandleNavigate(InputAction.CallbackContext ctx)
@@ -171,10 +172,18 @@ public class InputManager : MonoBehaviour, IInitializable
 
     public void EnablePlayerInput()
     {
-        if (_input == null)
-            return;
+        if (_input == null) return;
 
-        _input.Player.Enable();
+        _input.UI.Disable();    // UI 입력 차단
+        _input.Player.Enable(); // 플레이어 입력 활성화
+    }
+
+    public void EnableUIInput()
+    {
+        if (_input == null) return;
+
+        _input.Player.Disable(); // 플레이어 입력 차단
+        _input.UI.Enable();      // UI 입력 활성화
     }
 
     public void DisablePlayerInput()
@@ -185,14 +194,6 @@ public class InputManager : MonoBehaviour, IInitializable
         }
 
         _input.Player.Disable();
-    }
-
-    public void EnableUIInput()
-    {
-        if (_input == null)
-            return;
-
-        _input.UI.Enable();
     }
 
     public void DisableUIInput()

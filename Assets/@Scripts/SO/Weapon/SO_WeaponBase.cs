@@ -14,6 +14,8 @@ public class SO_WeaponBase : ScriptableObject
     [Tooltip("한 번에 쏘는 총알 수")] public int pelletCount = 1;
     public float spreadAngle = 0f;
     public int maxAmmo = 3;
+    public float reloadTime = 1.5f;
+    public float idleReloadDelay = 2f;
 
     [Header("Fire Rate")]
     public float fireRate = 0.5f;

@@ -12,10 +12,6 @@ public class PlayerAttack : MonoBehaviour
     private WeaponInstance _shotgunInstance;
     public WeaponInstance Shotgun => _shotgunInstance;
 
-    // 좌클릭 무기 (교체 가능한.)
-    [SerializeField] private SO_WeaponBase currentWeaponData;
-    private WeaponInstance _currentWeaponInstance;
-    public WeaponInstance Current => _currentWeaponInstance;
 
     // 머리 쿵 관련
     [SerializeField] private Transform _ceilingCheck;
@@ -43,7 +39,6 @@ public class PlayerAttack : MonoBehaviour
         _player = GetComponent<Player>();
         _rb = GetComponent<Rigidbody2D>();
         _shotgunInstance = new WeaponInstance(_shotgunData);
-        _currentWeaponInstance = new WeaponInstance(currentWeaponData);
     }
 
     private void Start()
@@ -55,12 +50,17 @@ public class PlayerAttack : MonoBehaviour
         if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
             _hapticManager = null;
 
-        _player.OnLocomotionChanged += HandleLocomotionChanged;
+    }
+
+    //매 프레임 장전 타이머 체크
+    private void Update()
+    {
+        _shotgunInstance.Tick();
     }
 
     void OnDestroy()
     {
-        _player.OnLocomotionChanged -= HandleLocomotionChanged;
+
     }
 
 
@@ -69,22 +69,24 @@ public class PlayerAttack : MonoBehaviour
         if (!TryFireWeapon(_shotgunInstance)) return;
         Fire(_shotgunData);
 
-        //_hapticManager?.PlayShotgunShot();
-        SoundManager.instance.HandleShotGunSFX();
+        if(SoundManager.instance != null)
+            SoundManager.instance.HandleShotGunSFX();
+
         float angle = Mathf.Atan2(_player.playerAimer.AimDirection.y, _player.playerAimer.AimDirection.x) * Mathf.Rad2Deg + 180f;
         _shotgunPivot.DORotate(new Vector3(0f, 0f, angle), 0f); // 0f = 즉시 회전
 
     }
 
-    public void FireCurrentWeapon()
+    public void ShieldOn()
     {
-        if (_player.deadeyeSkill.IsDeadeyeActive) return;
-        if (currentWeaponData == null) return;
-        if (!TryFireWeapon(_currentWeaponInstance)) return;
-        SoundManager.instance.HandlePistolSFX();
+        _player.IsShieldOn = true;
+        _player.playerAimer.OnShieldOn();
+    }
 
-        Fire(currentWeaponData);
-        //_hapticManager?.PlayPistolShot();
+    public void ShieldOff()
+    {
+        _player.IsShieldOn = false;
+        _player.playerAimer.OnShieldOff();
     }
 
     void Fire(SO_WeaponBase data)
@@ -208,26 +210,16 @@ public class PlayerAttack : MonoBehaviour
     public void ReloadAll()
     {
         _shotgunInstance.Reload();
-        _currentWeaponInstance?.Reload();
     }
 
-    // 무기 추가 시 필요.
-    public void SwapWeapon(SO_WeaponBase newWeapon)
+    public void SetPivotFacing(bool isFacingRight)
     {
-        currentWeaponData = newWeapon;
-        _currentWeaponInstance = new WeaponInstance(newWeapon); // 교체 시 인스턴스도 새로 생성 (기존꺼는 자동으로 GC가 해결.)
+        float scale = isFacingRight ? 1f : -1f;
+        _shotgunPivot.localScale = new Vector3(scale, 1f, 1f);
     }
 
-
-    // 지워야 할 코드
-    void HandleLocomotionChanged(LocomotionState state)
-    {
-        if (state == LocomotionState.Land)
-        {
-            // 착지 시 샷건 원래 자세로 복귀
-            _shotgunPivot.DORotate(new Vector3(0f, 0f, _shotgunIdleAngle), 0.2f);
-        }
-    }
+    
+    
 
     // 상태 다 종료
     public void ResetState()

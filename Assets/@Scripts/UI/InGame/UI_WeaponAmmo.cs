@@ -8,7 +8,7 @@ public class UI_WeaponAmmo : MonoBehaviour
     [SerializeField] private bool _isShotgun = true;
     [SerializeField] private RectTransform _bar;
 
-    [Header("»ö»ó")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private Color _filledColor = new Color(1f, 0.8f, 0f);
     [SerializeField] private Color _emptyColor = new Color(0.3f, 0.3f, 0.3f);
 
@@ -18,9 +18,7 @@ public class UI_WeaponAmmo : MonoBehaviour
 
     private void Start()
     {
-        _weaponInstance = _isShotgun
-            ? _player.playerAttack.Shotgun
-            : _player.playerAttack.Current;
+        _weaponInstance = _player.playerAttack.Shotgun;
 
         _slots = CreateSlots(_weaponInstance.Data.maxAmmo);
         _weaponInstance.OnAmmoChanged += OnAmmoChanged;

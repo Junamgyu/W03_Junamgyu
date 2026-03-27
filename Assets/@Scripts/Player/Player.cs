@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
 
     // 반동 뒤 점프 막기 위함
     public bool CanJump { get; set; } = true;
+    public bool IsShieldOn {get; set;} = false;
 
     // Temp
     [Header("Land")]
@@ -63,6 +64,7 @@ public class Player : MonoBehaviour
     public PlayerJump playerJump { get; private set; }
     public PlayerHealth playerHealth { get; private set; }
     public DeadeyeSkill deadeyeSkill { get; private set; }
+    public PlayerVisual playerVisual {get; private set;}
 
     Rigidbody2D _rb;
 
@@ -79,6 +81,7 @@ public class Player : MonoBehaviour
         playerJump = GetComponent<PlayerJump>(); // 점프 + 올라갈 때, 내려갈 때의 중력 담당
         playerHealth = GetComponent<PlayerHealth>();
         deadeyeSkill = GetComponent<DeadeyeSkill>();
+        playerVisual = GetComponent<PlayerVisual>();
         _rb = GetComponent<Rigidbody2D>();
         OriginalGravity = _rb.gravityScale;
     }

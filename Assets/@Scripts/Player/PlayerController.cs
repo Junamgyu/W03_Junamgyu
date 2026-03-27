@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     private Player _player;
     private InputManager _inputManager;
+    private bool _isShieldHeld = false;
 
     void Start()
     {
@@ -26,6 +27,11 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnSlowMotionSkill += HandleSlowMotionSkill;
         _inputManager.OnDeadeyeSkill += HandleDeadeyeSkill;
         //_inputManager.OnCheatOne += HandleCheatOne;
+    }
+    private void Update()
+    {
+        if(_isShieldHeld)
+            Debug.Log("방패 누르고 있는 중");
     }
 
     private void OnDestroy()
@@ -64,16 +70,28 @@ public class PlayerController : MonoBehaviour
         _player.playerJump.OnJump(ctx);
     }
 
-    private void HandlePrimaryAttack(InputAction.CallbackContext ctx)
-    {
-        if (ctx.started)
-            _player.playerAttack.FireCurrentWeapon();
-    }
-
-    private void HandleSecondaryAttack(InputAction.CallbackContext ctx)
+    private void HandlePrimaryAttack(InputAction.CallbackContext ctx)       //왼클릭으로 샷건
     {
         if (ctx.started)
             _player.playerAttack.FireShotgun();
+    }
+
+    private void HandleSecondaryAttack(InputAction.CallbackContext ctx)     //방패로 사용할 부분
+    {
+        if (ctx.performed)
+        {
+            _player.playerAttack.ShieldOn();
+            _isShieldHeld = true;
+            Debug.Log("Shield On");
+        }
+            
+
+        if (ctx.canceled)
+        {
+            _isShieldHeld = false;
+            _player.playerAttack.ShieldOff();
+        }
+            
     }
 
     private void HandleSlowMotionSkill(InputAction.CallbackContext ctx)

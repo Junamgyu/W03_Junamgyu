@@ -8,21 +8,26 @@ public class PlayerVisual : MonoBehaviour
     [Header("Jump Settings")]
     [SerializeField] private float _jumpStretchX = 0.75f;
     [SerializeField] private float _jumpStretchY = 1.25f;
-    [SerializeField] private float _jumpActionDuration = 0.05f; // Á¡ÇÁ´Â Áï°¢ÀûÀÌ¾î¾ß ÇÔ
+    [SerializeField] private float _jumpActionDuration = 0.05f; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï°¢ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½
     [SerializeField] private float _jumpReturnDuration = 0.3f;
     [SerializeField] private Ease _jumpEase = Ease.OutQuad;
 
     [Header("Landing Settings")]
     [SerializeField] private float _landSquashX = 1.4f;
     [SerializeField] private float _landSquashY = 0.6f;
-    [SerializeField] private float _landActionDuration = 0.08f; // ·£µùÀº ¾à°£ÀÇ ¹«°Ô°¨ÀÌ ÇÊ¿ä
-    [SerializeField] private float _landReturnDuration = 0.5f;  // ´õ ÂËµæÇÏ°Ô µ¹¾Æ¿È
+    [SerializeField] private float _landActionDuration = 0.08f; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½à°£ï¿½ï¿½ ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
+    [SerializeField] private float _landReturnDuration = 0.5f;  // ï¿½ï¿½ ï¿½Ëµï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½Æ¿ï¿½
     [SerializeField] private Ease _landEase = Ease.OutQuint;
 
     [Header("Dynamic Tilt")]
     [SerializeField] private float _maxTiltAngle = 12f;
     [SerializeField] private float _tiltSpeed = 15f;
     [SerializeField] private float _tiltReferenceSpeed = 10f;
+
+    [Header("Shield settings")]
+    [SerializeField] private float _shieldSquashY = 0.7f;   //ë°©íŒ¨ ì¤‘ ì„¸ë¡œ í¬ê¸°
+    [SerializeField] private float _shieldSquashDuration = 0.1f; //ì „í™˜ ì†ë„
+    [SerializeField] private Transform _groundPoint;        //ë°”ë‹¥ ê¸°ì¤€ ë¹ˆ ì˜¤ë¸Œì íŠ¸ ì—°ê²°
 
     private Vector3 _originalScale;
     private Vector3 _originalPos;
@@ -45,11 +50,15 @@ public class PlayerVisual : MonoBehaviour
         _player.OnRecoilStateChanged += HandleRecoilStateChanged;
     }
 
+
     private void HandleLocomotionChanged(LocomotionState state)
     {
-        _visual.DOKill(true);
-        ResetVisual();
-
+        if(!_player.IsShieldOn)
+        {
+            _visual.DOKill(true);
+            ResetVisual();   
+        }
+        
         if (state == LocomotionState.Jumping)
         {
             ExecuteJumpVisual();
@@ -60,13 +69,47 @@ public class PlayerVisual : MonoBehaviour
         }
     }
 
+    private void HandleShieldSquash()
+    {
+        Vector3 targetScale;
+        Vector3 targetPos;
+
+        if(_player.IsShieldOn)
+        {
+            targetScale = new Vector3(_originalScale.x, _originalScale.y * _shieldSquashY, _originalScale.z);
+            targetPos = new Vector3(_originalPos.x, _originalPos.y - (_originalScale.y - targetScale.y) * 0.5f, _originalPos.z);
+
+            float speed = Time.deltaTime * (1f / _shieldSquashDuration);
+
+            _visual.DOKill(false);
+            _visual.localScale = Vector3.Lerp(_visual.localScale, targetScale, speed);
+            _visual.localPosition = Vector3.Lerp(_visual.localPosition, targetPos, speed);
+        }
+        else
+        {
+            targetScale = _originalScale;
+            targetPos = _originalPos;
+
+            if(Vector3.Distance(_visual.localScale, _originalScale) > 0.01f && !DG.Tweening.DOTween.IsTweening(_visual))
+            {
+                float speed = Time.deltaTime * (1f / _shieldSquashDuration);
+                _visual.localScale = Vector3.Lerp(_visual.localScale, targetScale, speed);
+                _visual.localPosition = Vector3.Lerp(_visual.localPosition, targetPos, speed);
+            }
+        }
+
+        
+        
+       
+    }
+
     private void ExecuteJumpVisual()
     {
-        // Á¡ÇÁ: À§·Î ±æÂßÇÏ°Ô
+        // ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½
         _visual.DOScale(new Vector3(_jumpStretchX, _jumpStretchY, 1f), _jumpActionDuration).SetEase(_jumpEase)
             .OnComplete(() => _visual.DOScale(_originalScale, _jumpReturnDuration).SetEase(Ease.OutElastic));
 
-        // ÇÇº¿ º¸Á¤
+        // ï¿½Çºï¿½ ï¿½ï¿½ï¿½ï¿½
         float yOffset = (_height * (_jumpStretchY - _originalScale.y)) / 2f;
         _visual.DOLocalMoveY(_originalPos.y + yOffset, _jumpActionDuration).SetEase(_jumpEase)
             .OnComplete(() => _visual.DOLocalMoveY(_originalPos.y, _jumpReturnDuration).SetEase(Ease.OutElastic));
@@ -74,11 +117,11 @@ public class PlayerVisual : MonoBehaviour
 
     private void ExecuteLandVisual()
     {
-        // ·£µù: ¹Ù´Ú¿¡ ³³ÀÛÇÏ°Ô
+        // ï¿½ï¿½ï¿½ï¿½: ï¿½Ù´Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½
         _visual.DOScale(new Vector3(_landSquashX, _landSquashY, 1f), _landActionDuration).SetEase(_landEase)
             .OnComplete(() => _visual.DOScale(_originalScale, _landReturnDuration).SetEase(Ease.OutElastic));
 
-        // ÇÇº¿ º¸Á¤
+        // ï¿½Çºï¿½ ï¿½ï¿½ï¿½ï¿½
         float yOffset = (_height * (_landSquashY - _originalScale.y)) / 2f;
         _visual.DOLocalMoveY(_originalPos.y + yOffset, _landActionDuration).SetEase(_landEase)
             .OnComplete(() => _visual.DOLocalMoveY(_originalPos.y, _landReturnDuration).SetEase(Ease.OutElastic));
@@ -99,6 +142,7 @@ public class PlayerVisual : MonoBehaviour
     void Update()
     {
         HandleTilt();
+        HandleShieldSquash();
     }
 
     private void HandleTilt()

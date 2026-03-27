@@ -99,13 +99,18 @@ public class PlayerAttack : MonoBehaviour
         // 반동
         Vector2 shootDir = SnapTo8Direction(aimDir); // 반동만 8방향 스냅
 
-        // X만 초기화, Y는 보존 (점프 중 샷건 쏴도 Y속도 안 날아감)
-        _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
-        _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
-
+        if(!_player.IsGrounded)
+        {
+            // X만 초기화, Y는 보존 (점프 중 샷건 쏴도 Y속도 안 날아감)
+            _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
+            _rb.AddForce(-shootDir * data.recoilForce, ForceMode2D.Impulse);
+            TriggerRecoilRoutines(shootDir);
+        }
+        
+        
         _hapticManager?.PlayOneShot(data.lowFrequency, data.highFrequency, data.duration);
 
-        TriggerRecoilRoutines(shootDir);
+        
     }
 
     bool TryFireWeapon(WeaponInstance instance)

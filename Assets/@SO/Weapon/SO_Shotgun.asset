@@ -19,8 +19,8 @@ MonoBehaviour:
   pelletCount: 8
   spreadAngle: 15
   maxAmmo: 3
-  reloadTime: 1.5
-  idleReloadDelay: 2
+  reloadTime: 0.8
+  idleReloadDelay: 1
   fireRate: 0.12
   lowFrequency: 0.45
   highFrequency: 0.8

@@ -67,6 +67,15 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        if(other.TryGetComponent<Level01_BossOrbitSword>(out var orbitSword))
+        {
+            orbitSword.TakeDamage(_damage);
+            SpawnHitParticle();
+            ReturnToPool();
+            return;
+        }
+
+
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.CompareTag("Enemy")) //보스 에임 보정 관련때문에 CompareTag 추가
         {
             if (other.TryGetComponent<EnemyBase>(out var damageable))

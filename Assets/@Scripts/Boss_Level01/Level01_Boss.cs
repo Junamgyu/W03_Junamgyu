@@ -90,9 +90,13 @@ public class Level01_Boss : EnemyBase
     private Coroutine _patternCoroutine;
     private Level01_BossHealth _bossHealth;
     private Level01_BossRotation _bossRotation;
+    private bool _isStunned = false;
 
     // 칼 원래 로컬 위치 저장
     private Vector3[] _swordOriginalLocalPos;
+    private Vector3[] _swordOriginalLocalScale;
+    private Quaternion[] _swordOriginalLocalRot;
+
 
     #endregion
 
@@ -103,23 +107,32 @@ public class Level01_Boss : EnemyBase
         base.Start();
         _originPos = transform.position;
         _currentRotationSpeed = _rotationSpeedPhase1;
-        _bossHealth = GetComponent<Level01_BossHealth>();
-        _bossRotation = GetComponent<Level01_BossRotation>();
 
-        //칼 원래 위치 저장
-        _swordOriginalLocalPos = new Vector3[_swords.Length];
-        for(int i = 0; i < _swords.Length; i++)
-        {
-            if(_swords[i] != null)
-            {
-                _swordOriginalLocalPos[i] = _swords[i].localPosition;
-            }
-        }
         GameObject playerObj = GameObject.FindWithTag("Player");
         if(playerObj != null) _player = playerObj.transform;
 
+        //칼 원래 위치 저장
+        _swordOriginalLocalPos = new Vector3[_swords.Length];
+        _swordOriginalLocalScale = new Vector3[_swords.Length];
+        _swordOriginalLocalRot = new Quaternion[_swords.Length];
+        for(int i = 0; i < _swords.Length; i++)
+        {
+            if(_swords[i] == null) continue;
+            _swordOriginalLocalPos[i] = _swords[i].localPosition;
+            _swordOriginalLocalScale[i] = _swords[i].localScale;
+            _swordOriginalLocalRot[i] = _swords[i].localRotation;
+
+            // 칼에 보스 플레이어 참조 전달
+            var orbitSword = _swords[i].GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword != null)
+                orbitSword.Initialize(transform, _player);
+        }
+
         SetBodyColor(_colorIdle);
         _patternCoroutine = StartCoroutine(PatternCycleRoutine());
+
+        _bossHealth = GetComponent<Level01_BossHealth>();
+        _bossRotation = GetComponent<Level01_BossRotation>();                
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     // Update is called once per frame
@@ -145,6 +158,43 @@ public class Level01_Boss : EnemyBase
         StartCoroutine(RunPattern(Pattern5_BurstSword()));
     }
 
+    public void OnSwordDestroyed(Level01_BossOrbitSword sword)
+    {
+        bool anyOrbit = false;
+        foreach (var s in _swords)
+        {
+            if(s == null) continue;
+            var orbitSword = s.GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword != null && orbitSword.IsOrbit)
+            {
+                anyOrbit = true;
+                break;
+            }
+        }
+        if(!anyOrbit) StartCoroutine(StunRoutine());
+    }
+    #endregion
+
+    #region 보스 스턴
+    IEnumerator StunRoutine()
+    {
+        //무력화 시작
+        _isImmune = false;  //데미지 받기 시작
+        _isStunned = true;
+        SetBodyColor(Color.cyan);       // 무력화 색깔
+
+        if(_patternCoroutine != null)
+            StopCoroutine(_patternCoroutine);
+        
+        yield return new WaitForSeconds(4.5f);
+
+        _isStunned = false;
+        SetBodyColor(_colorIdle);
+        RegenerateOrbitSwords();
+
+        _patternCoroutine = StartCoroutine(PatternCycleRoutine());
+    }
+
     IEnumerator RunPattern(IEnumerator pattern)
     {
         _isPatternRunning = true;
@@ -159,11 +209,41 @@ public class Level01_Boss : EnemyBase
         _isPatternRunning = false;
     }
 
+    void RegenerateOrbitSwords()
+    {
+        for (int i = 0; i < _swords.Length; i++)
+        {
+            if (_swords[i] == null) continue;
+
+            var orbitSword = _swords[i].GetComponent<Level01_BossOrbitSword>();
+            if (orbitSword == null) continue;
+
+            // DOTween 트윈 전부 강제 종료
+            _swords[i].DOKill(true);
+            _swords[i].gameObject.SetActive(true);  //오브젝트 활성화
+
+            // 피봇에 다시 붙이기
+            _swords[i].SetParent(_swordPivot);
+
+            // 원래 위치/회전 복구
+            _swords[i].localPosition = _swordOriginalLocalPos[i];
+            _swords[i].localRotation = _swordOriginalLocalRot[i];
+            _swords[i].localScale = _swordOriginalLocalScale[i];
+
+
+            // 칼 상태 초기화
+            orbitSword.ResetSword();
+        }
+    }
+
     #endregion
 
     #region 피격 / 사망
     public override void TakeDamage(int damage, bool isAddGauge = false)
     {
+        // 칼이 Orbit 상태로 남아 있으면 무적
+        if(HasOrbitSword()) return;
+
         if(_isImmune) return;
 
         _bossHealth.OnHit();
@@ -171,6 +251,17 @@ public class Level01_Boss : EnemyBase
 
         if(!_isPhase2 && _currentHp <= _maxHp * 0.05f)
             StartCoroutine(EnterPhase2Routine());
+    }
+
+    bool HasOrbitSword()
+    {
+        foreach(var s in _swords)
+        {
+            if(s == null) continue;
+            var orbitSword = s.GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword != null && orbitSword.IsOrbit) return true;
+        }
+        return false;
     }
 
     public override void Die()

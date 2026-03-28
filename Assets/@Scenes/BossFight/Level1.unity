@@ -591,8 +591,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1154525650}
   m_SourcePrefab: {fileID: 100100000, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+--- !u!1 &439203271 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+  m_PrefabInstance: {fileID: 781274018}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &501053251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -684,12 +692,20 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 817151245}
   m_SourcePrefab: {fileID: 100100000, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
 --- !u!4 &544672769 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2608154827606444628, guid: 04d6abf0100dd504d95ba67f475445f3, type: 3}
   m_PrefabInstance: {fileID: 788182234}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &547488233 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+  m_PrefabInstance: {fileID: 1270350092}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &548801357
 PrefabInstance:
@@ -854,7 +870,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 984778273}
   m_SourcePrefab: {fileID: 100100000, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
 --- !u!1001 &788182234
 PrefabInstance:
@@ -953,6 +972,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9018743f50ef0940adf0f2dd0de7d3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+--- !u!1 &817151243 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+  m_PrefabInstance: {fileID: 501053251}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &817151245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 817151243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _maxHp: 3
+  _contactDamage: 1
+  _damageCooldown: 0.5
+  _floatRadius: 6
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!4 &948505029 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
@@ -963,6 +1010,29 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
   m_PrefabInstance: {fileID: 781274018}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &984778273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439203271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _maxHp: 3
+  _contactDamage: 1
+  _damageCooldown: 0.5
+  _floatRadius: 6
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!1001 &1026333277
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1234,6 +1304,34 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!1 &1154525648 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+  m_PrefabInstance: {fileID: 361854171}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1154525650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1154525648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _maxHp: 3
+  _contactDamage: 1
+  _damageCooldown: 0.5
+  _floatRadius: 6
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!1 &1251585824
 GameObject:
   m_ObjectHideFlags: 0
@@ -1427,13 +1525,39 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1329173709}
   m_SourcePrefab: {fileID: 100100000, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
 --- !u!4 &1329173707 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
   m_PrefabInstance: {fileID: 1270350092}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1329173709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547488233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _maxHp: 3
+  _contactDamage: 1
+  _damageCooldown: 0.5
+  _floatRadius: 6
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!1 &1350958286
 GameObject:
   m_ObjectHideFlags: 0
@@ -1663,8 +1787,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
-  _damage: 1
+  _maxHp: 3
+  _contactDamage: 1
   _damageCooldown: 0.5
+  _floatRadius: 2.5
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!114 &1404800054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1824,8 +1957,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1633790919}
   m_SourcePrefab: {fileID: 100100000, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+--- !u!1 &1592223385 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+  m_PrefabInstance: {fileID: 1422786269}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1621784307
 GameObject:
   m_ObjectHideFlags: 0
@@ -1868,6 +2009,29 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
   m_PrefabInstance: {fileID: 1422786269}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1633790919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1592223385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _maxHp: 3
+  _contactDamage: 1
+  _damageCooldown: 0.5
+  _floatRadius: 6
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!1 &1756778737
 GameObject:
   m_ObjectHideFlags: 0
@@ -8292,13 +8456,44 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7643588305713708203}
   m_SourcePrefab: {fileID: 100100000, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
 --- !u!4 &5411680645637523330 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 806645636429101843, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
   m_PrefabInstance: {fileID: 4052389103782460575}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7643588305713708201 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+  m_PrefabInstance: {fileID: 4052389103782460575}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7643588305713708203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7643588305713708201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _maxHp: 3
+  _contactDamage: 1
+  _damageCooldown: 0.5
+  _floatRadius: 6
+  _floatSpeed: 1.5
+  _floatAmplitude: 0.5
+  _attackSpeed: 10
+  _returnSpeed: 5
+  _attackReturenDelay: 0.5
+  _hitFlashCount: 2
+  _hitFlashInterval: 0.06
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

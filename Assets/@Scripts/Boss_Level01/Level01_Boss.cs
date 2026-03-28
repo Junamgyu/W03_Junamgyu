@@ -57,12 +57,13 @@ public class Level01_Boss : EnemyBase
     [SerializeField] private float _dropSwordPivotOffset = 0.5f; // 추가 — 칼 피벗 오프셋
     [SerializeField] private LayerMask _dropGroundLayer;    // 낙하 바닥 감지용
 
-    [Header("패턴 5 - 바닥 칼")]
-    [SerializeField] private GameObject _groundSpikePrefab;
-    [SerializeField] private int _spikeCount = 4;
-    [SerializeField] private float _spikeRange = 5f;
-    [SerializeField] private float _spikeInterval = 0.4f;
-    [SerializeField] private float _spikeRiseSpeed = 8f;
+    [Header("패턴 5 - 전방위 칼 발사")]
+   [SerializeField] private float _burstRushSpeed = 15f;      // 돌진 속도
+    [SerializeField] private float _burstRushDistance = 3f;    // 돌진 거리
+    [SerializeField] private float _burstSwordSpeed = 12f;     // 칼 발사 속도
+    [SerializeField] private float _burstInterval = 0.5f;      // 발사 간격
+    [SerializeField] private float _burstSwordLifetime = 3f;   // 칼 소멸 시간
+    [SerializeField] private GameObject _burstSwordPrefab;     // 발사용 칼 프리팹
 
     [Header("피격 연출")]
     [SerializeField] private int _hitFlashCount = 3;
@@ -137,7 +138,7 @@ public class Level01_Boss : EnemyBase
     else if (keyboard.digit4Key.wasPressedThisFrame)
         StartCoroutine(RunPattern(Pattern4_DropSword()));
     else if (keyboard.digit5Key.wasPressedThisFrame)
-        StartCoroutine(RunPattern(Pattern5_GroundSword()));
+        StartCoroutine(RunPattern(Pattern5_BurstSword()));
     }
 
     IEnumerator RunPattern(IEnumerator pattern)
@@ -596,47 +597,56 @@ public class Level01_Boss : EnemyBase
 
     #region 패턴 5 - 바닥에서 칼 솟아오르기 (2페이즈)
 
-    IEnumerator Pattern5_GroundSword()
+    IEnumerator Pattern5_BurstSword()
     {
         if (_player == null) yield break;
 
+        Debug.Log("보스 패턴 5번 실행");
+        
         yield return StartCoroutine(TellRoutine());
 
-        for (int i = 0; i < _spikeCount; i++)
+        Vector3 rushTarget = Vector3.MoveTowards(
+            transform.position, _player.position, _burstRushDistance
+        );
+        yield return StartCoroutine(MoveToPosition(rushTarget, _burstRushSpeed));
+
+        //3번 반복 - 홀수 
+        for(int round = 0; round < 3; round++)
         {
-            float offsetX = (i - _spikeCount / 2f) * (_spikeRange / _spikeCount);
-            Vector3 spikeBase = new Vector3(
-                _player.position.x + offsetX,
-                _originPos.y - 3f,
-                0f
-            );
+            float startOffset = (round % 2 == 0) ? 0f : 30f;
 
-            if (_groundSpikePrefab != null)
+            for(int i = 0; i < 6; i++)
             {
-                GameObject spike = Instantiate(_groundSpikePrefab, spikeBase, Quaternion.identity);
-                StartCoroutine(SpikeRiseRoutine(spike));
-            }
+                float angle = startOffset + i * 60f;
+                float rad = angle * Mathf.Deg2Rad;
+                Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-            yield return new WaitForSeconds(_spikeInterval);
+                if(_burstSwordPrefab != null)
+                {
+                    GameObject sword = Instantiate(
+                        _burstSwordPrefab, transform.position, Quaternion.Euler(0f, 0f, angle -90f)
+                    );
+
+                    if(sword.TryGetComponent<Rigidbody2D>(out var rb))
+                        rb.linearVelocity = dir * _burstSwordSpeed;
+                    else
+                        StartCoroutine(MoveSwordRoutine(sword, dir));
+                    Destroy(sword, _burstSwordLifetime);
+                }
+            }   
+            yield return new WaitForSeconds(_burstInterval);
         }
-
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.5f);
+        yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
     }
 
-    IEnumerator SpikeRiseRoutine(GameObject spike)
+    IEnumerator MoveSwordRoutine(GameObject sword, Vector2 dir)
     {
-        Vector3 riseTarget = spike.transform.position + Vector3.up * 5f;
-
-        while (Vector3.Distance(spike.transform.position, riseTarget) > 0.05f)
+        while(sword != null)
         {
-            spike.transform.position = Vector3.MoveTowards(
-                spike.transform.position, riseTarget, _spikeRiseSpeed * Time.deltaTime
-            );
+            sword.transform.position += (Vector3)(dir * _burstSwordSpeed * Time.deltaTime);
             yield return null;
         }
-
-        yield return new WaitForSeconds(0.5f);
-        Destroy(spike);
     }
 
     #endregion

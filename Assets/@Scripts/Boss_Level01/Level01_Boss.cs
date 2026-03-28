@@ -88,6 +88,8 @@ public class Level01_Boss : EnemyBase
     private float _currentRotationSpeed;
     private Coroutine _flashCoroutine;
     private Coroutine _patternCoroutine;
+    private Level01_BossHealth _bossHealth;
+    private Level01_BossRotation _bossRotation;
 
     // 칼 원래 로컬 위치 저장
     private Vector3[] _swordOriginalLocalPos;
@@ -101,6 +103,8 @@ public class Level01_Boss : EnemyBase
         base.Start();
         _originPos = transform.position;
         _currentRotationSpeed = _rotationSpeedPhase1;
+        _bossHealth = GetComponent<Level01_BossHealth>();
+        _bossRotation = GetComponent<Level01_BossRotation>();
 
         //칼 원래 위치 저장
         _swordOriginalLocalPos = new Vector3[_swords.Length];
@@ -127,7 +131,7 @@ public class Level01_Boss : EnemyBase
      if (_isPatternRunning) return;
 
     var keyboard = UnityEngine.InputSystem.Keyboard.current;
-    if (keyboard == null) return;
+    if (keyboard == null) return; 
 
     if (keyboard.digit1Key.wasPressedThisFrame)
         StartCoroutine(RunPattern(Pattern1_ThrowSword()));
@@ -162,9 +166,7 @@ public class Level01_Boss : EnemyBase
     {
         if(_isImmune) return;
 
-        if(_flashCoroutine != null) StopCoroutine(_flashCoroutine);
-        _flashCoroutine = StartCoroutine(HitFlashRoutine());
-
+        _bossHealth.OnHit();
         base.TakeDamage(damage, isAddGauge);
 
         if(!_isPhase2 && _currentHp <= _maxHp * 0.05f)

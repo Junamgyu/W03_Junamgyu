@@ -129,7 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 52325276}
   - component: {fileID: 52325277}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Level_1_Boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -508,6 +508,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1621784308}
     m_Modifications:
+    - target: {fileID: 581085468614007486, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 948953200142906251, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314610126398164650, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -556,9 +568,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 6673595568840243467, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Name
       value: Big_Sword (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -573,6 +601,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1621784308}
     m_Modifications:
+    - target: {fileID: 581085468614007486, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 948953200142906251, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314610126398164650, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -621,9 +661,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 240
       objectReference: {fileID: 0}
+    - target: {fileID: 6673595568840243467, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Name
       value: Big_Sword (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -723,13 +779,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1621784308}
     m_Modifications:
-    - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
+    - target: {fileID: 581085468614007486, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
-    - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
+    - target: {fileID: 948953200142906251, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314610126398164650, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_LocalPosition.x
@@ -771,9 +831,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 6673595568840243467, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Name
       value: Big_Sword (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1268,6 +1344,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1621784308}
     m_Modifications:
+    - target: {fileID: 581085468614007486, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 948953200142906251, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314610126398164650, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -1316,9 +1404,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 180
       objectReference: {fileID: 0}
+    - target: {fileID: 6673595568840243467, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Name
       value: Big_Sword (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1435,9 +1539,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1404800050}
   - component: {fileID: 1404800051}
-  m_Layer: 0
+  - component: {fileID: 1404800054}
+  - component: {fileID: 1404800053}
+  - component: {fileID: 1404800052}
+  - component: {fileID: 1404800055}
+  m_Layer: 15
   m_Name: Boss_Pivot
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1471,7 +1579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 834fe4ccdc65fc04ebdbe8b86f8272b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level01_Boss
-  _maxHp: 5
+  _maxHp: 100
   _attackDamage: 1
   _markIndicator: {fileID: 0}
   _bodyRenderer: {fileID: 52325277}
@@ -1528,6 +1636,103 @@ MonoBehaviour:
   _burstSwordPrefab: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
   _hitFlashCount: 3
   _hitFlashInterval: 0.08
+--- !u!114 &1404800052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404800049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cc9098e767cb3440b7941d18974521d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossRotation
+  _swordPivot: {fileID: 1621784308}
+  _rotationSpeedPhase1: 60
+  _rotationSpeedPhase2: 120
+--- !u!114 &1404800053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404800049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae3b86e9df380a41a6efc832a7fffe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossOrbitSword
+  _damage: 1
+  _damageCooldown: 0.5
+--- !u!114 &1404800054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404800049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3fd497edf959634898072bab2d296cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Level01_BossHealth
+  _swords:
+  - {fileID: 5411680645637523330}
+  - {fileID: 984778271}
+  - {fileID: 948505029}
+  - {fileID: 1329173707}
+  - {fileID: 561758484}
+  - {fileID: 1633790917}
+  _bodyRenderer: {fileID: 0}
+  _hitFlashCount: 3
+  _hitFlashInterval: 0.08
+--- !u!61 &1404800055
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404800049}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.038868666, y: 0.07773757}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 6.3638644, y: 5.586493}
+  m_EdgeRadius: 0
 --- !u!1001 &1422786269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1536,6 +1741,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1621784308}
     m_Modifications:
+    - target: {fileID: 581085468614007486, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 948953200142906251, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4314610126398164650, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 5411680644161114590, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -1584,9 +1801,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 120
       objectReference: {fileID: 0}
+    - target: {fileID: 6673595568840243467, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Name
       value: Big_Sword (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1602,7 +1835,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1621784308}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: SwordPivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7990,7 +8223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 806645636429101843, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.7600002
+      value: 3.08
       objectReference: {fileID: 0}
     - target: {fileID: 806645636429101843, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -8024,9 +8257,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2213351868936706069, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2565315752031551973, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3838500850361539194, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
       propertyPath: m_Name
       value: Big_Sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 5279905496976770157, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7575249039411093559, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

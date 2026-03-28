@@ -145,7 +145,7 @@ Transform:
   m_GameObject: {fileID: 52325275}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.63, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1456,7 +1456,7 @@ Transform:
   m_GameObject: {fileID: 1404800049}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.43, y: 6.29, z: 0}
+  m_LocalPosition: {x: -6.05, y: 8.23, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1493,22 +1493,38 @@ MonoBehaviour:
   _idleDuration: 1.5
   _tellDuration: 0.6
   _punishDuration: 0.5
-  _returnSpeed: 6
-  _throwSpeed: 12
-  _throwReturnDelay: 0.8
-  _throwReturnSpeed: 16
-  _slamRiseSpeed: 8
-  _slamSpeed: 18
-  _slamHeight: 4
+  _returnSpeed: 50
+  _throwSpeed: 20
+  _throwReturnDelay: 0.3
+  _throwReturnSpeed: 20
+  _overshootDistance: 15
+  _slamRiseSpeed: 50
+  _slamSpeed: 60
+  _slamHeight: 20
   _shockwavePrefab: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
-  _comboMoveSpeed: 12
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  _comboMoveSpeed: 30
   _comboCooldown: 0.25
-  _slashHitboxPrefab: {fileID: 0}
+  _comboApproachDistance: 3
+  _comboSwingDuration: 0.125
+  _comboSwingRange: 80
+  _comboRadius: 10
+  _slashHitboxPrefab: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
+  _dropSwordPrefab: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
   _dropSpeed: 20
-  _dropCount: 3
-  _dropRange: 4
+  _dropCountMin: 4
+  _dropCountMax: 7
+  _dropRange: 2.5
   _dropInterval: 0.3
-  _dropHeight: 7
+  _dropHeight: 15
+  _dropStickDuration: 0.8
+  _dropWarningDelay: 0.5
+  _dropSwordPivotOffset: 3
+  _dropGroundLayer:
+    serializedVersion: 2
+    m_Bits: 1024
   _groundSpikePrefab: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
   _spikeCount: 4
   _spikeRange: 5
@@ -1663,7 +1679,7 @@ Transform:
   m_GameObject: {fileID: 1621784307}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

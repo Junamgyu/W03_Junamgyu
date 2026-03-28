@@ -1,5 +1,6 @@
 using System.Collections;
 using DG.Tweening;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 
 public class Level01_Boss : EnemyBase
@@ -22,27 +23,39 @@ public class Level01_Boss : EnemyBase
     [SerializeField] private float _returnSpeed = 6f;
 
     [Header("패턴 1 - 칼 던지기")]
-    [SerializeField] private float _throwSpeed = 12f;
-    [SerializeField] private float _throwReturnDelay = 0.8f;
-    [SerializeField] private float _throwReturnSpeed = 16f;
+    [SerializeField] private float _throwSpeed = 20f;
+    [SerializeField] private float _throwReturnDelay = 0.2f;
+    [SerializeField] private float _throwReturnSpeed = 22f;     //돌아오는 속도 
+    [SerializeField] private float _overshootDistance = 3f;     //플레이어 지나치는 거리
 
     [Header("패턴 2 - 내려찍기")]
     [SerializeField] private float _slamRiseSpeed = 8f;
     [SerializeField] private float _slamSpeed = 18f;
     [SerializeField] private float _slamHeight = 4f;
     [SerializeField] private GameObject _shockwavePrefab;
+    [SerializeField] private LayerMask _groundLayer;
 
     [Header("패턴 3 - 칼 콤보")]
     [SerializeField] private float _comboMoveSpeed = 12f;
     [SerializeField] private float _comboCooldown = 0.25f;
+    [SerializeField] private float _comboApproachDistance = 2f;  // 접근 거리
+    [SerializeField] private float _comboSwingDuration = 0.15f;  // 스윙 속도
+    [SerializeField] private float _comboSwingRange = 80f;       // 휘두르는 각도 범위
+    [SerializeField] private float _comboRadius = 1.5f;          // 칼 길이
     [SerializeField] private GameObject _slashHitboxPrefab;
 
     [Header("패턴 4 - 칼 낙하")]
+    [SerializeField] private GameObject _dropSwordPrefab;   // 전용 낙하 칼 프리팹
     [SerializeField] private float _dropSpeed = 20f;
-    [SerializeField] private int _dropCount = 3;
+    [SerializeField] private int _dropCountMin = 4;         // 최소 횟수
+    [SerializeField] private int _dropCountMax = 7;         // 최대 횟수
     [SerializeField] private float _dropRange = 4f;
     [SerializeField] private float _dropInterval = 0.3f;
-    [SerializeField] private float _dropHeight = 7f;
+    [SerializeField] private float _dropHeight = 8f;
+    [SerializeField] private float _dropStickDuration = 0.8f; // 박힌 후 유지 시간
+    [SerializeField] private float _dropWarningDelay = 1.5f;  // 추가 — 스폰 후 대기 시간
+    [SerializeField] private float _dropSwordPivotOffset = 0.5f; // 추가 — 칼 피벗 오프셋
+    [SerializeField] private LayerMask _dropGroundLayer;    // 낙하 바닥 감지용
 
     [Header("패턴 5 - 바닥 칼")]
     [SerializeField] private GameObject _groundSpikePrefab;
@@ -293,27 +306,37 @@ public class Level01_Boss : EnemyBase
         sword.SetParent(null);
 
         Vector2 dir = (_player.position - sword.position).normalized;
-        float elapsed = 0f;
-
-        //날아가기
-        while(elapsed < _throwReturnDelay)
+        
+        //플레이어 지나친 목표 지점
+        Vector3 targetPos = _player.position + (Vector3)(dir * _overshootDistance);
+        //날아가기 - 플레이어 위치까지 도달하거나 최대 거리 초과 시 멈춤
+        while(true)
         {
+            if(sword == null) yield break;
+            float step = _throwSpeed * Time.deltaTime;
             sword.position += (Vector3)(dir * _throwSpeed * Time.deltaTime);
             sword.Rotate(0f, 0f, -720f * Time.deltaTime);
-            elapsed += Time.deltaTime;
+
+            Vector3 toTarget = targetPos - sword.position;
+            if(Vector3.Dot(toTarget, dir) <= 0f)
+                break;
             yield return null;
         }
 
+        //목표 지점에 정확한 스냅
+        sword.position = targetPos;
+
+        //잠깐 멈추는 딜레이
+        yield return new WaitForSeconds(_throwReturnDelay);
+
         //돌아오기
-        float returnElapsed = 0f;
-        while(returnElapsed < 3f)
+        while(true)
         {
             if(sword == null) break;
 
             Vector2 toOwner = (transform.position - sword.position).normalized;
             sword.position += (Vector3)(toOwner * _throwReturnSpeed * Time.deltaTime);
             sword.Rotate(0f, 0f, -720f * Time.deltaTime);
-            returnElapsed += Time.deltaTime;
 
             if(Vector3.Distance(sword.position, transform.position) < 0.5f)
                 break;
@@ -331,11 +354,13 @@ public class Level01_Boss : EnemyBase
     }
     #endregion
 
-    #region 패턴 2 - 내려 찍기 (가드 불가 / 2페이즈 충격파 가드 가능)
+    #region 패턴 2 내려 찍기 (가드 불가 / 2페이즈 충격파 가드 가능)
 
     IEnumerator Pattern2_Slam()
     {
         if (_player == null) yield break;
+
+        Debug.Log("보스 패턴 2번 실행");
 
         yield return StartCoroutine(TellRoutine());
 
@@ -352,8 +377,24 @@ public class Level01_Boss : EnemyBase
         yield return new WaitForSeconds(0.4f);
 
         // 내려찍기
-        Vector3 slamTarget = new Vector3(_player.position.x, _player.position.y, 0f);
-        yield return StartCoroutine(MoveToPosition(slamTarget, _slamSpeed));
+        float slamX = _player.position.x;
+        while(true)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, 
+                new Vector3(slamX, transform.position.y - 100f, 0f), 
+                _slamSpeed * Time.deltaTime);
+            
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 
+                0.3f, _groundLayer);
+            
+            if(hit.collider != null)
+            {
+                transform.position = new Vector3(transform.position.x, hit.point.y, 0f);
+                Debug.Log("플레이어 맞음");
+                break;
+            }
+            yield return null;
+        }
 
         // 충격 연출
         transform.DOPunchScale(new Vector3(0.4f, -0.4f, 0f), 0.2f, 5, 0.5f);
@@ -374,35 +415,107 @@ public class Level01_Boss : EnemyBase
     {
         if (_player == null) yield break;
 
-        yield return StartCoroutine(TellRoutine());
+    Debug.Log("보스 패턴 3번 실행");
 
-        for (int i = 0; i < 3; i++)
+    yield return StartCoroutine(TellRoutine());
+
+    Transform sword = GetAvailableSword();
+    if (sword == null) yield break;
+
+    int swordIndex = GetSwordIndex(sword);
+    sword.SetParent(null); // 피봇에서 분리
+
+    float radius = _comboRadius;
+    float swingRange = _comboSwingRange;
+    float swingDuration = _comboSwingDuration;
+
+    // 첫 휘두름 방향 계산 — 플레이어 방향 기준
+    Vector2 toPlayer = (_player.position - transform.position).normalized;
+    float centerAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
+
+    // 시작 각도 초기화 — 첫 번째는 왼쪽에서 시작
+    float currentStart = centerAngle - swingRange;
+    float currentEnd = centerAngle + swingRange;
+
+    for (int i = 0; i < 3; i++)
+    {
+        // 플레이어 방향으로 접근
+        Vector3 attackPos = Vector3.MoveTowards(
+            transform.position, _player.position, _comboApproachDistance
+        );
+        yield return StartCoroutine(MoveToPosition(attackPos, _comboMoveSpeed));
+
+        // 접근 후 플레이어 방향 재계산
+        toPlayer = (_player.position - transform.position).normalized;
+        centerAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
+
+        // 진자 운동 — 이전 끝 각도가 다음 시작 각도
+        // i==0: 왼→오, i==1: 오→왼, i==2: 왼→오
+        if (i == 0)
         {
-            Vector3 attackPos = Vector3.MoveTowards(
-                transform.position, _player.position, 2f
-            );
-            yield return StartCoroutine(MoveToPosition(attackPos, _comboMoveSpeed));
-
-            // 히트박스 생성
-            if (_slashHitboxPrefab != null)
-            {
-                GameObject hitbox = Instantiate(
-                    _slashHitboxPrefab,
-                    transform.position,
-                    Quaternion.identity
-                );
-                Destroy(hitbox, 0.15f);
-            }
-
-            transform.DOPunchPosition(
-                (_player.position - transform.position).normalized * 0.4f,
-                0.15f, 5, 0.5f
-            );
-
-            yield return new WaitForSeconds(_comboCooldown);
+            currentStart = centerAngle - swingRange;
+            currentEnd   = centerAngle + swingRange;
+        }
+        else
+        {
+            // 이전 끝 각도 ↔ 시작 각도 교체 (진자)
+            float temp = currentStart;
+            currentStart = currentEnd;
+            currentEnd   = temp;
         }
 
-        yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
+        // 칼 시작 위치 배치
+        float startRad = currentStart * Mathf.Deg2Rad;
+        sword.position = transform.position + new Vector3(
+            Mathf.Cos(startRad) * radius,
+            Mathf.Sin(startRad) * radius,
+            0f
+        );
+        sword.rotation = Quaternion.Euler(0f, 0f, currentStart);
+
+        // 히트박스 생성
+        GameObject hitbox = null;
+        if (_slashHitboxPrefab != null)
+            hitbox = Instantiate(_slashHitboxPrefab, sword.position, Quaternion.identity);
+
+        // 호 형태로 휘두르기
+        float elapsed = 0f;
+        while (elapsed < swingDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / swingDuration);
+
+            float currentAngle = Mathf.LerpAngle(currentStart, currentEnd, t);
+            float rad = currentAngle * Mathf.Deg2Rad;
+
+            sword.position = transform.position + new Vector3(
+                Mathf.Cos(rad) * radius,
+                Mathf.Sin(rad) * radius,
+                0f
+            );
+            sword.rotation = Quaternion.Euler(0f, 0f, currentAngle);
+
+            if (hitbox != null)
+                hitbox.transform.position = sword.position;
+
+            yield return null;
+        }
+
+        if (hitbox != null) Destroy(hitbox);
+
+        yield return new WaitForSeconds(_comboCooldown);
+    }
+
+    // 피봇 복귀
+    if (sword != null && swordIndex >= 0)
+    {
+        sword.SetParent(_swordPivot);
+        sword.localPosition = _swordOriginalLocalPos[swordIndex];
+        sword.localRotation = Quaternion.identity;
+    }
+
+    yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
+      
     }
 
     #endregion
@@ -413,59 +526,70 @@ public class Level01_Boss : EnemyBase
     {
         if (_player == null) yield break;
 
+        Debug.Log("보스 패턴 4번 실행");
+
         yield return StartCoroutine(TellRoutine());
 
-        for (int i = 0; i < _dropCount; i++)
+        int dropCount = Random.Range(_dropCountMin, _dropCountMax + 1);
+
+        for (int i = 0; i < dropCount; i++)
         {
             float randomX = _player.position.x + Random.Range(-_dropRange, _dropRange);
             Vector3 spawnPos = new Vector3(randomX, _player.position.y + _dropHeight, 0f);
 
-            Transform sword = GetAvailableSword();
-            if (sword != null)
-            {
-                int idx = GetSwordIndex(sword);
-                sword.SetParent(null);
-                sword.position = spawnPos;
-                StartCoroutine(DropSwordRoutine(sword, idx));
-            }
+            GameObject dropSword = Instantiate(_dropSwordPrefab, spawnPos, Quaternion.identity);
+            StartCoroutine(DropSwordRoutine(dropSword));
 
             yield return new WaitForSeconds(_dropInterval);
         }
-
-        yield return new WaitForSeconds(1.5f);
+        //마지막 칼이 착지할 시간 대기
+        yield return new WaitForSeconds(2f);
     }
 
-    IEnumerator DropSwordRoutine(Transform sword, int originalIndex)
+
+    IEnumerator DropSwordRoutine(GameObject sword)
     {
-        float elapsed = 0f;
-        while (elapsed < 3f)
+        if (sword == null) yield break;
+        sword.transform.rotation = Quaternion.Euler(0f, 0f, 180f);
+
+        yield return new WaitForSeconds(_dropWarningDelay);
+        //아래로 낙하
+        while(true)
         {
-            if (sword == null) yield break;
+            if(sword == null) yield break;
 
-            sword.position += Vector3.down * _dropSpeed * Time.deltaTime;
-            sword.Rotate(0f, 0f, -360f * Time.deltaTime);
-            elapsed += Time.deltaTime;
+            sword.transform.position += Vector3.down * _dropSpeed * Time.deltaTime;
 
-            // 바닥 도달 시 멈춤
-            if (sword.position.y <= _originPos.y)
+            //바닥 감지
+            RaycastHit2D hit = Physics2D.Raycast(
+                sword.transform.position,
+                Vector2.down,
+                _dropSpeed * Time.deltaTime + 0.3f,
+                _dropGroundLayer
+            );
+
+            if(hit.collider != null)
+            {
+                sword.transform.position = new Vector3(
+                    sword.transform.position.x, hit.point.y + _dropSwordPivotOffset, 0f
+                );
+
+                sword.transform.DOPunchScale(new Vector3(0.2f, -0.3f, 0f), 0.15f, 5, 0.5f);
                 break;
+            }
 
+            if(sword.transform.position.y < _originPos.y - 10f)
+            {
+                Destroy(sword);
+                yield break;
+            }
             yield return null;
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(_dropStickDuration);
 
-        // 피봇 복귀
-        if (sword != null && originalIndex >= 0)
-        {
-            sword.DOScale(Vector3.zero, 0.2f).OnComplete(() =>
-            {
-                sword.SetParent(_swordPivot);
-                sword.localScale = Vector3.one;
-                sword.localPosition = _swordOriginalLocalPos[originalIndex];
-                sword.localRotation = Quaternion.identity;
-            });
-        }
+        if(sword != null) Destroy(sword);
+
     }
 
     #endregion

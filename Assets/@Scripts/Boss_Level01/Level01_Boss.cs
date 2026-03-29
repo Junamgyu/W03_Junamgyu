@@ -42,6 +42,8 @@ public class Level01_Boss : EnemyBase
     [SerializeField] private float _comboSwingDuration = 0.15f;  // 스윙 속도
     [SerializeField] private float _comboSwingRange = 80f;       // 휘두르는 각도 범위
     [SerializeField] private float _comboRadius = 1.5f;          // 칼 길이
+
+    [SerializeField] private Vector2 _comboTargetOffset = Vector2.zero;
     [SerializeField] private GameObject _slashHitboxPrefab;
 
     [Header("패턴 4 - 칼 낙하")]
@@ -63,6 +65,7 @@ public class Level01_Boss : EnemyBase
     [SerializeField] private float _burstSwordSpeed = 12f;     // 칼 발사 속도
     [SerializeField] private float _burstInterval = 0.5f;      // 발사 간격
     [SerializeField] private float _burstSwordLifetime = 3f;   // 칼 소멸 시간
+    [SerializeField] private Vector2 _burstTargetOffset = Vector2.zero;
     [SerializeField] private GameObject _burstSwordPrefab;     // 발사용 칼 프리팹
 
     [Header("피격 연출")]
@@ -138,6 +141,8 @@ public class Level01_Boss : EnemyBase
     // Update is called once per frame
     void Update()
     {
+        _swordPivot.position = transform.position;
+
         _swordPivot.Rotate(0f, 0f, -_currentRotationSpeed * Time.deltaTime);
 
     
@@ -160,6 +165,8 @@ public class Level01_Boss : EnemyBase
 
     public void OnSwordDestroyed(Level01_BossOrbitSword sword)
     {
+        if(_isStunned) return;
+
         bool anyOrbit = false;
         foreach (var s in _swords)
         {
@@ -267,6 +274,7 @@ public class Level01_Boss : EnemyBase
     public override void Die()
     {
         StopAllCoroutines();
+        if(_bossHealth != null) _bossHealth.OnBossDie();
         StartCoroutine(BossDieRoutine());
     }
 
@@ -395,8 +403,11 @@ public class Level01_Boss : EnemyBase
         Transform sword = GetAvailableSword();
         if(sword == null) yield break;
 
+        var orbitSword = sword.GetComponent<Level01_BossOrbitSword>();
+
         //칼을 피봇에서 분리
         int sowrdIndex = GetSwordIndex(sword);
+        if(orbitSword != null) orbitSword.IsInPattern = true;       //패턴 시작
         sword.SetParent(null);
 
         Vector2 dir = (_player.position - sword.position).normalized;
@@ -407,7 +418,6 @@ public class Level01_Boss : EnemyBase
         while(true)
         {
             if(sword == null) yield break;
-            float step = _throwSpeed * Time.deltaTime;
             sword.position += (Vector3)(dir * _throwSpeed * Time.deltaTime);
             sword.Rotate(0f, 0f, -720f * Time.deltaTime);
 
@@ -441,9 +451,10 @@ public class Level01_Boss : EnemyBase
         //피봇 복귀
         if(sword != null && sowrdIndex >= 0)
         {
+            if(orbitSword != null) orbitSword.IsInPattern = false;
             sword.SetParent(_swordPivot);
             sword.localPosition = _swordOriginalLocalPos[sowrdIndex];
-            sword.localRotation = Quaternion.identity;
+            sword.localRotation = _swordOriginalLocalRot[sowrdIndex];
         }
     }
     #endregion
@@ -491,7 +502,7 @@ public class Level01_Boss : EnemyBase
         }
 
         // 충격 연출
-        transform.DOPunchScale(new Vector3(0.4f, -0.4f, 0f), 0.2f, 5, 0.5f);
+        transform.DOPunchScale(new Vector3(0.8f, -0.8f, 0f), 0.3f, 8, 0.8f);
 
         // 2페이즈 충격파
         if (_isPhase2 && _shockwavePrefab != null)
@@ -516,15 +527,20 @@ public class Level01_Boss : EnemyBase
     Transform sword = GetAvailableSword();
     if (sword == null) yield break;
 
+    var orbitSword = sword.GetComponent<Level01_BossOrbitSword>();
     int swordIndex = GetSwordIndex(sword);
+    
+    if(orbitSword != null) orbitSword.IsInPattern = true;
     sword.SetParent(null); // 피봇에서 분리
 
     float radius = _comboRadius;
     float swingRange = _comboSwingRange;
     float swingDuration = _comboSwingDuration;
 
+    Vector3 targetPos = _player.position + new Vector3(_comboTargetOffset.x, _comboTargetOffset.y, 0f);
+
     // 첫 휘두름 방향 계산 — 플레이어 방향 기준
-    Vector2 toPlayer = (_player.position - transform.position).normalized;
+    Vector2 toPlayer = (targetPos - transform.position).normalized;
     float centerAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
 
     // 시작 각도 초기화 — 첫 번째는 왼쪽에서 시작
@@ -533,14 +549,17 @@ public class Level01_Boss : EnemyBase
 
     for (int i = 0; i < 3; i++)
     {
+        targetPos = _player.position + new Vector3(_comboTargetOffset.x, _comboTargetOffset.y, 0f);
+
         // 플레이어 방향으로 접근
         Vector3 attackPos = Vector3.MoveTowards(
-            transform.position, _player.position, _comboApproachDistance
+            transform.position, targetPos, _comboApproachDistance
         );
         yield return StartCoroutine(MoveToPosition(attackPos, _comboMoveSpeed));
 
         // 접근 후 플레이어 방향 재계산
-        toPlayer = (_player.position - transform.position).normalized;
+        targetPos = _player.position + new Vector3(_comboTargetOffset.x, _comboTargetOffset.y, 0f);
+        toPlayer = (targetPos - transform.position).normalized;
         centerAngle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
 
         // 진자 운동 — 이전 끝 각도가 다음 시작 각도
@@ -578,7 +597,6 @@ public class Level01_Boss : EnemyBase
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / swingDuration);
-
             float currentAngle = Mathf.LerpAngle(currentStart, currentEnd, t);
             float rad = currentAngle * Mathf.Deg2Rad;
 
@@ -603,9 +621,10 @@ public class Level01_Boss : EnemyBase
     // 피봇 복귀
     if (sword != null && swordIndex >= 0)
     {
+        if(orbitSword != null) orbitSword.IsInPattern = false;
         sword.SetParent(_swordPivot);
         sword.localPosition = _swordOriginalLocalPos[swordIndex];
-        sword.localRotation = Quaternion.identity;
+        sword.localRotation = _swordOriginalLocalRot[swordIndex];
     }
 
     yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
@@ -698,8 +717,9 @@ public class Level01_Boss : EnemyBase
         
         yield return StartCoroutine(TellRoutine());
 
+        Vector3 burstTarget = _player.position + new Vector3(_burstTargetOffset.x, _burstTargetOffset.y, 0f);
         Vector3 rushTarget = Vector3.MoveTowards(
-            transform.position, _player.position, _burstRushDistance
+            transform.position, burstTarget, _burstRushDistance
         );
         yield return StartCoroutine(MoveToPosition(rushTarget, _burstRushSpeed));
 
@@ -775,12 +795,21 @@ public class Level01_Boss : EnemyBase
     Transform GetAvailableSword()
     {
         foreach (var sword in _swords)
-            if (sword != null && sword.parent == _swordPivot)
-                return sword;
+        {
+            if(sword == null) continue;
+            if(sword.parent != _swordPivot) continue;
+
+            var orbitSword = sword.GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword != null && orbitSword.State != Level01_BossOrbitSword.SwordState.Orbit)
+                continue;
+            
+            return sword;
+        }
+            
         return null;
     }
 
-    int GetSwordIndex(Transform sword)
+    public int GetSwordIndex(Transform sword)
     {
         for (int i = 0; i < _swords.Length; i++)
             if (_swords[i] == sword) return i;
@@ -794,4 +823,6 @@ public class Level01_Boss : EnemyBase
     }
 
     #endregion
+
+    
 }

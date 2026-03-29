@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Level01_BossHealth : MonoBehaviour
 {
@@ -11,6 +13,9 @@ public class Level01_BossHealth : MonoBehaviour
     [SerializeField] private SpriteRenderer _bodyRenderer;
     [SerializeField] private int _hitFlashCount = 3;
     [SerializeField] private float _hitFlashInterval = 0.08f;
+
+    [Header("HP UI")]
+    [SerializeField] private Slider _hpSlider; //인스펙터에서 연결
 
     private Level01_Boss _boss;
     private Coroutine _flashCoroutine;
@@ -25,10 +30,22 @@ public class Level01_BossHealth : MonoBehaviour
         if(_flashCoroutine != null) StopCoroutine(_flashCoroutine);
         _flashCoroutine = StartCoroutine(HitFlashRoutine());
         UpdateOrbitSwords();
+        UpdateHpUI();
     }
 
     void UpdateOrbitSwords()
     {
+        List<Level01_BossOrbitSword> orbitSwords = new List<Level01_BossOrbitSword>();
+        foreach(var s in _swords)
+        {
+            if (s == null) continue;
+            var orbitSword = s.GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword != null && orbitSword.IsOrbit)
+                orbitSwords.Add(orbitSword);
+        }
+
+        if(orbitSwords.Count == 0) return;
+
         float hpRatio = (float)_boss.CurrentHp / _boss.MaxHp;
         int activeSwordCount = Mathf.CeilToInt(hpRatio * _swords.Length);
 
@@ -69,6 +86,20 @@ public class Level01_BossHealth : MonoBehaviour
             yield return new WaitForSeconds(_hitFlashInterval);
             _bodyRenderer.color = original;
             yield return new WaitForSeconds(_hitFlashInterval);
+        }
+    }
+
+    void UpdateHpUI()
+    {
+        if(_hpSlider == null) return;
+        _hpSlider.value = (float)_boss.CurrentHp / _boss.MaxHp;
+    }
+
+    public void OnBossDie()
+    {
+        if(_hpSlider != null)
+        {
+            _hpSlider.gameObject.SetActive(false);
         }
     }
 

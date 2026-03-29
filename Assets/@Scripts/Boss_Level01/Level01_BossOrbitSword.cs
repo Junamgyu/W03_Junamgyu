@@ -6,6 +6,8 @@ using UnityEngine;
 public class Level01_BossOrbitSword : MonoBehaviour
 {
     public enum SwordState {Orbit, Free, Dead}
+
+    public bool IsInPattern {get; set;} = false;
     #region 인스펙터 변수
     [Header("체력")]
     [SerializeField] private int _maxHp = 3;
@@ -55,9 +57,13 @@ public class Level01_BossOrbitSword : MonoBehaviour
     {
         _boss = boss;
         _player = player;
-        _sr = GetComponent<SpriteRenderer>();
         _currentHp = _maxHp;
         State = SwordState.Orbit;
+    }
+
+    private void Awake()
+    {
+        _sr = GetComponent<SpriteRenderer>();
     }
     #endregion
 
@@ -91,7 +97,10 @@ public class Level01_BossOrbitSword : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (State == SwordState.Dead) return;
+    
+        if(State == SwordState.Dead) return;
+        if(State == SwordState.Free) return;
+        if(IsInPattern) return;
         
         _currentHp -= damage;
 
@@ -121,6 +130,12 @@ public class Level01_BossOrbitSword : MonoBehaviour
     //orbit -> Free
     void TransitionToFree()
     {
+        if(_boss == null)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
         State = SwordState.Free;
 
         //피봇에서 분리
@@ -155,21 +170,25 @@ public class Level01_BossOrbitSword : MonoBehaviour
     
     IEnumerator FreeFloatRoutine()
     {
+        int index = _boss.GetComponent<Level01_Boss>()?.GetSwordIndex(transform) ?? 0;
+
         while(State == SwordState.Free && !_isAttacking)
         {
             if(_boss == null) yield break;
-            _floatAngle += _floatSpeed * Time.deltaTime * Mathf.Rad2Deg;
 
-            float rad = _floatAngle * Mathf.Deg2Rad;
-            float bobY = Mathf.Sin(Time.time * 2f) * _floatAmplitude;
+            //목표 위치로 부드럽게 정렬 (보스 X 축 나란히)
+            float xOffset = (index - 2.5f) * _floatRadius * 0.6f;
+            float yOffset = 10f;
 
-            Vector3 target = _boss.position + new Vector3(
-                Mathf.Cos(rad) * _floatRadius,
-                Mathf.Sin(rad) * _floatRadius + bobY,
-                0f
+            Vector3 target = _boss.position + new Vector3(xOffset, yOffset, 0f);
+
+            transform.position = Vector3.Lerp(
+                transform.position, target, Time.deltaTime * 5f
             );
 
-            transform.position = Vector3.Lerp(transform.position, target , Time.deltaTime * 5f);
+            transform.rotation = Quaternion.Euler(0f, 0f, 180f);
+
+
             yield return null;
         }
     }
@@ -238,14 +257,15 @@ public class Level01_BossOrbitSword : MonoBehaviour
     public void ResetSword()
     {
         transform.DOKill(true);
+        StopAllCoroutines();
+        _behaviorCoroutine = null;
+        _flashCoroutine = null;
 
         State = SwordState.Orbit;
         _currentHp = _maxHp;
         _isAttacking = false;
         _lastDamageTime = -999f;
-
-        if(_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
-        _behaviorCoroutine = null;
+        IsInPattern = false;        
 
         //스프라이트 원래 색으로
         if(_sr != null) _sr.color = Color.white;

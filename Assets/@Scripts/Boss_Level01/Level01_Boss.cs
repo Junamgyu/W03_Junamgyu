@@ -21,6 +21,8 @@ public class Level01_Boss : EnemyBase
     [SerializeField] private float _tellDuration = 0.6f;
     [SerializeField] private float _punishDuration = 0.5f;
     [SerializeField] private float _returnSpeed = 6f;
+    [SerializeField] private float _freeSwordLaunchInterval = 0.3f;
+
 
     [Header("패턴 1 - 칼 던지기")]
     [SerializeField] private float _throwSpeed = 20f;
@@ -227,6 +229,10 @@ public class Level01_Boss : EnemyBase
 
             // DOTween 트윈 전부 강제 종료
             _swords[i].DOKill(true);
+
+            // 칼 상태 초기화
+            orbitSword.ResetSword();
+            
             _swords[i].gameObject.SetActive(true);  //오브젝트 활성화
 
             // 피봇에 다시 붙이기
@@ -235,11 +241,12 @@ public class Level01_Boss : EnemyBase
             // 원래 위치/회전 복구
             _swords[i].localPosition = _swordOriginalLocalPos[i];
             _swords[i].localRotation = _swordOriginalLocalRot[i];
-            _swords[i].localScale = _swordOriginalLocalScale[i];
 
 
-            // 칼 상태 초기화
-            orbitSword.ResetSword();
+            _swords[i].localScale = Vector3.zero;
+            _swords[i].DOScale(_swordOriginalLocalScale[i], 0.3f).SetEase(Ease.OutBack).SetDelay(i * 0.2f);
+
+            
         }
     }
 
@@ -456,6 +463,8 @@ public class Level01_Boss : EnemyBase
             sword.localPosition = _swordOriginalLocalPos[sowrdIndex];
             sword.localRotation = _swordOriginalLocalRot[sowrdIndex];
         }
+
+        StartCoroutine(LaunchFreeSwordsSequential());       //후딜 Free 칼 공격
     }
     #endregion
 
@@ -468,6 +477,7 @@ public class Level01_Boss : EnemyBase
         Debug.Log("보스 패턴 2번 실행");
 
         yield return StartCoroutine(TellRoutine());
+        StartCoroutine(LaunchFreeSwordsSequential());       //패턴 2는 시작시 Free칼 공격
 
         // 플레이어 위로 이동
         Vector3 riseTarget = new Vector3(
@@ -523,6 +533,7 @@ public class Level01_Boss : EnemyBase
     Debug.Log("보스 패턴 3번 실행");
 
     yield return StartCoroutine(TellRoutine());
+    //StartCoroutine(LaunchFreeSwordsSequential());       //Free 상태 칼 추가공격
 
     Transform sword = GetAvailableSword();
     if (sword == null) yield break;
@@ -628,6 +639,7 @@ public class Level01_Boss : EnemyBase
     }
 
     yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
+    StartCoroutine(LaunchFreeSwordsSequential());       //후딜 Free 칼 공격
       
     }
 
@@ -642,6 +654,7 @@ public class Level01_Boss : EnemyBase
         Debug.Log("보스 패턴 4번 실행");
 
         yield return StartCoroutine(TellRoutine());
+        StartCoroutine(LaunchFreeSwordsSequential());       //4번 패턴 시작 시 Free 칼 공격
 
         int dropCount = Random.Range(_dropCountMin, _dropCountMax + 1);
 
@@ -707,7 +720,7 @@ public class Level01_Boss : EnemyBase
 
     #endregion
 
-    #region 패턴 5 - 바닥에서 칼 솟아오르기 (2페이즈)
+    #region 패턴 5 - 사방으로 뿌리기 tkqkd 
 
     IEnumerator Pattern5_BurstSword()
     {
@@ -716,6 +729,7 @@ public class Level01_Boss : EnemyBase
         Debug.Log("보스 패턴 5번 실행");
         
         yield return StartCoroutine(TellRoutine());
+        //StartCoroutine(LaunchFreeSwordsSequential());       //Free 상태 칼 추가공격
 
         Vector3 burstTarget = _player.position + new Vector3(_burstTargetOffset.x, _burstTargetOffset.y, 0f);
         Vector3 rushTarget = Vector3.MoveTowards(
@@ -751,6 +765,7 @@ public class Level01_Boss : EnemyBase
         }
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
+        StartCoroutine(LaunchFreeSwordsSequential());       //후딜 Free 칼 공격
     }
 
     IEnumerator MoveSwordRoutine(GameObject sword, Vector2 dir)
@@ -786,6 +801,22 @@ public class Level01_Boss : EnemyBase
             yield return null;
         }
         transform.position = target;
+    }
+
+    //패턴 실행 시 Free 상태 칼 순차 공격
+    IEnumerator LaunchFreeSwordsSequential()
+    {
+        foreach(var s in _swords)
+        {
+            if(s == null) continue;
+            var orbitSword = s.GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword == null) continue;
+            if(orbitSword.State != Level01_BossOrbitSword.SwordState.Free) continue;
+
+
+            orbitSword.LaunchStraightAttack();
+            yield return new WaitForSeconds(0.3f);
+        }
     }
 
     #endregion

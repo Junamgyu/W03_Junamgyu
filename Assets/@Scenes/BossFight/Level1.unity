@@ -328,6 +328,7 @@ MonoBehaviour:
   _tellDuration: 0.6
   _punishDuration: 0.5
   _returnSpeed: 60
+  _freeSwordLaunchInterval: 0.3
   _throwSpeed: 20
   _throwReturnDelay: 0.2
   _throwReturnSpeed: 22
@@ -772,11 +773,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
@@ -873,11 +874,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
@@ -1126,11 +1127,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
@@ -1264,9 +1265,12 @@ MonoBehaviour:
   _floatRadius: 6
   _floatSpeed: 1.5
   _floatAmplitude: 0.5
-  _attackSpeed: 10
-  _returnSpeed: 5
-  _attackReturenDelay: 0.5
+  _attackSpeed: 40
+  _returnSpeed: 50
+  _attackReturenDelay: 0.3
+  _attackWarnFlashCount: 3
+  _attackWarnFlashInterval: 3
+  _attackWarnColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashCount: 2
   _hitFlashInterval: 0.06
 --- !u!1 &855749220
@@ -1372,9 +1376,12 @@ MonoBehaviour:
   _floatRadius: 6
   _floatSpeed: 1.5
   _floatAmplitude: 0.5
-  _attackSpeed: 10
-  _returnSpeed: 5
-  _attackReturenDelay: 0.5
+  _attackSpeed: 40
+  _returnSpeed: 50
+  _attackReturenDelay: 0.3
+  _attackWarnFlashCount: 3
+  _attackWarnFlashInterval: 3
+  _attackWarnColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashCount: 2
   _hitFlashInterval: 0.06
 --- !u!1001 &1026333277
@@ -1671,9 +1678,12 @@ MonoBehaviour:
   _floatRadius: 6
   _floatSpeed: 1.5
   _floatAmplitude: 0.5
-  _attackSpeed: 10
-  _returnSpeed: 5
-  _attackReturenDelay: 0.5
+  _attackSpeed: 40
+  _returnSpeed: 50
+  _attackReturenDelay: 0.3
+  _attackWarnFlashCount: 3
+  _attackWarnFlashInterval: 3
+  _attackWarnColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashCount: 2
   _hitFlashInterval: 0.06
 --- !u!1 &1251585824
@@ -1857,11 +1867,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
@@ -1898,9 +1908,12 @@ MonoBehaviour:
   _floatRadius: 6
   _floatSpeed: 1.5
   _floatAmplitude: 0.5
-  _attackSpeed: 10
-  _returnSpeed: 5
-  _attackReturenDelay: 0.5
+  _attackSpeed: 40
+  _returnSpeed: 50
+  _attackReturenDelay: 0.3
+  _attackWarnFlashCount: 3
+  _attackWarnFlashInterval: 3
+  _attackWarnColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashCount: 2
   _hitFlashInterval: 0.06
 --- !u!1 &1350958286
@@ -2109,11 +2122,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7643588306921679605, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 7920385505157006930, guid: 566853c13f4f5bc44be0f184cf0f0f96, type: 3}
       propertyPath: m_Layer
@@ -2192,9 +2205,12 @@ MonoBehaviour:
   _floatRadius: 6
   _floatSpeed: 1.5
   _floatAmplitude: 0.5
-  _attackSpeed: 10
-  _returnSpeed: 5
-  _attackReturenDelay: 0.5
+  _attackSpeed: 40
+  _returnSpeed: 50
+  _attackReturenDelay: 0.3
+  _attackWarnFlashCount: 3
+  _attackWarnFlashInterval: 3
+  _attackWarnColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashCount: 2
   _hitFlashInterval: 0.06
 --- !u!1 &1708013520
@@ -8758,11 +8774,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
       propertyPath: m_Layer
-      value: 15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4117320447102652583, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 5279905496976770157, guid: ed51cd1bb1e92b14a85dab8aca6f79f6, type: 3}
       propertyPath: m_Layer
@@ -8808,9 +8824,12 @@ MonoBehaviour:
   _floatRadius: 6
   _floatSpeed: 1.5
   _floatAmplitude: 0.5
-  _attackSpeed: 10
-  _returnSpeed: 5
-  _attackReturenDelay: 0.5
+  _attackSpeed: 40
+  _returnSpeed: 50
+  _attackReturenDelay: 0.3
+  _attackWarnFlashCount: 3
+  _attackWarnFlashInterval: 3
+  _attackWarnColor: {r: 1, g: 0, b: 0, a: 1}
   _hitFlashCount: 2
   _hitFlashInterval: 0.06
 --- !u!1660057539 &9223372036854775807

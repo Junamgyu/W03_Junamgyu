@@ -25,6 +25,9 @@ public class Level01_BossOrbitSword : MonoBehaviour
     [SerializeField] private float _attackSpeed = 10f;      //플레이어 향해 날아가는 속도
     [SerializeField] private float _returnSpeed = 5f;       //공격 후 돌아오는 속도
     [SerializeField] private float _attackReturenDelay = 0.5f;  //공격 후 복귀 딜레이
+    [SerializeField] private int _attackWarnFlashCount = 3;
+    [SerializeField] private float _attackWarnFlashInterval = 0.1f;
+    [SerializeField] private Color _attackWarnColor = Color.red;
 
     [Header("피격 연출")]
     [SerializeField] private int _hitFlashCount = 2;
@@ -252,6 +255,76 @@ public class Level01_BossOrbitSword : MonoBehaviour
         if(State == SwordState.Free)
             _behaviorCoroutine = StartCoroutine(FreeFloatRoutine());
     }
+
+    public void LaunchStraightAttack()
+    {
+        if(State != SwordState.Free) return;
+        if(_isAttacking) return;
+        if(_player == null) return;
+
+        StartCoroutine(StraightAttackRoutine());
+    }
+
+    IEnumerator StraightAttackRoutine()
+    {
+        _isAttacking = true;
+        if(_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
+
+        if(_sr != null)
+        {
+            Color originalColor = _sr.color;
+            for(int i = 0; i < _attackWarnFlashCount; i++)
+            {
+                _sr.color = _attackWarnColor;
+                yield return new WaitForSeconds(_attackWarnFlashInterval);
+                _sr.color = originalColor;
+                yield return new WaitForSeconds(_attackWarnFlashInterval);
+            }
+        }
+
+        //발사 지점 플레이어 위치 고정
+        Vector3 targetPos = _player.position;
+        Vector2 dir = (targetPos - transform.position).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
+
+        while(true)
+        {
+            if(this == null) yield break;
+
+            transform.position += (Vector3)(dir * _attackSpeed * Time.deltaTime);
+
+            Vector3 toTarget = targetPos - transform.position;
+            if(Vector3.Dot(toTarget, (Vector3)dir) <= 0f)
+                break;
+
+            yield return null;
+        }
+
+        transform.position = targetPos;
+
+        yield return new WaitForSeconds(_attackReturenDelay);
+
+        while(State == SwordState.Free)
+        {
+            if(_boss == null) yield break;
+
+            Vector2 toOwner = (_boss.position - transform.position).normalized;
+            transform.position += (Vector3)(toOwner * _returnSpeed * Time.deltaTime);
+
+            if(Vector3.Distance(transform.position, _boss.position) < _floatRadius + 0.5f)
+                break;
+
+            yield return null;
+        }
+
+        _isAttacking = false;
+
+        if(State == SwordState.Free)
+            _behaviorCoroutine = StartCoroutine(FreeFloatRoutine());
+    }
+
+
     #endregion
 
     public void ResetSword()

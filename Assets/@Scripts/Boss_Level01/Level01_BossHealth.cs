@@ -33,6 +33,11 @@ public class Level01_BossHealth : MonoBehaviour
         UpdateHpUI();
     }
 
+    public void ForceUpdateHpUI()
+    {
+        UpdateHpUI();
+    }
+
     void UpdateOrbitSwords()
     {
         List<Level01_BossOrbitSword> orbitSwords = new List<Level01_BossOrbitSword>();

@@ -6,6 +6,7 @@ using UnityEngine;
 public class Level01_Boss : EnemyBase
 {
     #region 인스펙터 변수
+    public bool IsPhase2 => _isPhase2;
 
     [Header("컴포넌트")]
     [SerializeField] private SpriteRenderer _bodyRenderer;
@@ -51,8 +52,10 @@ public class Level01_Boss : EnemyBase
     [Header("패턴 4 - 칼 낙하")]
     [SerializeField] private GameObject _dropSwordPrefab;   // 전용 낙하 칼 프리팹
     [SerializeField] private float _dropSpeed = 20f;
+    [SerializeField] private float _dropSpeedPhase2 = 35f;      //? transition Drop Speed of Phase2
     [SerializeField] private int _dropCountMin = 4;         // 최소 횟수
-    [SerializeField] private int _dropCountMax = 7;         // 최대 횟수
+    [SerializeField] private int _dropCountMax = 7;         // 최대 횟수\
+    [SerializeField] private int _dropCountPhase2Bonus = 3;     //? Add to count of Phase2
     [SerializeField] private float _dropRange = 4f;
     [SerializeField] private float _dropInterval = 0.3f;
     [SerializeField] private float _dropHeight = 8f;
@@ -150,19 +153,26 @@ public class Level01_Boss : EnemyBase
     
      if (_isPatternRunning) return;
 
-    var keyboard = UnityEngine.InputSystem.Keyboard.current;
-    if (keyboard == null) return; 
+        var keyboard = UnityEngine.InputSystem.Keyboard.current;
+        if (keyboard == null) return; 
 
-    if (keyboard.digit1Key.wasPressedThisFrame)
-        StartCoroutine(RunPattern(Pattern1_ThrowSword()));
-    else if (keyboard.digit2Key.wasPressedThisFrame)
-        StartCoroutine(RunPattern(Pattern2_Slam()));
-    else if (keyboard.digit3Key.wasPressedThisFrame)
-        StartCoroutine(RunPattern(Pattern3_SwordCombo()));
-    else if (keyboard.digit4Key.wasPressedThisFrame)
-        StartCoroutine(RunPattern(Pattern4_DropSword()));
-    else if (keyboard.digit5Key.wasPressedThisFrame)
-        StartCoroutine(RunPattern(Pattern5_BurstSword()));
+        if (keyboard.digit1Key.wasPressedThisFrame)
+            StartCoroutine(RunPattern(Pattern1_ThrowSword()));
+        else if (keyboard.digit2Key.wasPressedThisFrame)
+            StartCoroutine(RunPattern(Pattern2_Slam()));
+        else if (keyboard.digit3Key.wasPressedThisFrame)
+            StartCoroutine(RunPattern(Pattern3_SwordCombo()));
+        else if (keyboard.digit4Key.wasPressedThisFrame)
+            StartCoroutine(RunPattern(Pattern4_DropSword()));
+        else if (keyboard.digit5Key.wasPressedThisFrame)
+            StartCoroutine(RunPattern(Pattern5_BurstSword()));
+        else if (keyboard.digit6Key.wasPressedThisFrame)
+        {
+            _currentHp = Mathf.FloorToInt(_maxHp * 0.49f);
+            Debug.Log($"디버그 - 보스 체력 강제 설정 : {_currentHp} / {_maxHp}");
+            if (!_isPhase2)
+                StartCoroutine(EnterPhase2Routine());            
+        }
     }
 
     public void OnSwordDestroyed(Level01_BossOrbitSword sword)
@@ -232,7 +242,7 @@ public class Level01_Boss : EnemyBase
 
             // 칼 상태 초기화
             orbitSword.ResetSword();
-            
+
             _swords[i].gameObject.SetActive(true);  //오브젝트 활성화
 
             // 피봇에 다시 붙이기
@@ -263,7 +273,7 @@ public class Level01_Boss : EnemyBase
         _bossHealth.OnHit();
         base.TakeDamage(damage, isAddGauge);
 
-        if(!_isPhase2 && _currentHp <= _maxHp * 0.05f)
+        if(!_isPhase2 && _currentHp <= _maxHp * 0.5f)
             StartCoroutine(EnterPhase2Routine());
     }
 
@@ -350,6 +360,7 @@ public class Level01_Boss : EnemyBase
         _isImmune = false;
         SetBodyColor(_colorIdle);
 
+        if(_bossHealth != null) _bossHealth.ForceUpdateHpUI();
         _patternCoroutine = StartCoroutine(PatternCycleRoutine());
     }
     #endregion
@@ -407,14 +418,33 @@ public class Level01_Boss : EnemyBase
 
         yield return StartCoroutine(TellRoutine());
 
-        Transform sword = GetAvailableSword();
-        if(sword == null) yield break;
+        if(_isPhase2)
+        {
+            Transform sword1 = GetAvailableSword();
+            Transform sword2 = sword1 != null ? GetNextAvailableSword(sword1) : null;
+
+            if(sword1 != null) StartCoroutine(ThrowSwordRoutine(sword1));
+            if(sword2 != null) StartCoroutine(ThrowSwordRoutine(sword2));
+
+            yield return new WaitForSeconds(3f);
+        }
+        else
+        {
+            Transform sword = GetAvailableSword();
+            if(sword != null) yield return StartCoroutine(ThrowSwordRoutine(sword)); 
+        }
+        StartCoroutine(LaunchFreeSwordsSequential());
+    }
+
+
+    //? Trow the Sword logic
+    IEnumerator ThrowSwordRoutine(Transform sword)
+    {
 
         var orbitSword = sword.GetComponent<Level01_BossOrbitSword>();
-
-        //칼을 피봇에서 분리
-        int sowrdIndex = GetSwordIndex(sword);
-        if(orbitSword != null) orbitSword.IsInPattern = true;       //패턴 시작
+        int sowrdIndex = GetSwordIndex(sword);                              //칼을 피봇에서 분리
+        
+        if(orbitSword != null) orbitSword.IsInPattern = true;               //패턴 시작
         sword.SetParent(null);
 
         Vector2 dir = (_player.position - sword.position).normalized;
@@ -428,9 +458,7 @@ public class Level01_Boss : EnemyBase
             sword.position += (Vector3)(dir * _throwSpeed * Time.deltaTime);
             sword.Rotate(0f, 0f, -720f * Time.deltaTime);
 
-            Vector3 toTarget = targetPos - sword.position;
-            if(Vector3.Dot(toTarget, dir) <= 0f)
-                break;
+            if(Vector3.Dot(targetPos - sword.position, dir) <= 0f) break;
             yield return null;
         }
 
@@ -449,8 +477,7 @@ public class Level01_Boss : EnemyBase
             sword.position += (Vector3)(toOwner * _throwReturnSpeed * Time.deltaTime);
             sword.Rotate(0f, 0f, -720f * Time.deltaTime);
 
-            if(Vector3.Distance(sword.position, transform.position) < 0.5f)
-                break;
+            if(Vector3.Distance(sword.position, transform.position) < 0.5f) break;
             
             yield return null;
         }
@@ -463,8 +490,23 @@ public class Level01_Boss : EnemyBase
             sword.localPosition = _swordOriginalLocalPos[sowrdIndex];
             sword.localRotation = _swordOriginalLocalRot[sowrdIndex];
         }
+    }
 
-        StartCoroutine(LaunchFreeSwordsSequential());       //후딜 Free 칼 공격
+    Transform GetNextAvailableSword(Transform exclude)
+    {
+        foreach(var sword in _swords)
+        {
+            if(sword == null) continue;
+            if(sword == exclude) continue;
+            if(sword.parent != _swordPivot) continue;
+
+            var orbitSword = sword.GetComponent<Level01_BossOrbitSword>();
+            if(orbitSword != null && orbitSword.State != Level01_BossOrbitSword.SwordState.Orbit)
+                continue;
+            
+            return sword;
+        }
+        return null;
     }
     #endregion
 
@@ -479,48 +521,48 @@ public class Level01_Boss : EnemyBase
         yield return StartCoroutine(TellRoutine());
         StartCoroutine(LaunchFreeSwordsSequential());       //패턴 2는 시작시 Free칼 공격
 
-        // 플레이어 위로 이동
-        Vector3 riseTarget = new Vector3(
-            _player.position.x,
-            _player.position.y + _slamHeight,
-            0f
-        );
-        yield return StartCoroutine(MoveToPosition(riseTarget, _slamRiseSpeed));
+        int slamCount = _isPhase2 ? 2 : 1;      //? if phase2 than SlamCount 2
 
-        // 예고 멈춤
-        SetBodyColor(Color.red);
-        yield return new WaitForSeconds(0.4f);
-
-        // 내려찍기
-        float slamX = _player.position.x;
-        while(true)
+        for (int s = 0; s < slamCount; s++)
         {
-            transform.position = Vector3.MoveTowards(transform.position, 
-                new Vector3(slamX, transform.position.y - 100f, 0f), 
-                _slamSpeed * Time.deltaTime);
-            
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 
-                0.3f, _groundLayer);
-            
-            if(hit.collider != null)
+                // 플레이어 위로 이동
+            Vector3 riseTarget = new Vector3(_player.position.x, _player.position.y + _slamHeight, 0f);
+            yield return StartCoroutine(MoveToPosition(riseTarget, _slamRiseSpeed));
+
+            // 예고 멈춤
+            SetBodyColor(Color.red);
+            yield return new WaitForSeconds(0.4f);
+
+            // 내려찍기
+            float slamX = _player.position.x;
+            while(true)
             {
-                transform.position = new Vector3(transform.position.x, hit.point.y, 0f);
-                Debug.Log("플레이어 맞음");
-                break;
+                transform.position = Vector3.MoveTowards(transform.position, 
+                    new Vector3(slamX, transform.position.y - 100f, 0f), 
+                    _slamSpeed * Time.deltaTime);
+                
+                RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.3f, _groundLayer);
+                if(hit.collider != null)
+                {
+                    transform.position = new Vector3(transform.position.x, hit.point.y, 0f);
+                    break;
+                }
+                yield return null;
             }
-            yield return null;
+
+            // 충격 연출
+            transform.DOPunchScale(new Vector3(0.8f, -0.8f, 0f), 0.3f, 8, 0.8f);
+
+            // 2페이즈 충격파
+            if (_isPhase2 && _shockwavePrefab != null)
+                Instantiate(_shockwavePrefab, transform.position, Quaternion.identity);
+
+            yield return new WaitForSeconds(0.3f);
+
         }
-
-        // 충격 연출
-        transform.DOPunchScale(new Vector3(0.8f, -0.8f, 0f), 0.3f, 8, 0.8f);
-
-        // 2페이즈 충격파
-        if (_isPhase2 && _shockwavePrefab != null)
-            Instantiate(_shockwavePrefab, transform.position, Quaternion.identity);
-
-        yield return new WaitForSeconds(0.3f);
         yield return StartCoroutine(MoveToPosition(_originPos, _returnSpeed));
     }
+        
 
     #endregion
 
@@ -529,6 +571,8 @@ public class Level01_Boss : EnemyBase
     IEnumerator Pattern3_SwordCombo()
     {
         if (_player == null) yield break;
+        
+        int comboCount = _isPhase2 ? 4 : 3;
 
     Debug.Log("보스 패턴 3번 실행");
 
@@ -558,7 +602,7 @@ public class Level01_Boss : EnemyBase
     float currentStart = centerAngle - swingRange;
     float currentEnd = centerAngle + swingRange;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < comboCount; i++)
     {
         targetPos = _player.position + new Vector3(_comboTargetOffset.x, _comboTargetOffset.y, 0f);
 
@@ -658,13 +702,16 @@ public class Level01_Boss : EnemyBase
 
         int dropCount = Random.Range(_dropCountMin, _dropCountMax + 1);
 
+        if(_isPhase2) dropCount += _dropCountPhase2Bonus;       //2페이즈 +3
+        float currentDropSpeed = _isPhase2 ? _dropSpeedPhase2 : _dropSpeed;
+
         for (int i = 0; i < dropCount; i++)
         {
             float randomX = _player.position.x + Random.Range(-_dropRange, _dropRange);
             Vector3 spawnPos = new Vector3(randomX, _player.position.y + _dropHeight, 0f);
 
             GameObject dropSword = Instantiate(_dropSwordPrefab, spawnPos, Quaternion.identity);
-            StartCoroutine(DropSwordRoutine(dropSword));
+            StartCoroutine(DropSwordRoutine(dropSword, currentDropSpeed));
 
             yield return new WaitForSeconds(_dropInterval);
         }
@@ -673,7 +720,7 @@ public class Level01_Boss : EnemyBase
     }
 
 
-    IEnumerator DropSwordRoutine(GameObject sword)
+    IEnumerator DropSwordRoutine(GameObject sword, float dropSpeed)
     {
         if (sword == null) yield break;
         sword.transform.rotation = Quaternion.Euler(0f, 0f, 180f);
@@ -684,13 +731,11 @@ public class Level01_Boss : EnemyBase
         {
             if(sword == null) yield break;
 
-            sword.transform.position += Vector3.down * _dropSpeed * Time.deltaTime;
+            sword.transform.position += Vector3.down * dropSpeed * Time.deltaTime;
 
             //바닥 감지
-            RaycastHit2D hit = Physics2D.Raycast(
-                sword.transform.position,
-                Vector2.down,
-                _dropSpeed * Time.deltaTime + 0.3f,
+            RaycastHit2D hit = Physics2D.Raycast(sword.transform.position, Vector2.down,
+                dropSpeed * Time.deltaTime + 0.3f,
                 _dropGroundLayer
             );
 
@@ -713,9 +758,7 @@ public class Level01_Boss : EnemyBase
         }
 
         yield return new WaitForSeconds(_dropStickDuration);
-
         if(sword != null) Destroy(sword);
-
     }
 
     #endregion
@@ -725,6 +768,7 @@ public class Level01_Boss : EnemyBase
     IEnumerator Pattern5_BurstSword()
     {
         if (_player == null) yield break;
+        int roundCount = _isPhase2 ? 4 : 3;
 
         Debug.Log("보스 패턴 5번 실행");
         
@@ -738,7 +782,7 @@ public class Level01_Boss : EnemyBase
         yield return StartCoroutine(MoveToPosition(rushTarget, _burstRushSpeed));
 
         //3번 반복 - 홀수 
-        for(int round = 0; round < 3; round++)
+        for(int round = 0; round < roundCount; round++)
         {
             float startOffset = (round % 2 == 0) ? 0f : 30f;
 
@@ -806,6 +850,8 @@ public class Level01_Boss : EnemyBase
     //패턴 실행 시 Free 상태 칼 순차 공격
     IEnumerator LaunchFreeSwordsSequential()
     {
+        if(!_isPhase2) yield break;         //? Only Active to sword Attack of Phase2
+
         foreach(var s in _swords)
         {
             if(s == null) continue;
@@ -815,7 +861,7 @@ public class Level01_Boss : EnemyBase
 
 
             orbitSword.LaunchStraightAttack();
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(_freeSwordLaunchInterval);
         }
     }
 

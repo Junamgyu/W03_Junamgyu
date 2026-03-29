@@ -139,14 +139,28 @@ public class Level01_BossOrbitSword : MonoBehaviour
             return;
         }
 
-        State = SwordState.Free;
+        //? 1페이즈에서는 Free 상태 전환 없이 그냥 비활성화
+        var bossScript = _boss.GetComponent<Level01_Boss>();
+        if(bossScript != null && !bossScript.IsPhase2)
+        {
+            State = SwordState.Dead;
+            transform.SetParent(null);
+            transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack)
+                .OnComplete(()=> gameObject.SetActive(false));
 
+            bossScript.OnSwordDestroyed(this);
+            return;
+        }
+
+        //? 2페이즈에서는 기존대로 Free 전환
+
+        State = SwordState.Free;
         //피봇에서 분리
         transform.SetParent(null);
 
         //보스 주변 현재 위치 기준으로 공전 시작
         _floatAngle = Mathf.Atan2(transform.position.y - _boss.position.y,
-                        transform.position.x - _boss.position.x) *Mathf.Rad2Deg;
+                        transform.position.x - _boss.position.x) * Mathf.Rad2Deg;
 
         if(_behaviorCoroutine != null) StopCoroutine(_behaviorCoroutine);
             _behaviorCoroutine = StartCoroutine(FreeFloatRoutine());

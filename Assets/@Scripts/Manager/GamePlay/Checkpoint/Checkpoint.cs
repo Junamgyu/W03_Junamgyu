@@ -31,7 +31,6 @@ public class Checkpoint : MonoBehaviour
 
         RefreshCheckpointWall();
         OnCheckpointReached?.Invoke(this);
-        Instantiate(_checkPointMark, RespawnPoint.position, Quaternion.identity);
 
     }
 

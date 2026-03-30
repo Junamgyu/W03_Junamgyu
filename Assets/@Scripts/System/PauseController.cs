@@ -31,7 +31,7 @@ public class PauseController : MonoBehaviour, IInitializable
 
         GameState currentState = _gameStateManager.CurrentState;
 
-        if (!ctx.started || currentState == GameState.GameOver)
+        if (!ctx.started || currentState == GameState.GameOver || currentState == GameState.Clear)
             return;
 
         if (currentState == GameState.Playing)

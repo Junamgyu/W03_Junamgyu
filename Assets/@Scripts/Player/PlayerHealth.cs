@@ -10,6 +10,7 @@ public class PlayerHealth : EntityBase
     [SerializeField] private float _invincibleDuration = 1.5f;
     private bool _isInvincible = false;
     private HapticManager _hapticManager;
+    private PlayerShield _shield;
 
     public bool IsInvincible => _isInvincible;
 
@@ -24,12 +25,19 @@ public class PlayerHealth : EntityBase
         if (!ManagerRegistry.TryGet<HapticManager>(out _hapticManager))
             _hapticManager = null;
         _originalColor = _spriteRenderer.color; // 원래 색깔 저장
+        _shield = GetComponent<PlayerShield>();
     }
 
     public override void TakeDamage(int damage)
     {
         if (_isInvincible) return;
         if (_currentHp <= 0f) return;
+
+        if(_shield != null && _shield.IsShieldActive)
+        {
+            _shield.TryBlock();     //게이지 감소
+            return;
+        }
 
         base.TakeDamage(damage);
 

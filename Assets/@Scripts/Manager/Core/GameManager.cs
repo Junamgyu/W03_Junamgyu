@@ -87,7 +87,6 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         if (_playerHealth == null)
             return;
 
-        _playerHealth.OnDie += HandlePlayerDie;
     }
 
     private void UnbindPlayerHealth()
@@ -95,7 +94,6 @@ public class GameManager : PersistentMonoSingleton<GameManager>
         if (_playerHealth == null)
             return;
 
-        _playerHealth.OnDie -= HandlePlayerDie;
         _playerHealth = null;
     }
 

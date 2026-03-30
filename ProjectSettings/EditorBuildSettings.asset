@@ -8,12 +8,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/@Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/@Scenes/BossFight/Boss_Main.unity
+    guid: 7555d3d3f4984114085f6b10b941ccaf
   - enabled: 0
     path: Assets/@Scenes/JaeinScene.unity
     guid: 282b2b8a56264644da2ae0bc6b1d9590
-  - enabled: 1
+  - enabled: 0
     path: Assets/@Scenes/Maps/Lobby.unity
     guid: f37ab37aef548bd469ecad0555e21c17
+  - enabled: 1
+    path: Assets/@Scenes/BossFight/Level1.unity
+    guid: d84359b7f9ebc5e4ea493e04fca89a8f
   - enabled: 0
     path: Assets/@Scenes/RyeolScene.unity
     guid: 2b2182303d10b3441bf9d9fb2c11148a

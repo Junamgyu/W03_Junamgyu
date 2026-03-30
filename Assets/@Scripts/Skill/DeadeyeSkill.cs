@@ -23,7 +23,6 @@ public class DeadeyeSkill : MonoBehaviour
         _player = GetComponent<Player>();
         _cam = Camera.main;
         _originalFixedDeltaTime = Time.fixedDeltaTime;
-        _player.playerHealth.OnDie += OnPlayerDie;
 
         // 풀매니저 세팅
         if (!ManagerRegistry.TryGet<PoolManager>(out _poolManager))

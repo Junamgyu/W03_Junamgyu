@@ -28,6 +28,7 @@ public class PlayerAttack : MonoBehaviour
 
     private PoolManager _poolManager;
     private HapticManager _hapticManager;
+    private PlayerShield _playerShield;
 
     // Temp: 둘 다 끝났는지 추적
     bool _gravityDone = false;
@@ -39,6 +40,7 @@ public class PlayerAttack : MonoBehaviour
         _player = GetComponent<Player>();
         _rb = GetComponent<Rigidbody2D>();
         _shotgunInstance = new WeaponInstance(_shotgunData);
+        _playerShield = GetComponent<PlayerShield>();
     }
 
     private void Start()
@@ -81,12 +83,14 @@ public class PlayerAttack : MonoBehaviour
     {
         _player.IsShieldOn = true;
         _player.playerAimer.OnShieldOn();
+        _playerShield?.OnShieldOn();
     }
 
     public void ShieldOff()
     {
         _player.IsShieldOn = false;
         _player.playerAimer.OnShieldOff();
+        _playerShield.OnShieldOff();
     }
 
     void Fire(SO_WeaponBase data)

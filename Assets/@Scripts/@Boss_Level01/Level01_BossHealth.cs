@@ -30,8 +30,15 @@ public class Level01_BossHealth : MonoBehaviour
         yield return null;
 
         if(_hpSlider != null)
-            _hpSlider.gameObject.SetActive(true);
+            _hpSlider.gameObject.SetActive(false);
 
+        UpdateHpUI();
+    }
+
+    public void ShowHpBar()
+    {
+        if(_hpSlider != null)
+            _hpSlider.gameObject.SetActive(true);
         UpdateHpUI();
     }
 

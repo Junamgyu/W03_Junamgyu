@@ -10,7 +10,6 @@ public class Checkpoint : MonoBehaviour
     [SerializeField] private GameObject _checkPointMark;
 
     private bool _isActivated;
-
     public event Action<Checkpoint> OnCheckpointReached;
 
     private GameObject _spawnedCheckpointWall;
@@ -21,59 +20,58 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log($"체크포인트 충돌 감지 — {other.gameObject.name} / 태그: {other.tag}");
         if (_isActivated)
+        {
+            Debug.Log("이미 활성화됨 — 무시");
             return;
+        }
+           
 
         if (!other.CompareTag("Player"))
+        {
+            Debug.Log("Player 태그 아님 — 무시");
             return;
-
-        _isActivated = true;
-
-        RefreshCheckpointWall();
+        } 
+        Debug.Log("체크포인트 활성화!");
+        Activate();
         OnCheckpointReached?.Invoke(this);
 
     }
 
     public void SetActivated(bool value)
     {
-        _isActivated = value;
-        RefreshCheckpointWall();
+        if(value) Activate();
+        else Deactivate();
     }
 
-    private void RefreshCheckpointWall()
+    public void ResetCheckpoint()
     {
-        if (_isActivated)
-        {
-            TrySpawnCheckpointWall();
-        }
-        else
-        {
-            ClearCheckpointWall();
-        }
+        _isActivated = false;
+        ClearCheckpointWall();
     }
 
-    private void TrySpawnCheckpointWall()
+    private void Activate()
     {
-        if (_checkpointWall == null || _genPoint == null)
-            return;
+        _isActivated = true;
+        Spawnwall();
+    }
 
-        if (_spawnedCheckpointWall != null)
-            return;
+    private void Deactivate()
+    {
+        _isActivated = false;
+        ClearCheckpointWall();
+    }
 
-        _spawnedCheckpointWall = Instantiate(
-            _checkpointWall,
-            _genPoint.position,
-            _genPoint.rotation,
-            _genPoint
-        );
+    private void Spawnwall()
+    {
+        if (_checkpointWall == null) return;
+        _checkpointWall.SetActive(true);
     }
 
     private void ClearCheckpointWall()
     {
-        if (_spawnedCheckpointWall == null)
-            return;
-
-        Destroy(_spawnedCheckpointWall);
-        _spawnedCheckpointWall = null;
+        if (_spawnedCheckpointWall == null) return;
+        _checkpointWall.SetActive(false);
     }
 }

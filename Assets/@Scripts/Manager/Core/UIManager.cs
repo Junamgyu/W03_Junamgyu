@@ -116,6 +116,8 @@ public class UIManager : MonoBehaviour, IInitializable
 
             case GameState.Clear:
                 ShowClear();
+                if(ManagerRegistry.TryGet<InputManager>(out var im))
+                    im.DisablePlayerInput();
                 break;
 
             case GameState.Respawning:          //추가 - 패널 안뜨게
@@ -139,6 +141,11 @@ public class UIManager : MonoBehaviour, IInitializable
     private void HandleMainMenuRequested()
     {
         _poolManager?.ClearRuntimeObjects();
+
+        //! 체크포인트 초기화 추가
+        if(ManagerRegistry.TryGet<CheckpointManager>(out var cm))
+            cm.ClearCheckpoint();
+
         _sceneFlowManager?.LoadMainMenu();
     }
     

@@ -46,12 +46,21 @@ public class BossRespawnManager : MonoBehaviour
         BindManagers();
         BindPlayerDeath();
 
+        ResetAllCheckPoints();
+
         _gameStateManager?.ChangeState(GameState.Playing);
 
         if(_sceneFlowManager != null)
             _sceneFlowManager.OnStageReloadCompleted -= OnStageReloadCompleted;
         if(_sceneFlowManager != null)
             _sceneFlowManager.OnStageReloadCompleted += OnStageReloadCompleted;
+    }
+
+    void ResetAllCheckPoints()
+    {
+        var checkpoints = FindObjectsByType<Checkpoint>(FindObjectsSortMode.None);
+        foreach(var cp in checkpoints)
+            cp.ResetCheckpoint();
     }
 
     void BindManagers()

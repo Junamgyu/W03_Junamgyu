@@ -149,8 +149,7 @@ public class PlayerAttack : MonoBehaviour
     void SpawnBullet(SO_WeaponBase data, Vector2 dir)
     {
         // 무기에 따라 스폰 위치 결정
-        Transform muzzle = data == _shotgunData ? _shotgunMuzzle : _gunMuzzle;
-        Vector3 spawnPos = muzzle != null ? muzzle.position : _player.transform.position;
+        Vector3 spawnPos = _player.transform.position + (Vector3)(dir * 0.5f);
 
         GameObject bullet = _poolManager != null
             ? _poolManager.Get(data.bulletPrefab, spawnPos, Quaternion.identity)

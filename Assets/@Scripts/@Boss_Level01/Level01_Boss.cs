@@ -113,6 +113,9 @@ public class Level01_Boss : EnemyBase
     protected override void Start()
     {
         base.Start();
+
+        RaidStartManager.Instance?.StartTracking();     //! 보스 조우 시 트래킹 시작
+
         _originPos = transform.position;
         _currentRotationSpeed = _rotationSpeedPhase1;
 
@@ -300,6 +303,8 @@ public class Level01_Boss : EnemyBase
     //죽었을 경우
     IEnumerator BossDieRoutine()
     {
+        RaidStartManager.Instance?.StopTracking();      //! 보스 사망 시 트래킹 종료
+
         _isImmune = true;
         _currentRotationSpeed = 0f;
 
@@ -329,12 +334,19 @@ public class Level01_Boss : EnemyBase
 
     IEnumerator HitFlashRoutine()
     {
-        Color original = _bodyRenderer.color;
+        Color restoreColor;
+        if(_isStunned) 
+            restoreColor = Color.cyan;
+        else if (_isImmune)
+            restoreColor = _colorImmune;
+        else
+            restoreColor = _colorIdle;
+    
         for(int i = 0; i < _hitFlashCount; i++)
         {
             _bodyRenderer.color = Color.white;
             yield return new WaitForSeconds(_hitFlashInterval);
-            _bodyRenderer.color = original;
+            _bodyRenderer.color = restoreColor;
             yield return new WaitForSeconds(_hitFlashInterval);
         }
     }

@@ -84,7 +84,8 @@ public class BossRespawnManager : MonoBehaviour
 
     void OnPlayerDie()
     {
-        Debug.Log($"플레이어 사망 - 죽음 횟수 :{++DeathCount}");
+        DeathCount++;
+        RaidStartManager.Instance?.ResetStats();
 
         Time.timeScale = 1f;   
         _inputManger?.DisablePlayerInput();     //사망 후 입력 차단

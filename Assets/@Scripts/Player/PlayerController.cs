@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnPrimaryAttack += HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack += HandleSecondaryAttack;
         _inputManager.OnSlowMotionSkill += HandleSlowMotionSkill;
-        _inputManager.OnDeadeyeSkill += HandleDeadeyeSkill;
         //_inputManager.OnCheatOne += HandleCheatOne;
     }
     private void Update()
@@ -45,7 +44,6 @@ public class PlayerController : MonoBehaviour
         _inputManager.OnJump -= HandleJump;
         _inputManager.OnPrimaryAttack -= HandlePrimaryAttack;
         _inputManager.OnSecondaryAttack -= HandleSecondaryAttack;
-        _inputManager.OnDeadeyeSkill -= HandleDeadeyeSkill;
         _inputManager.OnSlowMotionSkill -= HandleSlowMotionSkill;
     }
 
@@ -100,14 +98,6 @@ public class PlayerController : MonoBehaviour
         if (skill != null)
             skill.OnSlowMotion(ctx);
     }
-
-    private void HandleDeadeyeSkill(InputAction.CallbackContext ctx)
-    {
-        var skill = _player.GetComponent<DeadeyeSkill>();
-        if (skill != null)
-            skill.OnDeadeye(ctx);
-    }
-
     //private void HandleCheatOne(InputAction.CallbackContext ctx)
     //{
     //    if (ctx.started)
